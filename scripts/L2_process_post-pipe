@@ -1,0 +1,159 @@
+#!/bin/csh
+
+# **********************
+# POST_PIPE
+# **********************
+
+## - STEP 11 -
+## Create image preview (REQUIRES GNUPLOT, DS9 and IMAGEMAGICK)
+
+echo
+echo "Creating image previews.."
+echo
+
+# What config are we using? Need this for ranges/orientation of raw image
+
+if ("$GRATID" == "Red-Low") then
+	set xlow = 5800
+	set xhigh = 9400
+	set orientation = 0
+else if ("$GRATID" == "Red-High") then
+	set xlow = 5900
+	set xhigh = 8000
+	set orientation = 0
+else if ("$GRATID" == "Blue-Low") then
+	set xlow = 3900
+	set xhigh = 5700
+	set orientation = 0
+else if ("$GRATID" == "Blue-High") then
+	set xlow = 3900
+	set xhigh = 5100
+	set orientation = 0
+endif
+
+
+# Generate 1D NON-SS spectrum
+
+echo "-	Parsing NON-SS Spectrum HDU and exporting data to TSV."
+
+# a) generate TSV file
+
+set processed_dat_file = $out_file_amended".dat"
+set processed_out_file = $out_file_amended"_spec.png"
+set preview_out_file = $out_file_amended".png"
+
+frprocess $out_file $processed_dat_file 6 1
+
+# b) write gnuplot file
+
+echo
+echo
+echo "-	Writing GNUplot file."
+
+# 1x1 2x1 VIEW
+#echo 'set term png size 640,480' > 1Dplot.p
+
+# 1x3 VIEW
+
+echo 'set term png size 1040,315' > 1Dplot.p
+
+echo 'set output "'$processed_out_file'"' >> 1Dplot.p
+
+echo 'set title ""' >> 1Dplot.p 
+
+echo 'set autoscale' >> 1Dplot.p
+
+echo 'xlow = '$xlow >> plot.p
+echo 'xhigh = '$xhigh >> plot.p
+
+echo 'set xrange [xlow:xhigh]' >> plot.p
+
+echo 'set xlabel "Wavelength (Angstroms)"' >> 1Dplot.p
+echo 'set ylabel "Counts"' >> 1Dplot.p
+
+echo 'plot "'$processed_dat_file'" index 0 using 1:2 with lines title ""' >> 1Dplot.p
+
+gnuplot 1Dplot.p
+
+# Generate L1 Raw image
+
+echo "-	Generating L1 Unextracted Image."
+
+ds9 -multiframe $out_file -frame 1 -single -rotate 90 -zoom 0.25 -width 1100 -height 315 -colorbar no -scale histequ -scale mode zscale -cmap heat -saveimage png raw.png -quit
+
+# Generate L2 Collapsed Datacube image
+
+echo "-	Generating Collapsed Datacube Image."
+
+ds9 -multiframe $out_file -frame 8 -single -zoom 16 -width 230 -colorbar no -height 225 -rotate 90 -scale histequ -scale mode zscale -cmap heat -saveimage png bundle.png -quit
+
+# Montaging
+
+# 1x1 2x1 VIEW
+#montage -tile 2x1 -geometry 640x480+10+0 -quality 100 -label "FS Bundle Image" bundle.png -label "Non Sky Subtracted Spectrum" $processed_out_file intermediate_montage.png
+#montage -tile 1x2 -geometry 1100x400+10+10 -quality 100 -label "Raw Image" raw.png -label "" intermediate_montage.png $preview_out_file
+
+# 1x3 VIEW
+
+echo "-	Montaging images."
+
+if (-e $processed_out_file && -e "raw.png" && -e "bundle.png") then
+
+	montage -tile 1x3 -title "L2 Data Product Preview for $out_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non Sky Subtracted Spectrum" $processed_out_file -label "Unextracted Spectra" raw.png -label "FS Bundle Reconstruction Image" bundle.png $preview_out_file
+
+	echo
+	echo "Done. "
+	echo
+
+else
+
+	echo
+	echo "Failed. One or more files used in the preview process do not exist."
+	echo
+
+endif
+
+## - STEP 12 -
+## Cleanup files and directories and store execution time
+
+set end_time = `date -d now +"%s"`
+echo "Execution UNIX end time: "$end_time"s"
+echo
+@ exec_time = $end_time - $start_time
+echo "Execution time: "$exec_time"s"
+echo
+
+echo $exec_time","$config_arm","$config_res >> $time_log_path
+
+rename tmp tmp_data tmp
+
+mkdir logs
+mkdir tmp_files
+
+set log_file_prefix = `basename $obj_file | sed 's/\.[^.]*$//'`
+rename ../$frodo_L2_log_path $log_file_prefix"_"$frodo_L2_log_path ../$frodo_L2_log_path
+
+foreach file (./*)
+	
+	set this_filename = `basename $file`
+
+	if ($this_filename != $out_file && $this_filename != $obj_file && $this_filename != $arc_file && $this_filename != $log_file_prefix"_"$frodo_L2_log_path && $this_filename != $preview_out_file) then
+
+		if (! -d $file) then
+
+			mv $file tmp_files/ > /dev/null
+
+		endif
+
+	endif
+
+end
+
+rm -f $obj_file > /dev/null
+rm -f $arc_file > /dev/null
+
+cd ..
+
+error:
+exit 1
+

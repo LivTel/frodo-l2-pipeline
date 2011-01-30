@@ -1,0 +1,55 @@
+ ####################################### frodo_red_arcfit #########################################
+
+ Usage:	frarcfit ext_arc_file
+		 ext_target_file
+		 ext_cont_file
+		 max_cc_delay
+		 min_dist
+		 half_aperture_num_pix
+		 derivative_tol
+		 derivative_tol_ref_px
+		 pix_tolerance
+		 min_contiguous_lines
+		 arc_line_list_filename
+		 max_pix_diff
+		 min_matched_lines
+		 fit_order
+		 cc_ext_arc_file
+		 cc_ext_target_file
+		 cc_ext_cont_file
+
+ Synopsis:
+
+ An automatic arc-line fitting routine.
+
+ Description:
+
+ The data is first cross correlated, with a maximum delay set by [max_cc_delay], on a row-by-row 
+ basis to remove the pixel-scale curvature. Candidate lines are then identified by:
+
+ 1.	Finding the peaks on a row-by-row basis using the find_peaks function ([min_dist],
+ 	[half_aperture_num_pix], [derivative_tol] and [derivative_tol_ref_px] parameters have their
+	usual meanings as stated in the frodo_red_findpeaks_simple blurb).
+
+ 2.	Checking for line contiguity where [pix_tolerance] is the maximum number of
+	pixels that the location of a single candidate line in a row is allowed to deviate from the
+	other rows by before dismissing the line.
+
+ 3.	Checking the average pixel channel of the contiguous lines against the reference arc line
+ 	list to identify matches. The maximum wavelength distance(in pixels) allowed for a peak to
+ 	be associated with that from the reference arc line list is [max_pix_diff].
+
+ The routine will fail if either the number of contiguous lines found is less than 
+ [min_contiguous_lines] or the number of lines matched to the reference file is less than 
+ [min_matched_lines].
+
+ If successful, the program will produce a file [FRARCFIT_OUTPUTF_WAVFITS_FILE] containing the
+ polynomial fits determined for each fibre along with cross correlated arc [cc_ext_arc_f], target 
+ [cc_ext_target_f] and continuum [cc_ext_cont_f] files.
+
+ Examples:
+
+ frarcfit ext_arc.fits ext_target.fits ext_continuum.fits 15 7 7 1 2 3 10 $L2_CONFIG_DIR/reference_arcs/red_g/041010/arc.lis 3 4 2 cc_ext_arc.fits
+ 	  cc_ext_target.fits cc_ext_continuum.fits
+
+ ##################################################################################################

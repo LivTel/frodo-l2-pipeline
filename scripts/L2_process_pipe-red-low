@@ -1,0 +1,109 @@
+#!/bin/csh
+
+# SETTING LOGGING ATTRIBUTES
+
+set log_file_prefix = `basename $obj_file | sed 's/\.[^.]*$//'`
+
+## TRACING THE SKY FLAT
+
+echo ""
+echo "###################################"
+echo "1: Find peaks in sky file. (frfind)"
+echo "###################################"
+
+frfind $sky_file 3 3 0 100 2 1000 | tee $log_file_prefix"_frfind.log"
+
+echo "####################################################"
+echo "2: Clean peak sky file of suspect entries. (frclean)"
+echo "####################################################"
+
+frclean 3 | tee $log_file_prefix"_frclean.log"
+
+echo "#####################################"
+echo "3: Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+frtrace 2 100 | tee $log_file_prefix"_frtrace.log"
+
+## EXTRACTION
+
+echo "#############################################"
+echo "4a: Extract sky file using tracing. (frtrace)"
+echo "#############################################"
+
+set sky_ext = sky_ext.fits
+frextract $sky_file $sky_ext pix 3 | tee $log_file_prefix"_frextract_sky.log"
+
+echo "################################################"
+echo "4b: Extract object file using tracing. (frtrace)"
+echo "################################################"
+
+set obj_ext = obj_ext.fits
+frextract $obj_file $obj_ext pix 3 | tee $log_file_prefix"_frextract_obj.log"
+
+echo "#############################################"
+echo "4c: Extract arc file using tracing. (frtrace)"
+echo "#############################################"
+
+set arc_ext = arc_ext.fits
+frextract $arc_file $arc_ext pix 3 | tee $log_file_prefix"_frextract_arc.log"
+
+# ARC-FITTING
+
+echo "##############################################################################################"
+echo "5: Shift spectra to a common reference point and find arc solutions for each fibre. (frarcfit)"
+echo "##############################################################################################"
+
+set obj_ext_shift = obj_ext_shift.fits 
+set sky_ext_shift = sky_ext_shift.fits
+frarcfit $arc_ext $obj_ext $arc_list_file 2 7 15 5 5 1 $obj_ext_shift $sky_ext $sky_ext_shift | tee $log_file_prefix"_frarcfit.log"
+
+# THROUGHPUT CORRECTION
+
+echo "################################################"
+echo "6: Correct for throughput. (frcorrectthroughput)"
+echo "################################################"
+
+set obj_ext_shift_cor = obj_ext_shift_cor.fits 
+frcorrectthroughput $sky_ext_shift $obj_ext_shift $obj_ext_shift_cor 4831.6 10998 | tee $log_file_prefix"_frcorrectthroughput.log"
+
+#4831.6
+
+# REBINNING
+
+echo "###########################"
+echo "7: Rebin spectra. (frrebin)"
+echo "###########################"
+
+set obj_ext_shift_cor_scrunched = obj_ext_shift_cor_scrunched.fits
+frrebin $obj_ext_shift_cor 1.6 4831.6 11000 lin $obj_ext_shift_cor_scrunched | tee $log_file_prefix"_frrebin.log"
+
+# OBJ/SKY FIBRE IDENTIFICATION
+
+echo "###########################################################################"
+echo "8: Identify object/sky fibres and extract sky fibres if possible. (fridsky)"
+echo "###########################################################################"
+echo ""
+
+set emptysky_ext_shift_cor_scrunched_only = emptysky_ext_shift_cor_scrunched_only.fits
+fridsky $obj_ext_shift_cor_scrunched 2 1 $emptysky_ext_shift_cor_scrunched_only | tee $log_file_prefix"_fridsky.log"
+
+# SKY SUBTRACTION
+
+echo "#######################################"
+echo "9: Sky subtract if possible. (frsubsky)"
+echo "#######################################"
+
+set obj_ext_shift_cor_scrunched_ss = obj_ext_shift_cor_scrunched_ss.fits
+frsubsky $emptysky_ext_shift_cor_scrunched_only $obj_ext_shift_cor_scrunched $obj_ext_shift_cor_scrunched_ss | tee $log_file_prefix"_frsubsky.log"
+
+# REFORMATTING
+
+echo "#################################################"
+echo "10: Reformat data into one MEF file. (frreformat)"
+echo "#################################################"
+
+frreformat $obj_file $obj_ext_shift_cor_scrunched $obj_ext_shift_cor_scrunched_ss $out_file | tee $log_file_prefix"_frreformat.log"
+
+echo "Success."
+

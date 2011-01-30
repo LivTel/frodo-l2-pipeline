@@ -1,0 +1,39 @@
+ ################################### frodo_red_findpeaks_simple ###################################
+
+ Usage:	frfind continuum_file 
+	       min_dist 
+	       half_aperture_num_pix
+	       der_tol_min	
+	       der_tol_max
+	       der_tol_ref_px
+	       min_rows
+
+ Synopsis:
+
+ Finds peaks (row-by-row) in a continuum FITS file.
+
+ Description:
+
+ Uses a peak finding routine that flags a peak if:
+
+ 1.	[half_aperture_num_pix] pixels either side of pixel being considered have lesser values.
+
+ 2.	The distance to the previous peak is greater than [min_dist].
+
+ 3.	The intensity of the currently considered peak is greater than the value at the pixels
+    	[der_tol_ref_px] either side by a tolerance value (see below).
+
+ Using the find_peaks function, the row data in [continuum_file] is cycled through a range of
+ derivative tolerances, starting at [der_tol_min] and ending at [der_tol_max], noting the best
+ value considered as the value giving the most number of rows with [FIBRES] number of peaks.
+
+ If successful, the program will produce a file [FRFIND_OUTPUTF_PEAKS_FILE] containing a list of
+ the centroids found using the find_centroid_parabolic function.
+
+ The program is terminated if the number of rows found is less than [min_rows].
+
+ Example: 
+
+ frfind continuum.fits 3 3 10 30 2 1000
+
+ ##################################################################################################

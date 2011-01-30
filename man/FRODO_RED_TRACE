@@ -1,0 +1,25 @@
+ ######################################## frodo_red_trace #########################################
+
+ Usage:	frtrace	polynomial_order 
+		num_bins
+		min_rows_per_bin
+ Synopsis:
+
+ Fits a polynomial to each centroid of each fibre in the [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] file.
+
+ Description:
+
+ Data from the [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] is first scrunched down the dispersion axis to
+ produce [num_bins] bins for each fibre. An average spaxel value and row coordinate for each bin is
+ then found.
+		
+ Following this, a set of equations are then created of order [polynomial_order] for each bin and
+ each fibre. A least-squares fitting routine is then applied using only bins where the number of
+ rows founds greater than [min_rows_per_bin] and the tracing solutions are outputted to
+ [FRTRACE_OUTPUTF_TRACE_FILE].
+
+ Example: 
+ 
+ frtrace 2 100 5
+
+ ##################################################################################################
