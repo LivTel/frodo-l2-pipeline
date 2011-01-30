@@ -1,0 +1,81 @@
+
+
+#!/bin/csh
+
+# ******************************************************************
+# FRODO_L2 - THE FRONT-END EXEC SCRIPT FOR THE FRODOSPEC L2 PIPELINE
+# ******************************************************************
+
+# !! CONFIG SPECIFIC VARIABLES !!
+
+#set time_log_path = "/home/rmb/Desktop/time_log.log" # devel
+#set time_log_path = "/home/eng/frodo_pipeline/time_log.log" # archive
+set  time_log_path = "/home/rmb/work/programs/C/frodo_pipeline/devel/time_log/time_log.log"
+
+set frodo_L2_log_path = "log.log"
+
+# SOURCE
+
+source $STARLINK_DIR/etc/login
+source $STARLINK_DIR/etc/cshrc
+
+source $script_dir/c-source
+
+# DEFINITIONS AND INPUT
+
+convert > /dev/null
+figaro > /dev/null
+kappa > /dev/null
+
+# FILE CHECK
+
+clear
+
+echo ""
+echo "### frodo_L2 ###";
+echo ""
+echo " _____ ____   ___  ____   ___  ____"
+echo "|  ___|  _ \\ / _ \\|  _ \\ / _ \\/ ___| _ __   ___  ___"
+echo "| |_  | |_) | | | | | | | | | \\___ \\| '_ \\ / _ \\/ __|"
+echo "|  _| |  _ <| |_| | |_| | |_| |___) | |_) |  __/ (__ "
+echo "|_|   |_| \\_\\\\___/|____/ \\___/|____/| .__/ \\___|\\___|"
+echo "				    |_|"
+echo ""
+echo "An IFU fibre-optic spectrograph for the LT."
+echo ""
+echo "Author: Rob Barnsley (LJMU)"
+echo "Email: rmb@astro.livjm.ac.uk"
+echo ""
+
+if ($#argv == "3" && -e "$1" && -e "$2" && $3 == "1") then
+
+	echo "Verbose: YES."
+	echo 
+	source $script_dir/pre_pipe $1 $2 | tee $frodo_L2_log_path
+
+else if ($#argv == "3" && -e "$1" && -e "$2" && $3 == "0") then
+
+	echo "Verbose: NO."
+	echo 
+	source $script_dir/pre_pipe $1 $2 > $frodo_L2_log_path
+
+else 
+
+	echo "Usage: frodo_L2 object_file arc_file verbose?(0/1)";
+	echo ""
+	echo "Synopsis:"
+	echo ""
+	echo "The L2 prototype pipeline for FRODOSpec."
+	echo 
+	echo "ERROR: Check your input."
+	echo
+	goto error
+
+endif
+
+
+error:
+exit 1
+
+
+

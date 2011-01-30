@@ -1,0 +1,53 @@
+#!/bin/csh
+
+##################################
+# L2_setup 			 #
+# Last Modified Date:   30/01/11 #
+##################################
+
+######################
+# set up environment #
+######################
+
+setenv L2_BASE_DIR "/home/rmb/svn/frodo_l2_pipeline/trunk" # laptop
+
+setenv L2_BIN_DIR $L2_BASE_DIR/bin
+setenv L2_LIB_DIR $L2_BASE_DIR/lib
+setenv L2_CONFIG_DIR $L2_BASE_DIR/config
+setenv L2_SRC_DIR $L2_BASE_DIR/src
+setenv L2_SCRIPT_DIR $L2_BASE_DIR/scripts
+setenv L2_MAN_DIR $L2_BASE_DIR/man
+
+setenv L2_ERROR_CODES_FILE $L2_CONFIG_DIR/ERROR_CODES
+
+setenv L2_HEADER_FILE $L2_MAN_DIR/HEADER
+setenv L2_FRFS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_FINDPEAKS_SIMPLE
+setenv L2_FRFSC_BLURB_FILE $L2_MAN_DIR/FRODO_RED_FINDPEAKS_SIMPLE_CLEAN
+setenv L2_FRT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_TRACE
+setenv L2_FRES_BLURB_FILE $L2_MAN_DIR/FRODO_RED_EXTRACT_SIMPLE
+setenv L2_FRA_BLURB_FILE $L2_MAN_DIR/FRODO_RED_ARCFIT
+
+setenv L2_VERSION_FILE $L2_MAN_DIR/VERSION
+
+################
+# set up shell #
+################
+
+limit stacksize unlimited
+
+################
+# core aliases #
+################
+
+alias frfind $L2_BIN_DIR/frfind
+alias frclean $L2_BIN_DIR/frclean
+alias frtrace $L2_BIN_DIR/frtrace
+alias frextract $L2_BIN_DIR/frextract
+alias frarcfit $L2_BIN_DIR/frarcfit
+
+##################
+# script aliases #
+##################
+
+alias L2_update_version $L2_SCRIPT_DIR/L2_update_version
+
