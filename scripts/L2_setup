@@ -2,14 +2,15 @@
 
 ##################################
 # L2_setup 			 #
-# Last Modified Date:   30/01/11 #
+# Last Modified Date:   31/01/11 #
 ##################################
 
 ######################
 # set up environment #
 ######################
 
-setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk" # laptop
+setenv L2_BASE_DIR `locate frodo_l2_pipeline/trunk | head -1`	# AUTO
+# setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# MANUAL:laptop
 
 setenv L2_BIN_DIR $L2_BASE_DIR/bin
 setenv L2_LIB_DIR $L2_BASE_DIR/lib
@@ -45,10 +46,19 @@ alias frtrace $L2_BIN_DIR/frtrace
 alias frextract $L2_BIN_DIR/frextract
 alias frarcfit $L2_BIN_DIR/frarcfit
 
-###############################
-# script aliases and sourcing #
-###############################
+###########################
+# update man/VERSION file #
+###########################
 
-alias L2_update_version $L2_SCRIPT_DIR/L2_update_version
-source $L2_SCRIPT_DIR/L2_update_version
+set author = `svn info $L2_BASE_DIR | grep "Last Changed Author" | awk -F "Author:" '{print $2}'`
+set rev = `svn info $L2_BASE_DIR | grep "Last Changed Rev" | awk -F "Rev:" '{print $2}'`
+set date = `svn info $L2_BASE_DIR | grep "Last Changed Date" | awk -F "Date:" '{print $2}'`
+
+set author = "Last Changed Author:\t$author"
+set rev = "Last Changed Revision:\t$rev"
+set date = "Last Changed Date:\t$date"
+
+echo $author > $L2_VERSION_FILE
+echo $rev >> $L2_VERSION_FILE	
+echo $date >> $L2_VERSION_FILE
 
