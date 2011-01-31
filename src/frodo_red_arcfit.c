@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_arcfit.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	31/01/11
 
 ************************************************************************/
 
@@ -26,7 +26,7 @@ int main (int argc, char *argv []) {
 
 	}
 
-	if (argc != 18) {
+	if (argc != 19) {
 
 		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
 
@@ -51,7 +51,7 @@ int main (int argc, char *argv []) {
 
 		// ***********************************************************************
 		// Redefine routine input parameters
-
+	
 		char *ext_arc_f			= argv[1];
 		char *ext_target_f		= argv[2];
 		char *ext_cont_f		= argv[3];
@@ -65,10 +65,11 @@ int main (int argc, char *argv []) {
 		char *arc_line_list_filename	= argv[11];
 		int max_pix_diff		= atoi(argv[12]);
 		int min_matched_lines		= atoi(argv[13]);
-		int fit_order			= atoi(argv[14]);
-		char *cc_ext_arc_f		= argv[15];
-		char *cc_ext_target_f		= argv[16];
-		char *cc_ext_cont_f		= argv[17];
+		double max_av_wavelength_diff	= atoi(argv[14]);
+		int fit_order			= atoi(argv[15]);
+		char *cc_ext_arc_f		= argv[16];
+		char *cc_ext_target_f		= argv[17];
+		char *cc_ext_cont_f		= argv[18];
 
 		// ***********************************************************************
 		// Open ext arc file (ARG 1), get parameters and perform any data format 
@@ -464,8 +465,8 @@ int main (int argc, char *argv []) {
 		find_peaks_contiguous(trim_nxelements, nyelements, trim_offset_ext_arc_frame_values, peaks, &num_peaks, min_dist, half_aperture_num_pix, derivative_tol, derivative_tol_ref_px, pix_tolerance, TRUE);
 
 		printf("\nArc line matching");
-		printf("\n-----------------\n");
-		printf("\nCandidate lines found:\t\t%d", num_peaks);
+		printf("\n-----------------\n\n");
+		printf("Candidate lines found:\t\t\t\t\t%d\n", num_peaks);
 
 		if (num_peaks < min_contiguous_lines) { 
 
@@ -550,7 +551,7 @@ int main (int argc, char *argv []) {
 	
 		}
 
-		printf("\nNumber of reference lines:\t%d", arc_line_list_num_ref_lines);
+		printf("Number of reference lines:\t\t\t\t%d\n", arc_line_list_num_ref_lines);
 
 		// 4.	Read arc line list file (ARG 11) for reference
 		//	wavelengths and their corresponding pixel positions
@@ -590,7 +591,6 @@ int main (int argc, char *argv []) {
 
 		// 5.	Match identified peaks to lines in reference file
 
-		double average_pixel_channel;
 		double this_diff, least_diff, least_diff_index;
 		bool matched_line;
 		int matched_line_count = 0;
@@ -601,32 +601,37 @@ int main (int argc, char *argv []) {
 		double matched_line_diffs [num_peaks];
 		memset(matched_line_diffs, 0, sizeof(double)*num_peaks);
 
-		int duplicate_index;
-		
-		for (ii=0; ii<num_peaks; ii++) {							// for each identified peak
+		double average_pixel_channels [num_peaks];
+		memset(average_pixel_channels, 0, sizeof(double)*num_peaks);	
 
-			least_diff = 0;
-			average_pixel_channel = 0;
-			matched_line = FALSE;
+		for (ii=0; ii<num_peaks; ii++) {
 
 			for (jj=0; jj<nyelements; jj++) {
 
-				average_pixel_channel += peak_centroids[jj][ii];
+				average_pixel_channels[ii] += peak_centroids[jj][ii];
 
 			}
 
-			average_pixel_channel /= nyelements;						// calculate the average pixel channel using all rows
+			average_pixel_channels[ii] /= nyelements;					// calculate the average pixel channel using all rows	
+
+		}
+
+		int duplicate_index;
+		
+		for (ii=0; ii<num_peaks; ii++) {							// for each identified candidate peak
+
+			least_diff = 0;
+			matched_line = FALSE;
 
 			for (jj=0; jj<arc_line_list_num_ref_lines; jj++) {				// then take each line in the reference arc line list file
 
-				this_diff = fabs(average_pixel_channel - arc_peak_centroids[jj]);	// calculate the difference between the identified and reference line
+				this_diff = fabs(average_pixel_channels[ii] - arc_peak_centroids[jj]);	// calculate the difference between the identified and reference arc line
 
 				if (this_diff <= max_pix_diff) {					// is the difference less than [max_pix_diff]?
 			
-					if (matched_line == FALSE || this_diff < least_diff) {		// is this the first line found or a line with a smaller difference?
+					if (matched_line == FALSE || this_diff < least_diff) {		// is this the first line found or a line with a smaller difference between ref arc line and matched?
 
 						matched_line = TRUE;
-						matched_line_count++;
 
 						least_diff = this_diff;
 						least_diff_index = jj;
@@ -645,16 +650,19 @@ int main (int argc, char *argv []) {
 
 					if(least_diff < matched_line_diffs[duplicate_index]) {					// does it have a smaller difference?
 
-						matched_line_indexes[duplicate_index] = -1;					// reset the duplicate values
+						matched_line_indexes[duplicate_index] = -1;					// reset the duplicate values, no increment required if duplicate
 						matched_line_diffs[duplicate_index] = 0;
-						
 
+						matched_line_indexes[ii] = least_diff_index;
+						matched_line_diffs[ii] = least_diff;
+						
 					}
 
 				} else {
 
 					matched_line_indexes[ii] = least_diff_index;
 					matched_line_diffs[ii] = least_diff;
+					matched_line_count++;
 
 				}
 
@@ -676,9 +684,94 @@ int main (int argc, char *argv []) {
 
 		}
 
-		for (ii=0; ii<matched_line_count; ii++) printf("%f\n", arc_peak_wavelengths[matched_line_indexes[ii]]);
+		printf("Number of matched lines:\t\t\t\t%d\n", matched_line_count);
 
-		printf("\nNumber of matched lines:\t%d\n", matched_line_count);
+		printf("\nIndex\tList wavelength\tList centroid\tAv. channel\tChannel difference\n");		// Channel difference is the difference between the reference arc list pixel location and the identified pixel location
+		printf("\t(Å)\t\t(px)\t\t(px)\t\t(px)\n\n");	
+
+		for (ii=0; ii<num_peaks; ii++) {
+
+			if (matched_line_indexes[ii] == -1) { 	// this line was unmatched
+
+				// printf("%d\t%s\t\t%s\t\t%.2f\t\t%s\n", ii, "", "", average_pixel_channels[ii], ""); 	// DEBUG
+
+			} else {
+
+				printf("%d\t%.2f\t\t%.2f\t\t%.2f\t\t%.2f\n", ii, arc_peak_wavelengths[matched_line_indexes[ii]], arc_peak_centroids[matched_line_indexes[ii]], average_pixel_channels[ii], matched_line_diffs[ii]);
+
+			}
+
+		}
+
+
+		// 7.	And do they sample the distribution well?
+
+		// for (ii=0; ii<arc_line_list_line_index; ii++) printf("\n%f\t%f\t%d", arc_peak_wavelengths[ii], arc_peak_wavelengths[matched_line_indexes[ii]], matched_line_indexes[ii]);	// DEBUG
+
+		double list_total_dist;
+		double list_av_dist;
+
+		for (ii=0; ii<arc_line_list_num_ref_lines-1; ii++) {
+
+			for (jj=ii+1; jj<arc_line_list_num_ref_lines; jj++) {
+				
+				list_total_dist += arc_peak_wavelengths[jj] - arc_peak_wavelengths[ii];
+
+				// printf("\n%f", arc_peak_wavelengths[jj] - arc_peak_wavelengths[ii]);		// DEBUG
+
+			}
+
+		}
+
+		list_av_dist = list_total_dist / powf(arc_line_list_line_index, 2);
+
+		double matched_line_wavelengths [matched_line_count];
+		memset(matched_line_wavelengths, 0, sizeof(double)*matched_line_count);
+		
+		int this_matched_line_index = 0;
+
+		for (ii=0; ii<num_peaks; ii++) {
+		
+			if (matched_line_indexes[ii] == -1) { 	// this line was unmatched
+
+				continue;
+
+			} else {
+
+				matched_line_wavelengths[this_matched_line_index] = arc_peak_wavelengths[matched_line_indexes[ii]];
+				this_matched_line_index++;
+
+			}
+
+		}
+
+		double sample_total_dist;
+		double sample_av_dist;
+
+		for (ii=0; ii<matched_line_count-1; ii++) {
+
+			for (jj=ii+1; jj<matched_line_count; jj++) {
+				
+				sample_total_dist += matched_line_wavelengths[jj] - matched_line_wavelengths[ii];
+
+				// printf("\n%f", matched_line_wavelengths[jj] - matched_line_wavelengths[ii]);		// DEBUG
+
+			}
+
+		}
+
+		sample_av_dist = sample_total_dist / powf(matched_line_count, 2);
+
+		double sample_list_diff = abs(list_av_dist-sample_av_dist);
+
+		printf("\nAverage distance between lines in reference arc list:\t%.1f", list_av_dist);
+		printf("\nAverage distance between lines in matched line list:\t%.1f\n", sample_av_dist);
+
+		if (sample_list_diff > max_av_wavelength_diff) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", 3, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+		}
 
 		// FIND THE DISPERSION SOLUTION AND WRITE TO [FRARCFIT_OUTPUTF_PFITS_FILE]
 		// OUTPUT FILE
@@ -803,6 +896,14 @@ int main (int argc, char *argv []) {
 		printf("\nMin χ2:\t\t\t%f\n", chi_squared_min);
 		printf("Max χ2:\t\t\t%f\n", chi_squared_max);
 		printf("Average χ2:\t\t%f\n", chi_squared/nyelements);
+
+		// 4.	Perform a few checks to ensure the chi squareds are sensible 
+
+		if ((chi_squared_min < FRARCFIT_VAR_CHISQUARED_MIN) || (chi_squared_max > FRARCFIT_VAR_CHISQUARED_MAX)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", 4, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+		}
 
 		// ***********************************************************************
 		// Create [cc_ext_arc/target/continuum_frame_values] array to hold the 

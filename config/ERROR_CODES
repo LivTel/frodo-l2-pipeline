@@ -1,7 +1,7 @@
 # DO NOT MODIFY FORMAT
 #
 # File:				ERROR_CODES
-# Last Modified Date:     	27/01/11
+# Last Modified Date:     	31/01/11
 #
 
 # fits_key	code	comment	
@@ -30,6 +30,7 @@ L2STATCL	-4	Failed to create [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] output file
 L2STATCL	-5	Failed to close [FRFIND_OUTPUTF_PEAKS_FILE] input file
 L2STATCL	-6	Failed to close [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] output file
 
+L2STATTR	3	Possible poor fit, χ² not within [FRARCFIT_VAR_CHISQUARED_MIN] and [FRARCFIT_VAR_CHISQUARED_MAX]
 L2STATTR	2	Failed to get L2_FRT_BLURB_FILE environment variable
 L2STATTR	1	Failed to get L2_HEADER_FILE environment variable
 L2STATTR	0	No errors encountered
@@ -64,6 +65,8 @@ L2STATEX	-11	Failed to create output FITS file (ARG 4)
 L2STATEX	-12	Failed to close input FITS file (ARG 1)
 L2STATEX	-13	Failed to close output FITS file (ARG 4)
 
+L2STATAR	4	Possible poor fit, χ² not within [FRARCFIT_VAR_CHISQUARED_MIN] and [FRARCFIT_VAR_CHISQUARED_MAX]
+L2STATAR	3	Distribution of matched arc lines may not be well sampled over the wavelength range
 L2STATAR	2	Failed to get L2_FRA_BLURB_FILE environment variable
 L2STATAR	1	Failed to get L2_HEADER_FILE environment variable
 L2STATAR	0	No errors encountered

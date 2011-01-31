@@ -9,7 +9,7 @@
 # set up environment #
 ######################
 
-setenv L2_BASE_DIR "/home/rmb/svn/frodo_l2_pipeline/trunk" # laptop
+setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk" # laptop
 
 setenv L2_BIN_DIR $L2_BASE_DIR/bin
 setenv L2_LIB_DIR $L2_BASE_DIR/lib
@@ -45,9 +45,10 @@ alias frtrace $L2_BIN_DIR/frtrace
 alias frextract $L2_BIN_DIR/frextract
 alias frarcfit $L2_BIN_DIR/frarcfit
 
-##################
-# script aliases #
-##################
+###############################
+# script aliases and sourcing #
+###############################
 
 alias L2_update_version $L2_SCRIPT_DIR/L2_update_version
+source $L2_SCRIPT_DIR/L2_update_version
 

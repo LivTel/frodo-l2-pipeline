@@ -405,26 +405,35 @@ int find_peaks_contiguous(int nxelements, int nyelements, double frame_values [n
 
 	bool insert;
 
-	int considered_peaks [nyelements];					// array to hold locations of the considered peak
+	int considered_peaks [nyelements];	// array to hold locations of the considered peak
 
-	for (ii=0; ii<all_rows_num_peaks[0]; ii++) {				// for each peak on the first row
+	double this_pix_difference = 0;
+	double least_pix_difference;
+
+	for (ii=0; ii<all_rows_num_peaks[0]; ii++) {									// for each peak on the first row
 
 		memset(considered_peaks, 0, sizeof(int)*nyelements);
 
 		considered_peaks[0] = all_rows_peaks[0][ii];
 
-		for (jj=1; jj<nyelements; jj++) {				// cycle each futher row
+		for (jj=1; jj<nyelements; jj++) {									// cycle each futher row
 
 			insert = FALSE;
 
-			for (kk=0; kk<all_rows_num_peaks[jj]; kk++) {		// and each element on the row
+			for (kk=0; kk<all_rows_num_peaks[jj]; kk++) {							// and each peak on the row
 
-				if (abs(all_rows_peaks[jj][kk] - all_rows_peaks[0][ii]) <= pix_tolerance) {		// found a suitable candidate peak
+				this_pix_difference = abs(all_rows_peaks[jj][kk] - all_rows_peaks[0][ii]);		// calculate the pixel distance between this peak and the peak from the first row
 
-					insert = TRUE;
-					considered_peaks[jj] = all_rows_peaks[jj][kk];
-					break;
-	
+				if (this_pix_difference <= pix_tolerance) {						// found a suitable candidate peak within the right tolerance
+
+					if ((insert == FALSE) || (this_pix_difference < least_pix_difference)) {	// if it's the first cycle OR there's a closer peak
+
+						insert = TRUE;
+						considered_peaks[jj] = all_rows_peaks[jj][kk];
+						least_pix_difference = this_pix_difference;				// this is always set on each iteration of jj as insert is set to FALSE
+
+					}
+					
 				} 
 
 			}
@@ -437,7 +446,7 @@ int find_peaks_contiguous(int nxelements, int nyelements, double frame_values [n
 
 		}
 
-		if (insert == TRUE) {			// considered_peaks can be inserted
+		if (insert == TRUE) {	// considered_peaks can be inserted
 
 			for (jj=0; jj<nyelements; jj++) {
 

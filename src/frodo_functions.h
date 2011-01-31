@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.h
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	31/01/11
 
 ************************************************************************/
 
@@ -60,6 +60,9 @@ int FRTRACE_VAR_POLYORDER_HI			= 10;
 char FRTRACE_VAR_ACCURACY_COEFFS [10]		= "%.10e";
 char FRTRACE_VAR_ACCURACY_CHISQ [10]		= "%.2f";
 
+double FRTRACE_VAR_CHISQUARED_MIN		= 0.1;
+double FRTRACE_VAR_CHISQUARED_MAX		= 10;
+
 // FREXTRACT
 
 char FRES_BLURB_FILE [200];
@@ -81,6 +84,9 @@ int FRARCFIT_VAR_POLYORDER_HI			= 10;
 
 char FRARCFIT_VAR_ACCURACY_COEFFS [10]		= "%.10e";
 char FRARCFIT_VAR_ACCURACY_CHISQ [10]		= "%.2f";
+
+double FRARCFIT_VAR_CHISQUARED_MIN		= 0.1;
+double FRARCFIT_VAR_CHISQUARED_MAX		= 5;
 
 // IFU PARAMETERS
 
