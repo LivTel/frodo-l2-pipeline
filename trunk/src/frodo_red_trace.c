@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_trace.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	31/01/11
 
 ************************************************************************/
 
@@ -375,6 +375,15 @@ int main(int argc, char *argv []) {
 		printf("\nMin χ2:\t\t\t%f\n", chi_squared_min);
 		printf("Max χ2:\t\t\t%f\n", chi_squared_max);
 		printf("Average χ2:\t\t%f\n", chi_squared/FIBRES);
+
+		// ***********************************************************************
+		// Perform a few checks to ensure the chi squareds are sensible 
+
+		if ((chi_squared_min < FRTRACE_VAR_CHISQUARED_MIN) || (chi_squared_max > FRTRACE_VAR_CHISQUARED_MAX)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", 3, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+		}
 
 		// ***********************************************************************
 		// Close [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] input file and

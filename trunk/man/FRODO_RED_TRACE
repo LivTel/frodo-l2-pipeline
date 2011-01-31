@@ -18,6 +18,8 @@
  rows founds greater than [min_rows_per_bin] and the tracing solutions are outputted to
  [FRTRACE_OUTPUTF_TRACE_FILE].
 
+ A warning will be issued if the min/max chi squared values indicate a suspect fit.
+
  Example: 
  
  frtrace 2 100 5
