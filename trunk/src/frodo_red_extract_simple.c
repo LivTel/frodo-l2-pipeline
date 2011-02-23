@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_extract_simple.c
- Last Modified Date:     	28/01/11
+ Last Modified Date:     	07/02/11
 
 ************************************************************************/
 
@@ -50,10 +50,10 @@ int main ( int argc, char *argv [] ) {
 		// ***********************************************************************
 		// Redefine routine input parameters
 
-		char *input_f			= argv[1];
+		char *input_f			= strdup(argv[1]);
 		int half_aperture_num_pix	= atoi(argv[2]);
 		bool flip_disp_axis		= atoi(argv[3]);
-		char *output_f			= argv[4];
+		char *output_f			= strdup(argv[4]);
 
 		// ***********************************************************************
 		// Is there EXPLICIT cross-talk? i.e. Is the extraction aperture width >
@@ -144,7 +144,7 @@ int main ( int argc, char *argv [] ) {
 
 		char input_string [500];
 
-		bool find_polynomialorder_comment = 0;
+		bool find_polynomialorder_comment = FALSE;
 
 		int polynomial_order;	
 
@@ -251,6 +251,9 @@ int main ( int argc, char *argv [] ) {
 		double input_frame_values [FIBRES][nyelements];
 		memset(input_frame_values, 0, sizeof(double)*nyelements*FIBRES);
 
+		// double total_flux = 0;	// DEBUG
+		// int count = 0;		// DEBUG
+
 		for (fpixel[1] = cut_y[0]; fpixel[1] <= cut_y[1]; fpixel[1]++) {
 
 			memset(input_f_pixels, 0, sizeof(double)*nxelements);
@@ -272,7 +275,7 @@ int main ( int argc, char *argv [] ) {
 	
 					}
 
-					x_int = rint(x) - 1;
+					x_int = rint(x) - INDEXING_CORRECTION;
 
 					// ***********************************************************************
 					// Does [x_int] violate the img boundaries?
@@ -292,10 +295,13 @@ int main ( int argc, char *argv [] ) {
 					for (jj=x_int-half_aperture_num_pix; jj<=x_int+half_aperture_num_pix; jj++) {
 
 						input_frame_values[ii][y_int-1] += input_f_pixels[jj];
+						// total_flux += input_f_pixels[jj];	// DEBUG
 
 					}
 
-					//printf("%f\t%f\t%f\t%f\n", x, input_f_pixels[x_int], input_f_pixels[x_int-1], input_f_pixels[x_int+1]);	// DEBUG
+					//printf("%f\t%f\t%f\t%f\n", x, input_f_pixels[x_int], input_f_pixels[x_int-1], input_f_pixels[x_int+1]);		// DEBUG
+
+					// if ((input_f_pixels[x_int] > input_f_pixels[x_int-1]) && (input_f_pixels[x_int] > input_f_pixels[x_int+1])) count++;	// DEBUG
 
 				}
 
@@ -309,6 +315,9 @@ int main ( int argc, char *argv [] ) {
 			}
 
 		}
+
+		// printf("%f\n", total_flux); // DEBUG
+		// printf("%d\n", count); // DEBUG
 
 		// ***********************************************************************
 		// Set output frame parameters
@@ -347,7 +356,7 @@ int main ( int argc, char *argv [] ) {
 
 				flip_array_dbl(intermediate_frame_values, nyelements);
 
-			}
+			}	
 
 			for (kk=0; kk<nyelements; kk++) {
 
@@ -414,6 +423,12 @@ int main ( int argc, char *argv [] ) {
 			return 1; 
 
 	    	}
+
+		// ***********************************************************************
+		// Free arrays on heap
+
+		free(input_f);
+		free(output_f);
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]

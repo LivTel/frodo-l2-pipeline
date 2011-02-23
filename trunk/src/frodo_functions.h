@@ -12,6 +12,7 @@ int calculate_cross_correlation_offset (double [], double [], int, int, int *, d
 int check_file_exists (char []);
 int find_centroid_parabolic (double [], int [], int, double [], bool);
 int find_peaks(int, double [], int [], int *, int, int, int, int, bool);
+int find_peaks_contiguous(int, int, double **, int **, int *, int, int, int, int, int, bool);
 int find_time (char []);
 int flip_array_dbl(double [], int);
 int lsearch_int(int [], int, int);
@@ -20,6 +21,7 @@ int populate_env_variable(char [], char []);
 int print_file(char *);
 
 
+bool INDEXING_CORRECTION			= TRUE;
 
 char HEADER_FILE [100];
 
@@ -87,6 +89,10 @@ char FRARCFIT_VAR_ACCURACY_CHISQ [10]		= "%.2f";
 
 double FRARCFIT_VAR_CHISQUARED_MIN		= 0.1;
 double FRARCFIT_VAR_CHISQUARED_MAX		= 5;
+
+// FRCORRECT
+
+char FRCT_BLURB_FILE [200];
 
 // IFU PARAMETERS
 

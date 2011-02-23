@@ -1,11 +1,10 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	03/02/11
 
 ************************************************************************/
 
-#include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -355,14 +354,14 @@ int find_peaks(int nxelements, double row_values [], int peaks [], int * num_pea
 /************************************************************************
 
  Function:		find_peaks_contiguous
- Last Modified Date:    26/01/11	
+ Last Modified Date:    03/02/11	
  Purpose:		finds contiguous peaks in a dataset
  Required By:		frodo_red_arcfit.c
  Additional Notes:	None
 
 ************************************************************************/
 
-int find_peaks_contiguous(int nxelements, int nyelements, double frame_values [nyelements][nxelements], int peaks [nyelements][nxelements], int * num_peaks, int min_dist, int half_aperture_num_pix, int derivative_tol, int derivative_tol_ref_px, int pix_tolerance, bool INDEXING_CORRECTION) {
+int find_peaks_contiguous(int nxelements, int nyelements, double ** frame_values, int ** peaks, int * num_peaks, int min_dist, int half_aperture_num_pix, int derivative_tol, int derivative_tol_ref_px, int pix_tolerance, bool INDEXING_CORRECTION) {
 
 	int ii, jj;
 

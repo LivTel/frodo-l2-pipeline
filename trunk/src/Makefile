@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   26/01/11 #
+# Last Modified Date:   10/02/11 #
 ##################################
 
 #############################
@@ -14,7 +14,7 @@ AR		= /usr/bin/ar
 # compiler flags #
 ##################
 
-CFLAGS		= -Wall
+CFLAGS		= -Wall -g
 
 #########################
 # csh terminal commands #
@@ -26,26 +26,24 @@ MV		= /bin/mv
 RM		= /bin/rm
 
 ####################
-# $(EXT_LIBS) flag #
+# $(LIBS) flag #
 ####################
 
-#LIBS 		= /space/home/eng/frodo_pipeline/cfitsio3.13/lib/libcfitsio.a /usr/lib/libm.a# 					DEPLOY/LTDEVSRV
-#LIBS 		= /home/rmb/cfitsio/libcfitsio.a /usr/lib64/libm.so /usr/lib64/libgsl.so /usr/lib64/libgslcblas.so# 		DEVEL/STARPC
-LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#	DEVEL/LAPTOP
+#LIBS 		= /space/home/eng/frodo_pipeline/cfitsio3.13/lib/libcfitsio.a /usr/lib/libm.a# 					RMB/DEPLOY/LTDEVSRV
+LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#	RMB/DEVEL/LAPTOP
 
 ####################
 # $(INCLUDES) flag #
 ####################
 
-#INCLUDES	= -I/space/home/eng/frodo_pipeline/cfitsio3.13/include#								DEPLOY/LTDEVSRV
-#INCLUDES	= -I/home/rmb/cfitsio -I/usr/include/gsl#									DEVEL/STARPC
-INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									DEVEL/LAPTOP
+#INCLUDES	= -I/space/home/eng/frodo_pipeline/cfitsio3.13/include#								RMB/DEPLOY/LTDEVSRV
+INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									RMB/DEVEL/LAPTOP
 
 ################
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput modhead
 
 #################
 # make routines #
@@ -70,6 +68,18 @@ frodo_red_extract_simple: frodo_red_extract_simple.c libfrodo
 frodo_red_arcfit: frodo_red_arcfit.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) -o frarcfit frodo_red_arcfit.c $(LIBS)
 	$(MV) frarcfit $(L2_BIN_DIR)
+
+frodo_red_correct_throughput: frodo_red_correct_throughput.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frcorrect frodo_red_correct_throughput.c $(LIBS)
+	$(MV) frcorrect $(L2_BIN_DIR)		
+
+modhead: modhead.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o modhead modhead.c $(LIBS)
+	$(MV) modhead $(L2_BIN_DIR)	
+
+imcopy: imcopy.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o imcopy imcopy.c $(LIBS)
+	$(MV) imcopy $(L2_BIN_DIR)
 
 # ------------------------------------------------------------------------------------------------------- #
 

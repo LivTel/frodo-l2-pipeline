@@ -1,7 +1,7 @@
 # DO NOT MODIFY FORMAT
 #
 # File:				ERROR_CODES
-# Last Modified Date:     	31/01/11
+# Last Modified Date:     	21/02/11
 #
 
 # fits_key	code	comment	
@@ -80,13 +80,13 @@ L2STATAR	-7	Failed to open extracted target FITS file (ARG 2)
 L2STATAR	-8	Extracted continuum frame must have 2 axes
 L2STATAR	-9	Failed to get image parameters of extracted continuum frame
 L2STATAR	-10	Failed to open extracted continuum FITS file (ARG 3)
-L2STATAR	-11	Failed to read row of arc frame
-L2STATAR	-12	Failed to read row of target frame
-L2STATAR	-13	Failed to read row of continuum frame
-L2STATAR	-14	File consistency failure (Bits per pixel)
-L2STATAR	-15	File consistency failure (Number of axes)
-L2STATAR	-16	File consistency failure (Dimension of first axis)
-L2STATAR	-17	File consistency failure (Dimension of second axis)
+L2STATAR	-11	File consistency failure (Bits per pixel)
+L2STATAR	-12	File consistency failure (Number of axes)
+L2STATAR	-13	File consistency failure (Dimension of first axis)
+L2STATAR	-14	File consistency failure (Dimension of second axis)
+L2STATAR	-15	Failed to read row of arc frame
+L2STATAR	-16	Failed to read row of target frame
+L2STATAR	-17	Failed to read row of continuum frame
 L2STATAR	-18	Insufficient spatially contiguous peaks found ([num_peaks] < [min_contiguous_lines])
 L2STATAR	-19	Reference arc line list (ARG 11) file doesn't exist
 L2STATAR	-20	Failed to match sufficient lines ([matched_line_count] < [min_matched_lines])
@@ -105,106 +105,36 @@ L2STATAR	-32	Failed to close input arc FITS file (ARG 1)
 L2STATAR	-33	Failed to close input target FITS file (ARG 2)
 L2STATAR	-34	Failed to close input continuum FITS file (ARG 3)
 L2STATAR	-35	Failed to close output arc FITS file (ARG 15)
-L2STATAR	-36	Failed to close output targetFITS file (ARG 16)
+L2STATAR	-36	Failed to close output target FITS file (ARG 16)
 L2STATAR	-37	Failed to close output continuum FITS file (ARG 17)
+L2STATAR	-38	Failed to close arc line list reference file (ARG 11)
 
+L2STATCO	2	Failed to get L2_FRCT_BLURB_FILE environment variable
+L2STATCO	1	Failed to get L2_HEADER_FILE environment variable
 L2STATCO	0	No errors encountered
 L2STATCO	-1	Failed on command line
-L2STATCO	-2	Continuum frame must have 2 axes
-L2STATCO	-3	Failed to get continuum frame parameters
-L2STATCO	-4	Failed to open continuum file
-L2STATCO	-5	Science frame must have 2 axes
-L2STATCO	-6	Failed to get science frame parameters
-L2STATCO	-7	Failed to open science file
-L2STATCO	-8	Consistency check failure (Bits per pixel)
-L2STATCO	-9	Consistency check failure (Number of axes)
-L2STATCO	-10	Consistency check failure (First dimension)
-L2STATCO	-11	Consistency check failure (Second dimension)	
-L2STATCO	-12	Failed to allocate memory for storage arrays
-L2STATCO	-13	tmp/ directory doesn't exist
-L2STATCO	-14	Wavelength start is lower than the minimum
-L2STATCO	-15	Wavelength end is greater than the maximum
-L2STATCO	-16	Failed to read row of continuum frame
-L2STATCO	-17	Failed to read row of science frame
-L2STATCO	-18	Failed to write output frame
-L2STATCO	-19	Failed to create output frame
-L2STATCO	-20	Failed to create output file
-L2STATCO	-21	Failed to close output file
-
-L2STATRE	0	No errors encountered
-L2STATRE	-1	Failed on command line
-L2STATRE	-2	Interpolation method not recognised
-L2STATRE	-3	Input frame must have 2 axes
-L2STATRE	-4	Failed to get input image parameters
-L2STATRE	-5	Failed to open input file
-L2STATRE	-6	Failed to read row of input frame
-L2STATRE	-7	tmp/ directory doesn't exist
-L2STATRE	-8	Wavelength start is lower than the minimum
-L2STATRE	-9	Wavelength end is greater than the maximum
-L2STATRE	-10	Interpolation couldn't be performed for one fibre as straddling values couldn't be found
-L2STATRE	-11	Failed to write output frame
-L2STATRE	-12	Failed to create output frame
-L2STATRE	-13	Failed to create output file
-L2STATRE	-14	Failed to write a wavelength calibration header key
-L2STATRE	-15	Input file doesn't exist
-L2STATRE	-16	Failed to close output file
-
-L2STATID	0	No errors encountered
-L2STATID	-1	Failed on command line
-L2STATID	-2	tmp/ directory doesn't exist
-L2STATID	-3	Science frame must have 2 axes
-L2STATID	-4	Failed to get science frame parameters
-L2STATID	-5	Failed to open science file
-L2STATID	-6	Failed to allocate memory for storage arrays
-L2STATID	-7	Failed to read row of science frame
-L2STATID	-8	Failed to write output frame
-L2STATID	-9	Failed to create output frame
-L2STATID	-10	Failed to create output file
-L2STATID	-11	No object fibres found given selection criteria
-L2STATID	-12	No sky fibres found given selection criteria
-L2STATID	-13	Failed to close output file
-
-L2STATSU	0	No errors encountered
-L2STATSU	-1	Failed on command line
-L2STATSU	-2	No sky file found
-L2STATSU	-3	Sky frame must have 2 axes
-L2STATSU	-4	Failed to get sky frame parameters
-L2STATSU	-5	Failed to open sky file
-L2STATSU	-6	Science frame must have 2 axes
-L2STATSU	-7	Failed to get science frame parameters
-L2STATSU	-8	Failed to open science file
-L2STATSU	-9	Consistency check failure (Bits per pixel)
-L2STATSU	-10	Consistency check failure (Number of axes)
-L2STATSU	-11	Consistency check failure (First dimension)
-L2STATSU	-12	Failed to allocate memory for storage arrays
-L2STATSU	-13	Failed to read row of sky frame
-L2STATSU	-14	Failed to read row of science frame
-L2STATSU	-15	Failed to write output frame
-L2STATSU	-16	Failed to create output frame
-L2STATSU	-17	Failed to propagate wavelength calibration header keys
-L2STATSU	-18	Failed to create output file
-L2STATSU	-19	Failed to close output file
-
-L2STATRF	0	No errors encountered
-L2STATRF	-1	Failed on command line
-L2STATRF	-2	Raw input file must have 2 axes
-L2STATRF	-3	Failed to get raw input file image parameters
-L2STATRF	-4	Failed to open raw input file
-L2STATRF	-5	Failed to create blank HDU
-L2STATRF	-6	Failed to write EXTNAME key
-L2STATRF	-7	Input frame must have 2 axes
-L2STATRF	-8	Failed to get input frame parameters
-L2STATRF	-9	Failed to open input file
-L2STATRF	-10	Failed to allocate memory for storage arrays
-L2STATRF	-11	Failed to read row of input frame
-L2STATRF	-12	Failed to create output frame
-L2STATRF	-13	Failed to write output frame
-L2STATRF	-14	Failed to craete output file
-L2STATRF	-15	Failed to get number of HDUs
-L2STATRF	-16	Failed to write FITS record
-L2STATRF	-17	Failed to write wavelength calibration header key
-L2STATRF	-18	Failed to get hdrspace
-L2STATRF	-19	Failed to close input file
-L2STATRF	-20	Failed to close output file
+L2STATCO	-2	Cross correlated, extracted target frame must have 2 axes
+L2STATCO	-3	Failed to get image parameters of cross correlated, extracted target frame
+L2STATCO	-4	Failed to open cross correlated, extracted target FITS file (ARG 1)
+L2STATCO	-5	Cross correlated, extracted continuum frame must have 2 axes
+L2STATCO	-6	Failed to get image parameters of cross correlated, extracted continuum frame
+L2STATCO	-7	Failed to open cross correlated, extracted continuum FITS file (ARG 2)
+L2STATCO	-8	File consistency failure (Bits per pixel)
+L2STATCO	-9	File consistency failure (Number of axes)
+L2STATCO	-10	File consistency failure (Dimension of first axis)
+L2STATCO	-11	File consistency failure (Dimension of second axis)
+L2STATCO	-12	Failed to read row of continuum frame
+L2STATCO	-13	[FRARCFIT_OUTPUTF_WAVFITS_FILE] file doesn't exist
+L2STATCO	-14	Failed to assign [polynomial_order] var
+L2STATCO	-15	Desired starting wavelength (ARG 3) is outside of inherent wavelength boundaries
+L2STATCO	-16	Desired ending wavelength (ARG 4) is outside of inherent wavelength boundaries
+L2STATCO	-17	Failed to read row of target frame
+L2STATCO	-18	Failed to write output target img
+L2STATCO	-19	Failed to create output target img
+L2STATCO	-20	Failed to create output target FITS file (ARG 5)
+L2STATCO	-21	Failed to close input target FITS file (ARG 1)
+L2STATCO	-22	Failed to close input continuum FITS file (ARG 2)
+L2STATCO	-23	Failed to close output target FITS file (ARG 5)
+L2STATCO	-24	Failed to close dispersion solutions file
 
 
