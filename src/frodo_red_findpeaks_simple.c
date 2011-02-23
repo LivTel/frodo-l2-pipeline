@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	07/02/11
 
 ************************************************************************/
 
@@ -10,6 +10,7 @@
 #include "fitsio.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
 
@@ -49,7 +50,7 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Redefine routine input parameters
 
-		char *cont_f			= argv[1];
+		char *cont_f			= strdup(argv[1]);
 		int min_dist			= atoi(argv[2]);
 		int half_aperture_num_pix	= atoi(argv[3]);
 		int der_tol_min			= atoi(argv[4]);
@@ -176,7 +177,7 @@ int main(int argc, char *argv []) {
 	
 				}
 
-				find_peaks(nxelements, row_values, peaks, &this_num_peaks, min_dist, half_aperture_num_pix, this_derivative_tol, der_tol_ref_px, TRUE);	
+				find_peaks(nxelements, row_values, peaks, &this_num_peaks, min_dist, half_aperture_num_pix, this_derivative_tol, der_tol_ref_px, INDEXING_CORRECTION);	
 
 				if (this_num_peaks == FIBRES) {				// if we find the correct number of peaks..
 
@@ -231,11 +232,10 @@ int main(int argc, char *argv []) {
 		find_time(timestr);
 
 		fprintf(outputfile, "#### %s ####\n\n", FRFIND_OUTPUTF_PEAKS_FILE);
-		fprintf(outputfile, "# Coordinates of the peaks found using the frodo_red_findpeaks_simple routine.\n\n");
+		fprintf(outputfile, "# Lists the coordinates of the peaks found using the frfind routine.\n\n");
 		fprintf(outputfile, "# Run filename:\t%s\n", cont_f);
 		fprintf(outputfile, "# Run datetime:\t%s\n\n", timestr);
-		fprintf(outputfile, "# Rows found:\t%d\n\n", best_derivative_tol_rows);
-		fprintf(outputfile, "# Layout:\tFibre\tx\ty\n");
+		fprintf(outputfile, "# Rows found:\t%d\n", best_derivative_tol_rows);
 
 		// ***********************************************************************
 		// Execute code with best derivative tolerance value to find centroids 
@@ -256,9 +256,9 @@ int main(int argc, char *argv []) {
 	
 			}
 
-			find_peaks(nxelements, row_values, peaks, &this_num_peaks, min_dist, half_aperture_num_pix, best_derivative_tol, der_tol_ref_px, TRUE);
+			find_peaks(nxelements, row_values, peaks, &this_num_peaks, min_dist, half_aperture_num_pix, best_derivative_tol, der_tol_ref_px, INDEXING_CORRECTION);
 
-			if (find_centroid_parabolic(row_values, peaks, this_num_peaks, peak_centroids, TRUE)) {
+			if (find_centroid_parabolic(row_values, peaks, this_num_peaks, peak_centroids, INDEXING_CORRECTION)) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -8, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
@@ -306,6 +306,11 @@ int main(int argc, char *argv []) {
 			return 1; 
 
 	    	}
+
+		// ***********************************************************************
+		// Clean up heap memory
+
+		free(cont_f);
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]

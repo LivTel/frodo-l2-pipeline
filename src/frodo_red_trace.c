@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_trace.c
- Last Modified Date:     	31/01/11
+ Last Modified Date:     	07/02/11
 
 ************************************************************************/
 
@@ -76,9 +76,9 @@ int main(int argc, char *argv []) {
 
 		char input_string [150];
 
-		bool find_ymin_comment = 0;
-		bool find_ymax_comment = 0;
-		bool find_ybad_comment = 0;
+		bool find_ymin_comment = FALSE;
+		bool find_ymax_comment = FALSE;
+		bool find_ybad_comment = FALSE;
 
 		int y_min, y_max, y_bad;	
 
@@ -169,7 +169,7 @@ int main(int argc, char *argv []) {
 
 		double width_of_bin = (double) range/bins;
 	
-		int bin_limits[bins+1];
+		int bin_limits [bins+1];
 		memset(bin_limits, 0, sizeof(int)*(bins+1));
 	
 		for(ii=0; ii<bins+1; ii++) {
@@ -192,7 +192,7 @@ int main(int argc, char *argv []) {
 		// Perform a further check to ensure the input tracing parameters 
 		// are sensible
 
-		if ((min_rows_per_bin > bins) || (min_rows_per_bin == 0)) {	// 
+		if ((min_rows_per_bin > bins) || (min_rows_per_bin == 0)) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -8, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -249,7 +249,7 @@ int main(int argc, char *argv []) {
 
 			for (jj=0; jj<bins; jj++) {
 
-				if ((y_num_rows[ii][jj]) != 0) {	// are there !any! rows for this fibre/bin?
+				if ((y_num_rows[ii][jj]) != 0) {	// are there any rows for this fibre/bin?
 
 					x_coords_binned[ii][jj] /= y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate 
 					y_coords_binned[ii][jj] /= y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate
@@ -284,11 +284,9 @@ int main(int argc, char *argv []) {
 		find_time(timestr);
 
 		fprintf(outputfile, "#### %s ####\n\n", FRTRACE_OUTPUTF_TRACES_FILE);
-		fprintf(outputfile, "# List of fibre tramline traces.\n\n");
+		fprintf(outputfile, "# List of fibre tramline trace coefficients and corresponding chi-squareds found using the frtrace program.\n\n");
 		fprintf(outputfile, "# Run datetime:\t\t%s\n\n", timestr);
 		fprintf(outputfile, "# Polynomial Order:\t%d\n\n", order);
-
-		fprintf(outputfile, "# Layout:\t\tFibre\tCoefficient\tχ2\n\n");
 
 		// ***********************************************************************
 		// Fit each fibre and store results to [FRTRACE_OUTPUTF_TRACES_FILE] file
@@ -298,7 +296,7 @@ int main(int argc, char *argv []) {
 
 		double coeffs [order+1];
 
-		double this_chi_squared, chi_squared_min, chi_squared_max, chi_squared;
+		double this_chi_squared, chi_squared_min = 0.0, chi_squared_max = 0.0, chi_squared = 0.0;
 
 		int bins_deficit;	// var to store how many bins have zero rows
 		int bins_used;		// var to store how many bins we're using
@@ -307,8 +305,6 @@ int main(int argc, char *argv []) {
 
 			bins_deficit = 0;
 			bins_used = 0;
-
-			this_chi_squared = 0;
 
 			memset(coords_y, 0, sizeof(double)*(bins));
 			memset(coeffs, 0, sizeof(double)*(order+1));

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_arcfit.c
- Last Modified Date:     	31/01/11
+ Last Modified Date:     	21/02/11
 
 ************************************************************************/
 
@@ -16,7 +16,7 @@
 
 #include <gsl/gsl_statistics_int.h>
 
-// *********************************************************************mi
+// *********************************************************************/
 
 int main (int argc, char *argv []) {
 
@@ -47,14 +47,14 @@ int main (int argc, char *argv []) {
 
 		return 1;
 
-	} else { 
-
+	} else {
+			
 		// ***********************************************************************
 		// Redefine routine input parameters
 	
-		char *ext_arc_f			= argv[1];
-		char *ext_target_f		= argv[2];
-		char *ext_cont_f		= argv[3];
+		char *ext_arc_f			= strdup(argv[1]);
+		char *ext_target_f		= strdup(argv[2]);
+		char *ext_cont_f		= strdup(argv[3]);
 		int max_cc_delay		= atoi(argv[4]);
 		int min_dist			= atoi(argv[5]);
 		int half_aperture_num_pix	= atoi(argv[6]);
@@ -62,14 +62,14 @@ int main (int argc, char *argv []) {
 		int derivative_tol_ref_px	= atoi(argv[8]);
 		int pix_tolerance		= atoi(argv[9]);
 		int min_contiguous_lines	= atoi(argv[10]);
-		char *arc_line_list_filename	= argv[11];
+		char *arc_line_list_filename	= strdup(argv[11]);
 		int max_pix_diff		= atoi(argv[12]);
 		int min_matched_lines		= atoi(argv[13]);
 		double max_av_wavelength_diff	= atoi(argv[14]);
 		int fit_order			= atoi(argv[15]);
-		char *cc_ext_arc_f		= argv[16];
-		char *cc_ext_target_f		= argv[17];
-		char *cc_ext_cont_f		= argv[18];
+		char *cc_ext_arc_f		= strdup(argv[16]);
+		char *cc_ext_target_f		= strdup(argv[17]);
+		char *cc_ext_cont_f		= strdup(argv[18]);
 
 		// ***********************************************************************
 		// Open ext arc file (ARG 1), get parameters and perform any data format 
@@ -191,6 +191,48 @@ int main (int argc, char *argv []) {
 		}
 
 		// ***********************************************************************
+		// Check consistency of arc/target/continuum fits files (ARGS 1, 2 and 3)
+	
+		printf("\nConsistency check");
+		printf("\n-----------------\n");
+
+		printf("\nBits per pixel:\t\t");
+		if (ext_arc_f_bitpix != ext_target_f_bitpix && ext_target_f_bitpix != ext_cont_f_bitpix) { 	// if a = b and b = c then a must = c
+			printf("FAIL\n"); 
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -11, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			return 1; 
+		} else { 
+			printf("OK\n"); 
+		} 
+
+		printf("Number of axes:\t\t");
+		if (ext_arc_f_naxis != ext_target_f_naxis && ext_target_f_naxis != ext_cont_f_naxis) {		
+			printf("FAIL\n"); 
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -12, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			return 1; 
+		} else { 
+			printf("OK\n"); 
+		} 
+	
+		printf("First axis dimension:\t");
+		if (ext_arc_f_naxes[0] != ext_target_f_naxes[0] && ext_target_f_naxes[0] != ext_cont_f_naxes[0]) {		
+			printf("FAIL\n"); 
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -13, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			return 1; 
+		} else { 
+			printf("OK\n"); 
+		} 
+	
+		printf("Second axis dimension:\t"); 
+		if (ext_arc_f_naxes[1] != ext_target_f_naxes[1] && ext_target_f_naxes[1] != ext_cont_f_naxes[1]) {		
+			printf("FAIL\n"); 
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -14, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			return 1; 
+		} else { 
+			printf("OK\n"); 
+		} 
+
+		// ***********************************************************************
 		// Set the range limits using target fits file (ARG 2) n.b. this should
 		// be an arbitrary choice if all files have identical parameters
 
@@ -235,7 +277,7 @@ int main (int argc, char *argv []) {
 
 			} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -11, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -15, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_arc_f_status); 
 
 				return 1; 
@@ -264,7 +306,7 @@ int main (int argc, char *argv []) {
 
 			} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -12, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -16, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_target_f_status); 
 
 				return 1; 
@@ -293,7 +335,7 @@ int main (int argc, char *argv []) {
 
 			} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -13, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -17, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_cont_f_status); 
 
 				return 1; 
@@ -301,48 +343,6 @@ int main (int argc, char *argv []) {
 			}
 
 		}
-
-		// ***********************************************************************
-		// Check consistency of arc/target/continuum fits files (ARGS 1, 2 and 3)
-	
-		printf("\nConsistency check");
-		printf("\n-----------------\n");
-
-		printf("\nBits per pixel:\t\t");
-		if (ext_arc_f_bitpix != ext_target_f_bitpix && ext_target_f_bitpix != ext_cont_f_bitpix) { 	// if a = b and b = c then a must = c
-			printf("FAIL\n"); 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -14, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			return 1; 
-		} else { 
-			printf("OK\n"); 
-		} 
-
-		printf("Number of axes:\t\t");
-		if (ext_arc_f_naxis != ext_target_f_naxis && ext_target_f_naxis != ext_cont_f_naxis) {		
-			printf("FAIL\n"); 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -15, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			return 1; 
-		} else { 
-			printf("OK\n"); 
-		} 
-	
-		printf("First axis dimension:\t");
-		if (ext_arc_f_naxes[0] != ext_target_f_naxes[0] && ext_target_f_naxes[0] != ext_cont_f_naxes[0]) {		
-			printf("FAIL\n"); 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -16, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			return 1; 
-		} else { 
-			printf("OK\n"); 
-		} 
-	
-		printf("Second axis dimension:\t"); 
-		if (ext_arc_f_naxes[1] != ext_target_f_naxes[1] && ext_target_f_naxes[1] != ext_cont_f_naxes[1]) {		
-			printf("FAIL\n"); 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -17, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			return 1; 
-		} else { 
-			printf("OK\n"); 
-		} 
 
 		// CROSS CORRELATION AND DATA OFFSET/TRIM APPLICATION
 		// ***********************************************************************
@@ -365,11 +365,10 @@ int main (int argc, char *argv []) {
 		int jj;
 
 		double offset_row_values [nxelements];
+		int best_offsets [nyelements];
 
 		int this_best_offset;
 		double this_best_r;
-
-		int best_offsets [nyelements];
 
 		for (jj=0; jj<nyelements; jj++) {
 
@@ -432,8 +431,14 @@ int main (int argc, char *argv []) {
 
 		int trim_nxelements = nxelements - abs(lead_offset) - abs(lag_offset);
 
-		double trim_offset_ext_arc_frame_values [nyelements][trim_nxelements];
-		memset(trim_offset_ext_arc_frame_values, 0, sizeof(double)*trim_nxelements*nyelements);
+		double **trim_offset_ext_arc_frame_values;							// Dynamically sized multidimensional arrays require ptr-to-ptr allocation
+		trim_offset_ext_arc_frame_values = malloc(nyelements * sizeof(double *));			// and the corresponding initialisation of both columns (as pointers)
+
+		for(jj=0; jj<nyelements; jj++) {
+
+			trim_offset_ext_arc_frame_values[jj] = malloc(trim_nxelements * sizeof(double));	// and rows
+
+		}
 
 		double trim_offset_ext_target_frame_values [nyelements][trim_nxelements];
 		memset(trim_offset_ext_target_frame_values, 0, sizeof(double)*trim_nxelements*nyelements);
@@ -459,10 +464,16 @@ int main (int argc, char *argv []) {
 
 		int num_peaks = 0;	
 
-		int peaks [nyelements][trim_nxelements];				// this array will hold peak locations for all iterations (can't have more than [trim_nxelements] peaks)
-		memset(peaks, 0, sizeof(int)*nyelements*trim_nxelements);		
+		int **peaks;							// Dynamically sized multidimensional array to hold peak locations for all iterations
+		peaks = malloc(nyelements * sizeof(int *));
 
-		find_peaks_contiguous(trim_nxelements, nyelements, trim_offset_ext_arc_frame_values, peaks, &num_peaks, min_dist, half_aperture_num_pix, derivative_tol, derivative_tol_ref_px, pix_tolerance, TRUE);
+		for(jj=0; jj<nyelements; jj++) {
+
+			peaks[jj] = malloc(trim_nxelements * sizeof(int));
+
+		}
+
+		find_peaks_contiguous(trim_nxelements, nyelements, trim_offset_ext_arc_frame_values, peaks, &num_peaks, min_dist, half_aperture_num_pix, derivative_tol, derivative_tol_ref_px, pix_tolerance, INDEXING_CORRECTION);
 
 		printf("\nArc line matching");
 		printf("\n-----------------\n\n");
@@ -506,7 +517,7 @@ int main (int argc, char *argv []) {
 
 			}
 
-			find_centroid_parabolic(row_values, this_row_peaks, num_peaks, this_row_peak_centroids, TRUE);
+			find_centroid_parabolic(row_values, this_row_peaks, num_peaks, this_row_peak_centroids, INDEXING_CORRECTION);
 
 			for (ii=0; ii<num_peaks; ii++) {
 
@@ -515,7 +526,7 @@ int main (int argc, char *argv []) {
 			}
 
 		}
-	
+
 		// 3.	Open reference arc line list file (ARG 11) and count
 		//	number of reference lines
 	
@@ -708,7 +719,7 @@ int main (int argc, char *argv []) {
 
 		// for (ii=0; ii<arc_line_list_line_index; ii++) printf("\n%f\t%f\t%d", arc_peak_wavelengths[ii], arc_peak_wavelengths[matched_line_indexes[ii]], matched_line_indexes[ii]);	// DEBUG
 
-		double list_total_dist;
+		double list_total_dist = 0.0;
 		double list_av_dist;
 
 		for (ii=0; ii<arc_line_list_num_ref_lines-1; ii++) {
@@ -745,7 +756,7 @@ int main (int argc, char *argv []) {
 
 		}
 
-		double sample_total_dist;
+		double sample_total_dist = 0.0;
 		double sample_av_dist;
 
 		for (ii=0; ii<matched_line_count-1; ii++) {
@@ -788,7 +799,7 @@ int main (int argc, char *argv []) {
 
 		}
 
-		// 2.	Create [FRARCFIT_OUTPUTF_PFITS_FILE] output file and print a few 
+		// 2.	Create [FRARCFIT_OUTPUTF_WAVFITS_FILE] output file and print a few 
 		// 	parameters
 
 		FILE *outputfile;
@@ -808,13 +819,12 @@ int main (int argc, char *argv []) {
 		find_time(timestr);
 
 		fprintf(outputfile, "#### %s ####\n\n", FRARCFIT_OUTPUTF_WAVFITS_FILE);
-	        fprintf(outputfile, "# List of fibre pixel channel to wavelength dispersion solutions.\n\n");
+	        fprintf(outputfile, "# List of fibre pixel channel to wavelength dispersion solution coefficients and corresponding chi-squareds found using the frarcfit program.\n\n");
                 fprintf(outputfile, "# Run Datetime:\t\t%s\n\n", timestr);
 	        fprintf(outputfile, "# Target Filename:\t%s\n", ext_target_f);
 	        fprintf(outputfile, "# Arc Filename:\t\t%s\n", ext_arc_f);
 	        fprintf(outputfile, "# Continuum Filename:\t%s\n\n", ext_cont_f);
                 fprintf(outputfile, "# Polynomial Order:\t%d\n\n", fit_order);
-		fprintf(outputfile, "# Layout:\t\tFibre\tCoefficient\tχ2\n\n");
 
 		// 3.	Populate arrays and perform fits
 
@@ -823,7 +833,7 @@ int main (int argc, char *argv []) {
 
 		double coeffs [fit_order+1];
 
-		double this_chi_squared, chi_squared_min, chi_squared_max, chi_squared;
+		double this_chi_squared, chi_squared_min = 0.0, chi_squared_max = 0.0, chi_squared = 0.0;
 
 		int line_count;
 
@@ -859,18 +869,18 @@ int main (int argc, char *argv []) {
 
 			}
 
-			// Output solutions to arc_sol.dat 
+			// Output solutions to [FRARCFIT_OUTPUTF_WAVFITS_FILE] file 
 
 			fprintf(outputfile, "%d\t", jj+1);
 
 			for (ii=0; ii<=fit_order; ii++) {
 		  
-				fprintf(outputfile, FRTRACE_VAR_ACCURACY_COEFFS, coeffs[ii]);
+				fprintf(outputfile, FRARCFIT_VAR_ACCURACY_COEFFS, coeffs[ii]);
 				fprintf(outputfile, "\t");
 
 			}
 
-			fprintf(outputfile, FRTRACE_VAR_ACCURACY_CHISQ, this_chi_squared);
+			fprintf(outputfile, FRARCFIT_VAR_ACCURACY_CHISQ, this_chi_squared);
 			fprintf(outputfile, "\n");
 
 			if ((jj==0) || (this_chi_squared < chi_squared_min)) { 
@@ -915,16 +925,16 @@ int main (int argc, char *argv []) {
 		memset(cc_ext_arc_frame_values, 0, sizeof(double)*nyelements*trim_nxelements);
 
 		double cc_ext_target_frame_values [nyelements*trim_nxelements];
-		memset(cc_ext_arc_frame_values, 0, sizeof(double)*nyelements*trim_nxelements);
+		memset(cc_ext_target_frame_values, 0, sizeof(double)*nyelements*trim_nxelements);
 
 		double cc_ext_cont_frame_values [nyelements*trim_nxelements];
-		memset(cc_ext_arc_frame_values, 0, sizeof(double)*nyelements*trim_nxelements);
+		memset(cc_ext_cont_frame_values, 0, sizeof(double)*nyelements*trim_nxelements);
 
 		for (jj=0; jj<nyelements; jj++) {
 	
 			ii = jj * trim_nxelements;
 	
-			for (kk=0; kk<nxelements; kk++) {
+			for (kk=0; kk<trim_nxelements; kk++) {
 	
 				cc_ext_arc_frame_values[ii] = trim_offset_ext_arc_frame_values[jj][kk];
 				cc_ext_target_frame_values[ii] = trim_offset_ext_target_frame_values[jj][kk];
@@ -1057,7 +1067,8 @@ int main (int argc, char *argv []) {
 		}
 
 		// ***********************************************************************
-		// Close input files (ARGS 1,2 and 3) and output files (ARGS 16, 17 and 18)
+		// Close input files (ARGS 1,2 and 3), output files (ARGS 16, 17 and 18)
+		// and arc list file (ARG 11)
 
 		if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) { 
 
@@ -1112,6 +1123,35 @@ int main (int argc, char *argv []) {
 			return 1; 
 
 	    	}
+
+		if (fclose(arc_line_list_f)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -38, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			return 1; 
+
+		}
+
+		// ***********************************************************************
+		// Clean up heap memory
+
+		for(ii=0; ii<nyelements; ii++) {
+
+			free(trim_offset_ext_arc_frame_values[ii]);
+			free(peaks[ii]);
+
+		}
+
+		free(peaks);
+		free(trim_offset_ext_arc_frame_values);
+
+		free(ext_arc_f);
+		free(ext_target_f);
+		free(ext_cont_f);
+		free(arc_line_list_filename);
+		free(cc_ext_arc_f);
+		free(cc_ext_target_f);
+		free(cc_ext_cont_f);
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]

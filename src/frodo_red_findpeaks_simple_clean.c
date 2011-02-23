@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple_clean.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	07/02/11
 
 ************************************************************************/
 
@@ -10,6 +10,7 @@
 #include "fitsio.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
 
@@ -178,9 +179,15 @@ int main(int argc, char *argv []) {
 		printf("\nMinimum y coordinate:\t%d", y_min);
 		printf("\nMaximum y coordinate:\t%d\n", y_max);
 
-		printf("\nFound %d bad row(s):\n\n", bad_row_count);
+		printf("\nFound %d bad row(s):\n", bad_row_count);
 
 		for (ii=0; ii<bad_row_count; ii++) {
+
+			if (ii==0) {
+
+				printf("\n");
+
+			}
 
 			printf("%d\n", bad_rows[ii]);
 
@@ -219,15 +226,21 @@ int main(int argc, char *argv []) {
 		find_time(timestr);
 	
 		fprintf(outputfile, "#### %s ####\n\n", FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE);
-		fprintf(outputfile, "# File cleaned using the frodo_red_findpeaks_simple_clean routine.\n\n");
+		fprintf(outputfile, "# File cleaned using the frclean program.\n\n");
 		fprintf(outputfile, "# Run datetime:\t%s\n", timestr);
 		fprintf(outputfile, "\n# Min y coord:\t%d", y_min);
 		fprintf(outputfile, "\n# Max y coord:\t%d\n", y_max);
-		fprintf(outputfile, "\n# Bad rows:\t%d\n\n", bad_row_count);
+		fprintf(outputfile, "\n# Bad rows:\t%d\n", bad_row_count);
 
 		for (ii=0; ii<bad_row_count; ii++) {
 
-			fprintf(outputfile, "# Bad row num:\t%d\n", bad_rows[ii]);
+			if (ii==0) {
+
+				fprintf(outputfile, "\n");
+
+			}
+
+			fprintf(outputfile, "# %d\n", bad_rows[ii]);
 
 		}
 
@@ -253,6 +266,7 @@ int main(int argc, char *argv []) {
 				if (lsearch_int(bad_rows, coord_y, bad_row_count) == -1)	{		// not a bad row
 
 					fprintf(outputfile, "%s", input_string);				// print to file as is else print nothing
+					// if(fibre_number == 72) printf("%f\t%d\n", coord_x, coord_y);		// DEBUG
 
 				} 
 	
