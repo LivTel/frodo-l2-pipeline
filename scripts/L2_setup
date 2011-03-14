@@ -2,7 +2,7 @@
 
 ##################################
 # L2_setup 			 #
-# Last Modified Date:   21/02/11 #
+# Last Modified Date:   14/03/11 #
 ##################################
 
 ######################
@@ -28,6 +28,9 @@ setenv L2_FRT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_TRACE
 setenv L2_FRES_BLURB_FILE $L2_MAN_DIR/FRODO_RED_EXTRACT_SIMPLE
 setenv L2_FRA_BLURB_FILE $L2_MAN_DIR/FRODO_RED_ARCFIT
 setenv L2_FRCT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_CORRECT_THROUGHPUT
+setenv L2_FRR_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REBIN
+setenv L2_FRS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_SUBSKY
+setenv L2_FRRF_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REFORMAT
 
 setenv L2_VERSION_FILE $L2_MAN_DIR/VERSION
 
@@ -47,6 +50,9 @@ alias frtrace $L2_BIN_DIR/frtrace
 alias frextract $L2_BIN_DIR/frextract
 alias frarcfit $L2_BIN_DIR/frarcfit
 alias frcorrect $L2_BIN_DIR/frcorrect
+alias frrebin $L2_BIN_DIR/frrebin
+alias frsubsky $L2_BIN_DIR/frsubsky
+alias frreformat $L2_BIN_DIR/frreformat
 
 alias modhead $L2_BIN_DIR/modhead
 alias imcopy $L2_BIN_DIR/imcopy

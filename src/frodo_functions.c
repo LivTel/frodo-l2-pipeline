@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	03/02/11
+ Last Modified Date:     	08/03/11
 
 ************************************************************************/
 
@@ -16,6 +16,9 @@
 
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_statistics_double.h>
+#include <gsl/gsl_spline.h>
+#include <gsl/gsl_interp.h>
+#include <gsl/gsl_math.h>
 
 /************************************************************************
 
@@ -146,7 +149,7 @@ int calculate_cross_correlation_offset(double x [], double y [], int n, int max_
 
 	for (offset=-max_offset; offset<=max_offset; offset++) {
 	
-		double sx, sy, numerator = 0, den_x_term = 0, den_y_term = 0, denominator;
+		double sx, sy, numerator = 0.0, den_x_term = 0.0, den_y_term = 0.0, denominator;
 
 		int ii, jj;
 	
@@ -175,7 +178,7 @@ int calculate_cross_correlation_offset(double x [], double y [], int n, int max_
 
 		r = numerator / denominator;
 
-		if ((offset == -max_offset) || (r > best_r)) {
+		if ((offset == -max_offset) || (r > best_r)) {	// Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 			best_r = r;
 			best_offset = offset;
@@ -198,12 +201,14 @@ int calculate_cross_correlation_offset(double x [], double y [], int n, int max_
 /************************************************************************
 
  Function:		check_file_exists
- Last Modified Date:    25/01/11
+ Last Modified Date:    03/03/11
  Purpose:		checks a file to see if it exists
  Required By:		frodo_red_findpeaks_simple_clean.c
 			frodo_red_trace.c
 			frodo_red_extract_simple.c
 			frodo_red_arcfit.c
+			frodo_red_correct_throughput.c
+			frodo_red_rebin.c
  Additional Notes:	None
 
 ************************************************************************/
@@ -233,7 +238,7 @@ int check_file_exists(char filename []) {
 			dataset given the position of the peaks
  Required By:		frodo_red_findpeaks_simple.c
 			frodo_red_arcfit.c
- Additional Notes:	None
+ Additional Notes:	
 
 
  [INDEXING CORRECTION]:
@@ -291,7 +296,7 @@ int find_centroid_parabolic(double row_values [], int peaks [], int num_peaks, d
 /************************************************************************
 
  Function:		find_peaks
- Last Modified Date:    17/01/11	
+ Last Modified Date:    03/03/11	
  Purpose:		finds the peaks in a dataset
  Required By:		frodo_red_findpeaks_simple.c
 			frodo_red_arcfit.c > frodo_functions.c 	
@@ -325,7 +330,7 @@ int find_peaks(int nxelements, double row_values [], int peaks [], int * num_pea
 
 				break;	  // this pixel is not a peak within the specified aperture
 
-			} else if ((jj == ii + half_aperture_num_pix) && ((row_values[ii] - row_values[ii-derivative_tol_ref_px]) > derivative_tol && (row_values[ii] - row_values[ii+derivative_tol_ref_px]) > derivative_tol)) {	// reached last pixel in aperture => pixel ii is a peak within it. Check that it is sufficiently brighter than the derivative tolerance value / pixel
+			} else if ((jj == ii + half_aperture_num_pix) && ((row_values[ii] - row_values[ii-derivative_tol_ref_px]) > derivative_tol && (row_values[ii] - row_values[ii+derivative_tol_ref_px]) > derivative_tol)) {	// reached last pixel in aperture => pixel ii is a peak within it. Check that it is sufficiently brighter than the derivative tolerance value / pixel. Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 				if (peak_count == 0) {	// if this is the first peak, we can just add it without checking the minimum distance parameter (no other peaks exist)
 
@@ -473,6 +478,7 @@ int find_peaks_contiguous(int nxelements, int nyelements, double ** frame_values
 			frodo_red_findpeaks_simple_clean.c
 			frodo_red_trace.c
 			frodo_red_arcfit.c
+			frodo_red_rebin.c
  Additional Notes:	None
 
 ************************************************************************/
@@ -522,6 +528,205 @@ int flip_array_dbl(double array [], int size) {
 		array[ii] = flip_array[ii];		// rewrite array [array] with the reversed array [flip_array]
 	
 	}
+
+	return 0;
+
+}
+
+/************************************************************************
+
+ Function:		interpolate
+ Last Modified Date:    03/03/11	
+ Purpose:		interpolates a dataset [x] to find all values
+			between [interpolation_start] and 
+			[interpolation_end] with a spacing of [spacing]
+ Required By:		frodo_red_rebin.c
+ Additional Notes:	
+
+
+ Interpolation types are specified by the GSL library.
+
+
+************************************************************************/
+
+int interpolate(char interpolation_type [], double x [], double cor_cc_ext_target_f_pixels [], int nxelements, double interpolation_start, double interpolation_end, double spacing, double reb_cor_cc_ext_target_f_pixels []) {
+
+	gsl_spline *spline;
+
+	if (strcmp(interpolation_type, "linear") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_linear, nxelements);
+
+	} else if (strcmp(interpolation_type, "polynomial") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_polynomial, nxelements);
+
+	} else if (strcmp(interpolation_type, "cspline") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_cspline, nxelements);
+
+	} else if (strcmp(interpolation_type, "cspline_periodic") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_cspline_periodic, nxelements);
+
+	} else if (strcmp(interpolation_type, "akima") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_akima, nxelements);
+
+	} else if (strcmp(interpolation_type, "akima_periodic") == 0) {
+
+		spline = gsl_spline_alloc(gsl_interp_akima_periodic, nxelements);
+
+	} else {
+
+		return 1;
+
+	}
+
+	gsl_interp_accel *acc = gsl_interp_accel_alloc();
+		     
+	gsl_spline_init(spline, x, cor_cc_ext_target_f_pixels, nxelements);
+
+	int this_interpolation_index = 0;
+
+	double xi;
+
+	for (xi = interpolation_start; gsl_fcmp(xi, interpolation_end+spacing, 1e-5); xi += spacing) {	// checking to see if xi is equal to interpolation_end+spacing (i.e. no more iterations)
+
+		reb_cor_cc_ext_target_f_pixels[this_interpolation_index] = gsl_spline_eval(spline, xi, acc);
+		// printf("\n%f\t%g", xi, reb_cor_cc_ext_target_f_pixels[this_interpolation_index]);	// DEBUG
+
+		this_interpolation_index++;
+
+	}
+
+	gsl_spline_free(spline);
+	gsl_interp_accel_free(acc);
+
+	return 0;
+
+}
+
+/************************************************************************
+
+ Function:		iterative_sigma_clip
+ Last Modified Date:    08/03/11	
+ Purpose:		Perform iterative sigma clipping on a dataset of 
+			n values
+ Required By:		frodo_red_subsky
+ Additional Notes:	
+
+ Before each iteration, a ceiling value is worked out which is found by:
+
+  ceiling = [mean] + [clip_sigma] * [sd]
+
+ The elements in the dataset [values] are then cycled and any value that
+ is greater than the ceiling value for this iteration are flagged FALSE
+ in the [retain_indexes] array. This procedure is recursively done until
+ the number of indexes retained for an iteration equals that of the last
+ iteration.
+
+ Along with the [retain_indexes] array, the final mean [final_mean],
+ final standard deviation [final_sd] and final number of retained 
+ indexes [final_num_retained_indexes] variables are populated.
+
+************************************************************************/
+
+int iterative_sigma_clip(double values [], int n, int clip_sigma, int retain_indexes [], double * final_mean, double * final_sd, int * final_num_retained_indexes) {
+
+	int ii;
+
+	int this_iteration_num_retained_indexes, last_iteration_num_retained_indexes = n;
+
+	int this_iteration_values_index;
+
+	int iteration_count = 0;
+
+	bool continue_iterations = TRUE;
+
+	for (ii=0; ii<n; ii++) {	// initialise to TRUE under assumption that all are to be retained
+
+		retain_indexes[ii] = TRUE;
+
+	}
+
+	double mean = gsl_stats_mean(values, 1, n);
+	double sd = gsl_stats_sd(values, 1, n);
+
+	double ceiling = mean + (double) clip_sigma*sd;
+
+	while (continue_iterations == TRUE) {
+
+		this_iteration_num_retained_indexes = n;
+
+		// ***********************************************************************
+		// Determine which indexes to retain given current ceiling value
+
+		for (ii=0; ii<n; ii++) {
+
+			if (values[ii] > ceiling) {	// this index, ii, is not to be retained
+	
+				retain_indexes[ii] = FALSE;
+				this_iteration_num_retained_indexes--;
+
+			}
+
+		}
+
+		//	printf("%f\t%f\t%f\n", mean, sd, ceiling);	// DEBUG
+
+		// ***********************************************************************
+		// Check to see if the number of retained indexes is the same as the
+		// previous iteration. If this is the first iteration, check to see if the
+		// number of retained indexes is equal to the original number of values.
+		// If so, stop the iterations.
+
+		if ((this_iteration_num_retained_indexes == last_iteration_num_retained_indexes) || this_iteration_num_retained_indexes <= 1) {
+
+			break;
+
+		}
+
+		iteration_count++;	
+
+		// ***********************************************************************
+		// Create new arrays of retained values and work out new ceiling value
+
+		double *this_iteration_values;
+		this_iteration_values = (double *) malloc((this_iteration_num_retained_indexes)*sizeof(double));
+
+		this_iteration_values_index = 0;
+
+		for (ii=0; ii<n; ii++) {
+
+			if (retain_indexes[ii] == TRUE) {
+
+				this_iteration_values[this_iteration_values_index] = values[ii];
+				this_iteration_values_index++;
+
+			}
+
+		}
+
+		printf("\nIteration:\t\t\t%d\n", iteration_count);
+		printf("Ceiling:\t\t\t%.3e\n", ceiling);
+		printf("Number of indexes retained:\t%d\n", this_iteration_num_retained_indexes);
+
+		mean = gsl_stats_mean(this_iteration_values, 1, this_iteration_values_index);
+		sd = gsl_stats_sd(this_iteration_values, 1, this_iteration_values_index);
+
+		ceiling = mean + (double) clip_sigma*sd;
+
+		last_iteration_num_retained_indexes = this_iteration_num_retained_indexes;
+	
+		free(this_iteration_values);
+			
+	}
+
+	*final_mean = mean;
+	*final_sd = sd;
+
+	*final_num_retained_indexes = this_iteration_num_retained_indexes;
 
 	return 0;
 
@@ -593,6 +798,9 @@ int populate_env_variable(char var_to_populate [], char env_var_name []) {
  Required By:		frodo_red_findpeaks_simple.c
 			frodo_red_extract_simple.c
 			frodo_red_arcfit.c
+			frodo_red_correct_throughput.c
+			frodo_red_rebin.c
+			frodo_red_subsky.c
  Additional Notes:	None
 
 ************************************************************************/
@@ -631,20 +839,20 @@ int populate_img_parameters(char f [], fitsfile *f_ptr, int maxdim, int *bitpix,
 
 ************************************************************************/
 
-int print_file(char TEXT_FILE [200]) {
+int print_file(char text_file [200]) {
 
-	FILE *TEXT_FILE_fptr;
-	TEXT_FILE_fptr = fopen(TEXT_FILE, "r");
+	FILE *text_file_fptr;
+	text_file_fptr = fopen(text_file, "r");
 
 	char input_string [300];
 
-	if (TEXT_FILE_fptr) {
+	if (text_file_fptr) {
 	
-		while(!feof(TEXT_FILE_fptr)) {
+		while(!feof(text_file_fptr)) {
 
 			memset(input_string, '\0', 300);
 
-			fgets (input_string, 300, TEXT_FILE_fptr);
+			fgets (input_string, 300, text_file_fptr);
 	
 			printf("%s", input_string);
 	
@@ -652,7 +860,7 @@ int print_file(char TEXT_FILE [200]) {
 
 	} else {
 
-		printf("\nWARNING:\tUnable to print file. File %s doesn't exist.\n", TEXT_FILE);
+		printf("\nWARNING:\tUnable to print file. File %s doesn't exist.\n", text_file);
 		return 1;
 
 	}
