@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_correct_throughput.c
- Last Modified Date:     	21/02/11
+ Last Modified Date:     	03/03/11
 
 ************************************************************************/
 
@@ -13,6 +13,9 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_correct_throughput.h"
+#include "frodo_red_arcfit.h"
 
 #include <gsl/gsl_sort_double.h>
 #include <gsl/gsl_statistics_double.h>
@@ -55,8 +58,8 @@ int main (int argc, char *argv []) {
 	
 		char *cc_ext_target_f		= strdup(argv[1]);
 		char *cc_ext_cont_f		= strdup(argv[2]);
-		double start_wav		= atof(argv[3]);
-		double end_wav			= atof(argv[4]);
+		double start_wav		= strtod(argv[3], NULL);
+		double end_wav			= strtod(argv[4], NULL);
 		char *cor_cc_ext_target_f	= strdup(argv[5]);
 
 		// ***********************************************************************
@@ -315,7 +318,7 @@ int main (int argc, char *argv []) {
 			token_index = 0;
 			coeff_index = 0;
 
-			if (atoi(&input_string[0]) > 0) { 		// check the line begins with a positive number
+			if (strtol(&input_string[0], NULL, 0) > 0) { 		// check the line begins with a positive number
 
 				// ***********************************************************************
 				// String tokenisation loop: 
@@ -330,18 +333,18 @@ int main (int argc, char *argv []) {
 
 					if (token_index == 0 ) {							// fibre token
 
-						this_fibre = atoi(token);
+						this_fibre = strtol(token, NULL, 0);
 
 					} else if ((token_index >= 1) && (token_index <= polynomial_order+1)) { 	// coeff token
 
-						this_coeff = atof(token);
+						this_coeff = strtod(token, NULL);
 						// printf("%d\t%d\t%e\n", this_fibre, coeff_index, this_coeff);		// DEBUG
 						coeffs[this_fibre-1][coeff_index] = this_coeff;
 						coeff_index++;
 
 					} else if (token_index == polynomial_order+2) {					// chisquared token
 
-						this_chisquared = atof(token);
+						this_chisquared = strtod(token, NULL);
 
 					}
 
@@ -368,8 +371,8 @@ int main (int argc, char *argv []) {
 
 			for (jj=0; jj<=polynomial_order; jj++) {
 		    
-				this_fibre_smallest_wav += coeffs[ii][jj];
-				this_fibre_largest_wav += coeffs[ii][jj]*pow(cut_x[1], jj);
+				this_fibre_smallest_wav += coeffs[ii][jj]*pow(0+INDEXING_CORRECTION, jj);
+				this_fibre_largest_wav += coeffs[ii][jj]*pow((cut_x[1]-1)+INDEXING_CORRECTION, jj);
 
 			}
 
@@ -378,36 +381,16 @@ int main (int argc, char *argv []) {
 				smallest_wav = this_fibre_smallest_wav;
 				largest_wav = this_fibre_largest_wav;
 
-			} else if (this_fibre_smallest_wav > smallest_wav) {    // note the sign, we want to find the maximum value for the least wavelength.
+			} else if (this_fibre_smallest_wav > smallest_wav) {    // note the sign, we want to find the maximum value for the least wavelength. Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 				smallest_wav = this_fibre_smallest_wav;
 
-			} else if (this_fibre_largest_wav < largest_wav) {      // logic is as above, except for least value of maximum wavelength
+			} else if (this_fibre_largest_wav < largest_wav) {      // logic is as above, except for least value of maximum wavelength. Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 				largest_wav = this_fibre_largest_wav;
 			  
 			}
 		
-		}
-	
-		printf("\nWavelength boundaries");
-		printf("\n---------------------\n");
-
-		printf("\nStarting wavelength:\t%.2f Å", smallest_wav);
-		printf("\nEnding wavelength:\t%.2f Å\n", largest_wav);
-
-		if (start_wav < smallest_wav) { 
-		  
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -15, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-			return 1; 
-
-		} else if (end_wav > largest_wav) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -16, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-			return 1; 
-
 		}
 
 		// ***********************************************************************
@@ -416,11 +399,11 @@ int main (int argc, char *argv []) {
 
 	        double this_element_wav;
 
-	        int first_element_array [nyelements];
-		memset(first_element_array, 0, sizeof(int)*nyelements);
+	        int first_element_index_array [nyelements];
+		memset(first_element_index_array, 0, sizeof(int)*nyelements);
 
-	        int last_element_array [nyelements];
-		memset(last_element_array, 0, sizeof(int)*nyelements);
+	        int last_element_index_array [nyelements];
+		memset(last_element_index_array, 0, sizeof(int)*nyelements);
 
 	        int kk;
 
@@ -436,7 +419,7 @@ int main (int argc, char *argv []) {
 
 		      		}
 
-		      		if (this_element_wav > start_wav) {	// the current index, ii, represents the first pixel with a wavelength > start_wav
+		      		if (this_element_wav > start_wav) {	// the current index, ii, represents the first pixel with a wavelength >= start_wav. Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 		       			break;
 
@@ -444,7 +427,7 @@ int main (int argc, char *argv []) {
 
 		   	}
 
-			first_element_array[jj] = ii;
+			first_element_index_array[jj] = ii;
 
 			// printf("%d\t%d\t%f\n", jj, ii, this_element_wav);	// DEBUG
 
@@ -462,7 +445,7 @@ int main (int argc, char *argv []) {
 
 		      		}
 
-		      		if (this_element_wav < end_wav) {	// the current index, ii, represents the last pixel with a wavelength < end_wav
+		      		if (this_element_wav < end_wav) {	// the current index, ii, represents the last pixel with a wavelength <= end_wav. Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 		       			break;
 
@@ -470,11 +453,31 @@ int main (int argc, char *argv []) {
 
 		   	}
 
-			last_element_array[jj] = ii;
+			last_element_index_array[jj] = ii;
 
 			// printf("%d\t%d\t%f\n", jj, ii, this_element_wav);	// DEBUG
 
 	        }
+	
+		printf("\nWavelength boundaries");
+		printf("\n---------------------\n");
+
+		printf("\nInherent minimum wavelength:\t%.2f Å", smallest_wav);
+		printf("\nInherent maximum wavelength:\t%.2f Å\n", largest_wav);
+
+		if (start_wav < smallest_wav) {		// Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
+		  
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -15, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			return 1; 
+
+		} else if (end_wav > largest_wav) {	// Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -16, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			return 1; 
+
+		}
 
 		// CALCULATE AND APPLY THROUGHPUT COEFFICIENTS TO TARGET FRAME (ARG 1)
 		// ***********************************************************************
@@ -488,9 +491,11 @@ int main (int argc, char *argv []) {
 	
 		for(jj=0; jj<nyelements; jj++) {
 
+			// printf("\n%d\t%d", first_element_index_array[jj], last_element_index_array[jj]);		// DEBUG
+
 			disp_val = 0.0;
 
-			for(ii=first_element_array[jj]; ii<=last_element_array[jj]; ii++) {
+			for(ii=first_element_index_array[jj]; ii<=last_element_index_array[jj]; ii++) {
 
 				disp_val += cc_ext_cont_frame_values[jj][ii];
 
@@ -500,7 +505,7 @@ int main (int argc, char *argv []) {
 	
 		}
 
-		// 2.	Duplicate array and sort into ascending order
+		// 2.	Duplicate [continuum_spectra_totals] array and sort into ascending order
 
 		double continuum_spectra_totals_sorted [nyelements];
 		memcpy(continuum_spectra_totals_sorted, continuum_spectra_totals, sizeof(double)*nyelements);	
@@ -514,9 +519,9 @@ int main (int argc, char *argv []) {
 
 		printf("\nFibre fluxes and throughput coefficients");
 		printf("\n----------------------------------------\n");
-		printf("\nMinimum Flux:\t%f\n", continuum_spectra_totals_sorted[0]);
-		printf("Maximum Flux:\t%f\n", continuum_spectra_totals_sorted[nyelements-1]);
-		printf("Median Flux:\t%f\n", continuum_spectra_median);
+		printf("\nMinimum Flux:\t%.2e\n", continuum_spectra_totals_sorted[0]);
+		printf("Maximum Flux:\t%.2e\n", continuum_spectra_totals_sorted[nyelements-1]);
+		printf("Median Flux:\t%.2e\n", continuum_spectra_median);
 		printf("\nFibre\tTotal Flux\tCoefficient\n\n");
 
 		double throughput_coefficients [nyelements];
@@ -572,8 +577,8 @@ int main (int argc, char *argv []) {
 	
 		long cor_cc_ext_target_f_fpixel = 1;
 
-		// 6.	Create [cor_cc_ext_target_frame_values] array to hold the output data
-		//	in the correct format
+		// 6.	Create [cor_cc_ext_target_output_frame_values] array to hold the
+		//	output data in the correct format
 
 		double cor_cc_ext_target_output_frame_values [nxelements*nyelements];
 		memset(cor_cc_ext_target_output_frame_values, 0, sizeof(double)*nxelements*nyelements);

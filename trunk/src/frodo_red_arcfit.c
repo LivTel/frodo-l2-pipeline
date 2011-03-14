@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_arcfit.c
- Last Modified Date:     	21/02/11
+ Last Modified Date:     	07/03/11
 
 ************************************************************************/
 
@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_arcfit.h"
 
 #include <gsl/gsl_statistics_int.h>
 
@@ -55,18 +57,18 @@ int main (int argc, char *argv []) {
 		char *ext_arc_f			= strdup(argv[1]);
 		char *ext_target_f		= strdup(argv[2]);
 		char *ext_cont_f		= strdup(argv[3]);
-		int max_cc_delay		= atoi(argv[4]);
-		int min_dist			= atoi(argv[5]);
-		int half_aperture_num_pix	= atoi(argv[6]);
-		int derivative_tol		= atoi(argv[7]);
-		int derivative_tol_ref_px	= atoi(argv[8]);
-		int pix_tolerance		= atoi(argv[9]);
-		int min_contiguous_lines	= atoi(argv[10]);
+		int max_cc_delay		= strtol(argv[4], NULL, 0);
+		int min_dist			= strtol(argv[5], NULL, 0);
+		int half_aperture_num_pix	= strtol(argv[6], NULL, 0);
+		int derivative_tol		= strtol(argv[7], NULL, 0);
+		int derivative_tol_ref_px	= strtol(argv[8], NULL, 0);
+		int pix_tolerance		= strtol(argv[9], NULL, 0);
+		int min_contiguous_lines	= strtol(argv[10], NULL, 0);
 		char *arc_line_list_filename	= strdup(argv[11]);
-		int max_pix_diff		= atoi(argv[12]);
-		int min_matched_lines		= atoi(argv[13]);
-		double max_av_wavelength_diff	= atoi(argv[14]);
-		int fit_order			= atoi(argv[15]);
+		int max_pix_diff		= strtol(argv[12], NULL, 0);
+		int min_matched_lines		= strtol(argv[13], NULL, 0);
+		double max_av_wavelength_diff	= strtol(argv[14], NULL, 0);
+		int fit_order			= strtol(argv[15], NULL, 0);
 		char *cc_ext_arc_f		= strdup(argv[16]);
 		char *cc_ext_target_f		= strdup(argv[17]);
 		char *cc_ext_cont_f		= strdup(argv[18]);
@@ -554,7 +556,7 @@ int main (int argc, char *argv []) {
 
 			fgets(input_string, 300, arc_line_list_f);	
 
-			if (atoi(&input_string[0]) > 0) {		// check the line begins with a positive number (usable)
+			if (strtol(&input_string[0], NULL, 0) > 0) {		// check the line begins with a positive number (usable)
 	
 				arc_line_list_num_ref_lines++;				
 
@@ -585,7 +587,7 @@ int main (int argc, char *argv []) {
 
 			fgets(input_string, 300, arc_line_list_f);	
 
-			if (atoi(&input_string[0]) > 0) {		// check the line begins with a positive number (usable)
+			if (strtol(&input_string[0], NULL, 0) > 0) {		// check the line begins with a positive number (usable)
 	
 				sscanf(input_string, "%lf\t%lf\t", &pixel_channel, &wavelength); 
 
@@ -607,7 +609,12 @@ int main (int argc, char *argv []) {
 		int matched_line_count = 0;
 
 		int matched_line_indexes [num_peaks];
-		memset(matched_line_indexes, -1, sizeof(int)*num_peaks);				// -1 indicates no match
+
+		for (ii=0; ii<num_peaks; ii++) {
+
+			matched_line_indexes[ii] = -1;			// -1 indicates no match
+
+		}
 
 		double matched_line_diffs [num_peaks];
 		memset(matched_line_diffs, 0, sizeof(double)*num_peaks);
@@ -623,7 +630,7 @@ int main (int argc, char *argv []) {
 
 			}
 
-			average_pixel_channels[ii] /= nyelements;					// calculate the average pixel channel using all rows	
+			average_pixel_channels[ii] /= (double) nyelements;				// calculate the average pixel channel using all rows	
 
 		}
 
@@ -638,7 +645,7 @@ int main (int argc, char *argv []) {
 
 				this_diff = fabs(average_pixel_channels[ii] - arc_peak_centroids[jj]);	// calculate the difference between the identified and reference arc line
 
-				if (this_diff <= max_pix_diff) {					// is the difference less than [max_pix_diff]?
+				if (this_diff <= max_pix_diff) {					// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 			
 					if (matched_line == FALSE || this_diff < least_diff) {		// is this the first line found or a line with a smaller difference between ref arc line and matched?
 
@@ -659,7 +666,7 @@ int main (int argc, char *argv []) {
 
 					duplicate_index = lsearch_int(matched_line_indexes, least_diff_index, num_peaks);
 
-					if(least_diff < matched_line_diffs[duplicate_index]) {					// does it have a smaller difference?
+					if(least_diff < matched_line_diffs[duplicate_index]) {					// does it have a smaller difference? - comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 						matched_line_indexes[duplicate_index] = -1;					// reset the duplicate values, no increment required if duplicate
 						matched_line_diffs[duplicate_index] = 0;
@@ -705,6 +712,7 @@ int main (int argc, char *argv []) {
 			if (matched_line_indexes[ii] == -1) { 	// this line was unmatched
 
 				// printf("%d\t%s\t\t%s\t\t%.2f\t\t%s\n", ii, "", "", average_pixel_channels[ii], ""); 	// DEBUG
+				continue;
 
 			} else {
 
@@ -778,7 +786,7 @@ int main (int argc, char *argv []) {
 		printf("\nAverage distance between lines in reference arc list:\t%.1f", list_av_dist);
 		printf("\nAverage distance between lines in matched line list:\t%.1f\n", sample_av_dist);
 
-		if (sample_list_diff > max_av_wavelength_diff) {
+		if (sample_list_diff > max_av_wavelength_diff) {	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", 3, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -807,7 +815,7 @@ int main (int argc, char *argv []) {
 
 		if (!outputfile) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -23, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -22, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 			return 1;
 
@@ -863,7 +871,7 @@ int main (int argc, char *argv []) {
 
 			if (calc_least_sq_fit(fit_order, matched_line_count, coord_x, coord_y, coeffs, &this_chi_squared)) {	
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -22, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -23, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 				return 1; 
 
@@ -903,9 +911,9 @@ int main (int argc, char *argv []) {
 
 		printf("\nFitting results");
 		printf("\n---------------\n");
-		printf("\nMin χ2:\t\t\t%f\n", chi_squared_min);
-		printf("Max χ2:\t\t\t%f\n", chi_squared_max);
-		printf("Average χ2:\t\t%f\n", chi_squared/nyelements);
+		printf("\nMin χ2:\t\t\t%.2f\n", chi_squared_min);
+		printf("Max χ2:\t\t\t%.2f\n", chi_squared_max);
+		printf("Average χ2:\t\t%.2f\n", chi_squared/nyelements);
 
 		// 4.	Perform a few checks to ensure the chi squareds are sensible 
 
@@ -969,7 +977,7 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -23, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -24, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_arc_f_status); 
 
 					return 1; 
@@ -978,7 +986,7 @@ int main (int argc, char *argv []) {
 
 			} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -24, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -25, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_arc_f_status); 
 
 				return 1; 
@@ -987,7 +995,7 @@ int main (int argc, char *argv []) {
 
 		} else {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -25, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -26, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_arc_f_status); 
 
 			return 1; 
@@ -1005,7 +1013,7 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -26, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -27, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_target_f_status); 
 
 					return 1; 
@@ -1014,7 +1022,7 @@ int main (int argc, char *argv []) {
 
 			} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -27, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -28, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_target_f_status); 
 
 				return 1; 
@@ -1023,7 +1031,7 @@ int main (int argc, char *argv []) {
 
 		} else {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -28, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -29, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_target_f_status); 
 
 			return 1; 
@@ -1041,7 +1049,7 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -29, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -30, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_cont_f_status); 
 
 					return 1; 
@@ -1050,7 +1058,7 @@ int main (int argc, char *argv []) {
 
 			} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -30, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -31, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_cont_f_status); 
 
 				return 1; 
@@ -1059,7 +1067,7 @@ int main (int argc, char *argv []) {
 
 		} else {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -31, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -32, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_cont_f_status); 
 
 			return 1; 
@@ -1072,7 +1080,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -32, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -33, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, ext_arc_f_status); 
 
 			return 1; 
@@ -1081,7 +1089,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -33, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -34, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, ext_target_f_status); 
 
 			return 1; 
@@ -1090,7 +1098,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -34, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -35, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, ext_cont_f_status); 
 
 			return 1; 
@@ -1099,7 +1107,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -35, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -36, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, cc_ext_arc_f_status); 
 
 			return 1; 
@@ -1108,7 +1116,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -36, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -37, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, cc_ext_target_f_status); 
 
 			return 1; 
@@ -1117,7 +1125,7 @@ int main (int argc, char *argv []) {
 
 		if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -37, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -38, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, cc_ext_cont_f_status); 
 
 			return 1; 
@@ -1126,7 +1134,15 @@ int main (int argc, char *argv []) {
 
 		if (fclose(arc_line_list_f)) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -38, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -39, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			return 1; 
+
+		}
+
+		if (fclose(outputfile)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -40, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 			return 1; 
 

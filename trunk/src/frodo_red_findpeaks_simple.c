@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple.c
- Last Modified Date:     	07/02/11
+ Last Modified Date:     	03/03/11
 
 ************************************************************************/
 
@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_findpeaks_simple.h"
 
 // *********************************************************************
 
@@ -51,12 +53,12 @@ int main(int argc, char *argv []) {
 		// Redefine routine input parameters
 
 		char *cont_f			= strdup(argv[1]);
-		int min_dist			= atoi(argv[2]);
-		int half_aperture_num_pix	= atoi(argv[3]);
-		int der_tol_min			= atoi(argv[4]);
-		int der_tol_max			= atoi(argv[5]);
-		int der_tol_ref_px		= atoi(argv[6]);
-		int min_rows			= atoi(argv[7]);
+		int min_dist			= strtol(argv[2], NULL, 0);
+		int half_aperture_num_pix	= strtol(argv[3], NULL, 0);
+		int der_tol_min			= strtol(argv[4], NULL, 0);
+		int der_tol_max			= strtol(argv[5], NULL, 0);
+		int der_tol_ref_px		= strtol(argv[6], NULL, 0);
+		int min_rows			= strtol(argv[7], NULL, 0);
 
 		// ***********************************************************************
 		// Open cont file (ARG 1), get parameters and perform any data format 

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_extract_simple.c
- Last Modified Date:     	07/02/11
+ Last Modified Date:     	07/03/11
 
 ************************************************************************/
 
@@ -13,6 +13,9 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_extract_simple.h"
+#include "frodo_red_trace.h"
 
 // *********************************************************************
 
@@ -51,8 +54,8 @@ int main ( int argc, char *argv [] ) {
 		// Redefine routine input parameters
 
 		char *input_f			= strdup(argv[1]);
-		int half_aperture_num_pix	= atoi(argv[2]);
-		bool flip_disp_axis		= atoi(argv[3]);
+		int half_aperture_num_pix	= strtol(argv[2], NULL, 0);
+		int flip_disp_axis		= strtol(argv[3], NULL, 0);
 		char *output_f			= strdup(argv[4]);
 
 		// ***********************************************************************
@@ -200,7 +203,7 @@ int main ( int argc, char *argv [] ) {
 			token_index = 0;
 			coeff_index = 0;
 
-			if (atoi(&input_string[0]) > 0) { 		// check the line begins with a positive number
+			if (strtol(&input_string[0], NULL, 0) > 0) { 		// check the line begins with a positive number
 
 				// ***********************************************************************
 				// String tokenisation loop: 
@@ -215,18 +218,18 @@ int main ( int argc, char *argv [] ) {
 
 					if (token_index == 0 ) {							// fibre token
 
-						this_fibre = atoi(token);
+						this_fibre = strtol(token, NULL, 0);
 
 					} else if ((token_index >= 1) && (token_index <= polynomial_order+1)) { 	// coeff token
 
-						this_coeff = atof(token);
+						this_coeff = strtod(token, NULL);
 						// printf("%d\t%d\t%e\n", this_fibre, coeff_index, this_coeff);		// DEBUG
 						coeffs[this_fibre-1][coeff_index] = this_coeff;
 						coeff_index++;
 
 					} else if (token_index == polynomial_order+2) {					// chisquared token
 
-						this_chisquared = atof(token);
+						this_chisquared = strtod(token, NULL);
 
 					}
 
@@ -264,18 +267,18 @@ int main ( int argc, char *argv [] ) {
 
 				for (ii=0; ii<FIBRES; ii++) {
 
-					x = 0;
+					x = 0.0;
 
 					// ***********************************************************************
 					// Find tracing centroid from polynomial coefficients
 	
 					for (jj=0; jj<polynomial_order+1; jj++) {
 					
-						x = (coeffs[ii][jj]*(pow(y_int,jj))) + x;
+						x += (coeffs[ii][jj]*(pow(y_int,jj)));
 	
 					}
 
-					x_int = rint(x) - INDEXING_CORRECTION;
+					x_int = lrint(x) - INDEXING_CORRECTION;
 
 					// ***********************************************************************
 					// Does [x_int] violate the img boundaries?

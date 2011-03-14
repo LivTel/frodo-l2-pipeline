@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple_clean.c
- Last Modified Date:     	07/02/11
+ Last Modified Date:     	07/03/11
 
 ************************************************************************/
 
@@ -13,6 +13,9 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_findpeaks_simple_clean.h"
+#include "frodo_red_findpeaks_simple.h"
 
 // *********************************************************************
 
@@ -20,7 +23,7 @@ int main(int argc, char *argv []) {
 
 	if(populate_env_variable(REF_ERROR_CODES_FILE, "L2_ERROR_CODES_FILE")) {
 
-		printf("\n Unable to populate [REF_ERROR_CODES_FILE] variable with corresponding environment variable. Routine will proceed without error handling\n");
+		printf("\nUnable to populate [REF_ERROR_CODES_FILE] variable with corresponding environment variable. Routine will proceed without error handling\n");
 
 	}
 
@@ -50,8 +53,8 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Redefine routine input parameters
 
-		double pixel_tolerance		= atof(argv[1]);
-		int max_bad_rows		= atoi(argv[2]);
+		double pixel_tolerance		= strtod(argv[1], NULL);
+		int max_bad_rows		= strtol(argv[2], NULL, 0);
 	
 		// ***********************************************************************
 		// Open [FRFIND_OUTPUTF_PEAKS] input file
@@ -96,11 +99,11 @@ int main(int argc, char *argv []) {
 
 			fgets(input_string, 150, inputfile);	
 
-			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 	// get row number
+			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 		// get row number
 
-				sscanf(input_string, "%*[^\t]%d", &rows);	// read all data up to tab as string ([^\t]), but do not store (*)		
+				sscanf(input_string, "%*[^\t]%d", &rows);					// read all data up to tab as string ([^\t]), but do not store (*)		
 
-			} else if (atoi(&input_string[0]) > 0) {					// else check the line begins with a positive number (usable)
+			} else if (strtol(&input_string[0], NULL, 0) > 0) {					// else check the line begins with a positive number (usable)
 	
 				sscanf(input_string, "%d\t%lf\t%d\t", &fibre_number, &coord_x, &coord_y);
 	
@@ -124,7 +127,7 @@ int main(int argc, char *argv []) {
 
 		for (ii=0; ii<FIBRES; ii++) {
 
-			array_coord_x_av[ii] /= rows;
+			array_coord_x_av[ii] /= (double) rows;
 
 			// printf("%d\t%f\n", ii+1, array_coord_x_av[ii]);	// DEBUG
 
@@ -154,13 +157,13 @@ int main(int argc, char *argv []) {
 
 				sscanf(input_string, "%*[^\t]%d", &rows);	// read all data up to tab as string ([^\t]), but do not store (*)	
 
-			} else if (atoi(&input_string[0]) > 0) {	// check the line begins with a positive number (usable)
+			} else if (strtol(&input_string[0], NULL, 0) > 0) {	// check the line begins with a positive number (usable)
 	
 				sscanf(input_string, "%d\t%lf\t%d\t", &fibre_number, &coord_x, &coord_y);
 
-				if (fabs(coord_x-array_coord_x_av[fibre_number-1]) > pixel_tolerance)	{
+				if (fabs(coord_x-array_coord_x_av[fibre_number-1]) > pixel_tolerance)	{	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
-					if (lsearch_int(bad_rows, coord_y, rows) == -1) {	// no entry cor this [coord_y] already in array
+					if (lsearch_int(bad_rows, coord_y, rows) == -1) {	// no entry for this [coord_y] already in array
 
 						bad_rows[bad_row_count] = coord_y;		// so add it
 						bad_rows_number[bad_row_count] = rows;		// and row number
@@ -259,7 +262,7 @@ int main(int argc, char *argv []) {
 
 			fgets(input_string, 150, inputfile);	
 
-			if (atoi(&input_string[0]) > 0) {	// check the line begins with a positive number (usable)
+			if (strtol(&input_string[0], NULL, 0) > 0) {	// check the line begins with a positive number (usable)
 	
 				sscanf(input_string, "%d\t%lf\t%d\t", &fibre_number, &coord_x, &coord_y);
 

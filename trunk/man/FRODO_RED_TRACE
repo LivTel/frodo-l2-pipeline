@@ -3,6 +3,7 @@
  Usage:	frtrace	polynomial_order 
 		num_bins
 		min_rows_per_bin
+
  Synopsis:
 
  Fits a polynomial to each centroid of each fibre in the [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] file.

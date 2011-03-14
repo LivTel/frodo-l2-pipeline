@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   10/02/11 #
+# Last Modified Date:   14/03/11 #
 ##################################
 
 #############################
@@ -43,7 +43,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									RMB/DEVEL/LAPTOP
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput modhead
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat imcopy modhead
 
 #################
 # make routines #
@@ -72,6 +72,18 @@ frodo_red_arcfit: frodo_red_arcfit.c libfrodo
 frodo_red_correct_throughput: frodo_red_correct_throughput.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) -o frcorrect frodo_red_correct_throughput.c $(LIBS)
 	$(MV) frcorrect $(L2_BIN_DIR)		
+
+frodo_red_rebin: frodo_red_rebin.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frrebin frodo_red_rebin.c $(LIBS)
+	$(MV) frrebin $(L2_BIN_DIR)
+
+frodo_red_subsky: frodo_red_subsky.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frsubsky frodo_red_subsky.c $(LIBS)
+	$(MV) frsubsky $(L2_BIN_DIR)
+
+frodo_red_reformat: frodo_red_reformat.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frreformat frodo_red_reformat.c $(LIBS)
+	$(MV) frreformat $(L2_BIN_DIR)
 
 modhead: modhead.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) -o modhead modhead.c $(LIBS)

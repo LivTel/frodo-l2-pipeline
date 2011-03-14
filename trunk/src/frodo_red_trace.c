@@ -13,6 +13,9 @@
 #include <stdbool.h>
 #include "frodo_error_handling.h"
 #include "frodo_functions.h"
+#include "frodo_config.h"
+#include "frodo_red_trace.h"
+#include "frodo_red_findpeaks_simple_clean.h"
 
 // *********************************************************************
 
@@ -50,9 +53,9 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Redefine routine input parameters
 
-		int order			= atoi(argv[1]);
-		int bins			= atoi(argv[2]);	
-		int min_rows_per_bin		= atoi(argv[3]);
+		int order			= strtol(argv[1], NULL, 0);
+		int bins			= strtol(argv[2], NULL, 0);	
+		int min_rows_per_bin		= strtol(argv[3], NULL, 0);
 
 		// ***********************************************************************
 		// Open [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE] input file
@@ -168,15 +171,20 @@ int main(int argc, char *argv []) {
 		int ii;
 
 		double width_of_bin = (double) range/bins;
+		double current_bin_position = (double) y_min;			// store the current bin position [current_bin_position] as a double to avoid rounding errors
+
+		// printf("%f\n", width_of_bin);	// DEBUG
 	
 		int bin_limits [bins+1];
 		memset(bin_limits, 0, sizeof(int)*(bins+1));
 	
 		for(ii=0; ii<bins+1; ii++) {
 	
-			bin_limits[ii] = y_min + (ii*width_of_bin);		// (bins*width_of_bin = range) => bin_limits[bins] = y_min + range i.e. bin_limits[bins] = y_max exactly
+			bin_limits[ii] = lrint(current_bin_position);		// round [current_bin_position] and store as an integer to use as the current bin limit
 
-			// printf("%d\n", bin_limits[ii]);	// DEBUG
+			//printf("%f\t%ld\t%d\n", current_bin_position, lrint(current_bin_position), bin_limits[ii]);	// DEBUG
+
+			current_bin_position += width_of_bin;
 	
 		}
 
@@ -225,7 +233,7 @@ int main(int argc, char *argv []) {
 	
 			fgets(input_string, 150, inputfile);	
 
-			if (atoi(&input_string[0]) > 0) {					// else check the line begins with a positive number (usable)
+			if (strtol(&input_string[0], NULL, 0) > 0) {					// else check the line begins with a positive number (usable)
 	
 				sscanf(input_string, "%d\t%lf\t%d\t", &fibre_number, &coord_x, &coord_y);
 	
@@ -237,7 +245,7 @@ int main(int argc, char *argv []) {
 
 				y_num_rows [fibre_number-1][this_bin]++;			// this is the number of rows in each bin (n.b. for all fibres)
 				x_coords_binned[fibre_number-1][this_bin] += coord_x;		// this is the cumulative x coordinate for each bin/fibre
-				y_coords_binned[fibre_number-1][this_bin] += coord_y;		// this is the cumulative y coordinate for each bin/fibre
+				y_coords_binned[fibre_number-1][this_bin] += (double) coord_y;	// this is the cumulative y coordinate for each bin/fibre
 
 			}
 
@@ -251,8 +259,8 @@ int main(int argc, char *argv []) {
 
 				if ((y_num_rows[ii][jj]) != 0) {	// are there any rows for this fibre/bin?
 
-					x_coords_binned[ii][jj] /= y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate 
-					y_coords_binned[ii][jj] /= y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate
+					x_coords_binned[ii][jj] /= (double) y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate 
+					y_coords_binned[ii][jj] /= (double) y_num_rows[ii][jj];		// must divide by [y_num_rows] to get average coordinate
 
 				}
 
@@ -347,11 +355,11 @@ int main(int argc, char *argv []) {
 			fprintf(outputfile, FRTRACE_VAR_ACCURACY_CHISQ, this_chi_squared);
 			fprintf(outputfile, "\n");
 
-			if ((ii==0) || (this_chi_squared < chi_squared_min)) { 
+			if ((ii==0) || (this_chi_squared < chi_squared_min)) { 		// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 				chi_squared_min = this_chi_squared;
 
-			} else if ((ii==0) || (this_chi_squared > chi_squared_max)) {
+			} else if ((ii==0) || (this_chi_squared > chi_squared_max)) {	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 				chi_squared_max = this_chi_squared;
 
@@ -368,14 +376,14 @@ int main(int argc, char *argv []) {
 		printf("\nFitting results");
 		printf("\n--------------------\n");
 		printf("\nNumber of bins used:\t%d\n", bins_used);
-		printf("\nMin χ2:\t\t\t%f\n", chi_squared_min);
-		printf("Max χ2:\t\t\t%f\n", chi_squared_max);
-		printf("Average χ2:\t\t%f\n", chi_squared/FIBRES);
+		printf("\nMin χ2:\t\t\t%.2f\n", chi_squared_min);
+		printf("Max χ2:\t\t\t%.2f\n", chi_squared_max);
+		printf("Average χ2:\t\t%.2f\n", chi_squared/FIBRES);
 
 		// ***********************************************************************
 		// Perform a few checks to ensure the chi squareds are sensible 
 
-		if ((chi_squared_min < FRTRACE_VAR_CHISQUARED_MIN) || (chi_squared_max > FRTRACE_VAR_CHISQUARED_MAX)) {
+		if ((chi_squared_min < FRTRACE_VAR_CHISQUARED_MIN) || (chi_squared_max > FRTRACE_VAR_CHISQUARED_MAX)) {	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", 3, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
