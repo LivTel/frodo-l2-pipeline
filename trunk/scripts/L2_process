@@ -1,0 +1,305 @@
+#!/bin/csh
+
+##################################
+# L2_process			 #
+# Last Modified Date:   01/05/11 #
+##################################
+
+set error_L2_process = 0	# is the error in L2_process?
+
+###################################################
+# - STEP 1 - 					  #
+# Set associated configuration specific variables #
+###################################################
+
+if ("$target_key_GRATID" == "Red-Low") then
+
+	set config_dir 				= "red_g" 
+	set config_arm 				= "red" 
+	set config_res 				= "low" 
+	set L2_process_pipe_script_name 	= "L2_process_pipe-red-low"
+
+	set WAV_LOW 				= 5800
+	set WAV_HIGH 				= 9400
+
+	set preview_orientation 		= 0
+
+else if ("$target_key_GRATID" == "Red-High") then
+
+	set config_dir 				= "red_vph" 
+	set config_arm 				= "red" 
+	set config_res 				= "high" 
+	set L2_process_pipe_script_name		= "L2_process_pipe-red-high"	
+
+	set WAV_LOW 				= 5900
+	set WAV_HIGH 				= 8000
+
+	set preview_orientation			= 0
+
+else if ("$target_key_GRATID" == "Blue-Low") then
+
+	set config_dir 				= "blue_g" 
+	set config_arm 				= "blue" 
+	set config_res 				= "low" 
+	set L2_process_pipe_script_name 	= "L2_process_pipe-blue-low"
+
+	set WAV_LOW 				= 3900
+	set WAV_HIGH 				= 5700
+
+	set preview_orientation 		= 0	
+
+else if ("$target_key_GRATID" == "Blue-High") then
+
+	set config_dir				= "blue_vph" 
+	set config_arm 				= "blue" 
+	set config_res				= "high" 
+	set L2_process_pipe_script_name 	= "L2_process_pipe-blue-high"	
+
+	set WAV_LOW 				= 3900
+	set WAV_HIGH 				= 5100
+	set preview_orientation 		= 0
+
+else 
+
+	set error_msg = "! L2_process:\tConfiguration (GRATID) not recognised. (CRITICAL)"
+	set error_L2_process = 1
+	goto error
+
+endif
+
+echo "- L2_process:\tUsing $target_key_GRATID configuration."
+
+#######################
+# - STEP 2 -	      #
+# Process target date #
+#######################
+
+set target_key_DATE = `modhead $target_file DATE | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
+set target_key_TIME = `modhead $target_file UTSTART | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
+
+set target_key_DATE_formatted = `date -d "$target_key_DATE $target_key_TIME" +"%d/%m/%Y %T"`
+set target_key_DATE_unix = `date -d "$target_key_DATE $target_key_TIME" +"%s"`
+
+#########################################
+# - STEP 3 - 				#
+# Set variables for directory structure #
+#########################################
+
+set this_reference_arc_dir = "$L2_REFERENCE_ARCS_DIR/$config_dir/"
+set this_lookup_tables_dir = "$L2_LOOKUP_TABLES_DIR/$config_dir/"
+
+echo "- L2_process:\tReference arc directory: $this_reference_arc_dir"
+echo "\t\tLookup tables directory: $this_lookup_tables_dir"
+
+##################################################
+# - STEP 4 -			       		 #
+# Lookup nearest-in-time reference arc list file #
+##################################################
+
+set reference_arc_error = 1
+
+set i=`cat $this_lookup_tables_dir/arc.tab | wc -l`
+set j=1
+
+while ($j <= $i)
+
+	set line = `cat $this_lookup_tables_dir/arc.tab | head -$j | tail -1`
+
+	@ j = $j + 1
+
+	set from_day =  `echo $line[2] | awk -F "/" '{print $1}'`
+	set from_month =  `echo $line[2] | awk -F "/" '{print $2}'`
+	set from_year =  `echo $line[2] | awk -F "/" '{print $3}'`
+
+	set uk_locale_date_from = $from_day"/"$from_month"/"$from_year
+	set us_locale_date_from = $from_month"/"$from_day"/"$from_year
+
+	set date_from_unix = `date -d "$us_locale_date_from $line[3]" +"%s"`
+	set date_from_formatted = "$uk_locale_date_from $line[3]"
+
+	if ($line[4] == 'now') then
+	
+		set date_to_unix = `date -d $line[4] +"%s"`	
+		set date_to_formatted = "$line[4]"
+		
+	else
+
+		set to_day =  `echo $line[4] | awk -F "/" '{print $1}'`
+		set to_month =  `echo $line[4] | awk -F "/" '{print $2}'`
+		set to_year =  `echo $line[4] | awk -F "/" '{print $3}'`
+
+		set uk_locale_date_to = $to_day"/"$to_month"/"$to_year
+		set us_locale_date_to = $to_month"/"$to_day"/"$to_year
+
+		set date_to_unix = `date -d "$us_locale_date_to $line[5]" +"%s"`
+		set date_to_formatted = "$uk_locale_date_to $line[5]"
+
+	endif
+
+	if ("$target_key_DATE_unix" >= "$date_from_unix" && "$target_key_DATE_unix" <= "$date_to_unix") then
+
+		echo "- L2_process:\tReference arc list ($line[1]) found for observation date $target_key_DATE_formatted."
+		echo "\t\tValid from $date_from_formatted to $date_to_formatted."
+		set reference_arc_list_file = "$this_reference_arc_dir$line[1]"
+		set reference_arc_error = 0
+		break
+
+	endif
+
+end
+
+if ($reference_arc_error == 1) then
+
+	set error_msg = "! L2_process:\tNo reference arc file found with dates spanning the required range. (CRITICAL)"
+	set error_L2_process = 1
+	goto error
+
+endif
+
+#################################################################################################
+# - STEP 5 -			    				       				#
+# Source configuration specific L2 pipeline script (L2_process_pipe-*) and check output is sane #
+#################################################################################################
+
+echo "- L2_process:\tExecuting $L2_process_pipe_script_name script."
+echo
+
+source $L2_SCRIPT_DIR/$L2_process_pipe_script_name
+
+if (! -e $output_file) then
+
+	set error_msg = "! L2_process:\tNo output file "$output_file" found. (CRITICAL)"
+	set error_L2_process = 1
+	goto error	
+
+else 
+
+	set num_HDUs = `liststruc $output_file | grep 'HDU' | tail -1 | awk -F "#" '{print $2}' | awk -F " " '{print $1}'`
+
+	if ($num_HDUs != 8) then
+
+		set error_msg = "! L2_process:\tIncorrect number of HDUs in output file "$output_file". (CRITICAL)"
+		set error_L2_process = 1
+		goto error
+
+	endif
+
+endif
+
+echo
+echo "- L2_process:\tExecution complete."
+
+####################################################
+# - STEP 6 -					   #
+# Create image previews 		           #
+####################################################
+
+####################################################
+# Check external preview creation software exists: #
+#						   #
+# - ImageMagick:montage (/usr/bin)		   #
+####################################################
+
+if (`find /usr/bin -name montage | grep -c montage` > 0) then
+
+	echo "- L2_process:\tCreating image preview."
+
+	#####################################################
+	# Process SPEC_NONSS extension to TSV file and plot #
+	#####################################################
+
+	set this_output_ext = 6
+
+	set output_spectrum_TSV_file = $output_file_stem"_"$this_output_ext".dat"
+	frspec2tsv $output_file $output_spectrum_TSV_file $this_output_ext 1
+
+	set output_spectrum_gnuplot_file = $output_file_stem"_"$this_output_ext".p"
+	set output_spectrum_png_file = $output_file_stem"_"$this_output_ext".png"
+
+	echo 'set term png size 1040,315' 						> $output_spectrum_gnuplot_file
+	echo 'set output "'$output_spectrum_png_file 					>> $output_spectrum_gnuplot_file
+	echo 'set title "L2 Image Preview ('$target_file')"' 				>> $output_spectrum_gnuplot_file
+	echo 'set autoscale' 								>> $output_spectrum_gnuplot_file
+	echo 'set xrange ['$WAV_LOW':'$WAV_HIGH']' 					>> $output_spectrum_gnuplot_file
+	echo 'set xlabel "Wavelength (Angstroms)"' 					>> $output_spectrum_gnuplot_file
+	echo 'set ylabel "Counts"' 							>> $output_spectrum_gnuplot_file
+	echo 'plot "'$output_spectrum_TSV_file'" index 0 using 1:2 with lines title ""' >> $output_spectrum_gnuplot_file
+
+	gnuplot $output_spectrum_gnuplot_file
+
+	###################################
+	# Generate L1_IMAGE preview image #
+	###################################
+
+	set this_output_ext = 1
+
+	########################################
+	# Generate COLCUBE_NONSS preview image #
+	########################################
+
+	set this_output_ext = 8
+
+	##################################
+	# Montage images		 #
+	##################################
+
+	echo "- L2_process:\tImage preview creation complete."
+
+else
+
+	set error_msg = "! L2_process:\tmontage routine doesn't exist in /usr/bin. No previews were made. (WARNING)"	
+
+endif
+
+if ($?error_msg == 1) then
+
+	echo
+	echo "$error_msg"
+
+endif
+
+exit(0)
+
+error:
+
+if ($error_L2_process == 1) then
+
+	if ($?1) then
+		echo -n `basename $1`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?2) then
+		echo -n `basename $2`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?3) then
+		echo -n `basename $3`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?error_msg) then
+		echo $error_msg >> $L2_FAIL_LOG_PATH
+	else
+		echo "UNDEF"  >> $L2_FAIL_LOG_PATH
+	endif
+
+endif
+
+echo
+echo "########################################## L2_process ###########################################"
+
+if ($?error_msg == 1) then
+
+	echo
+	echo "$error_msg"
+	echo
+
+endif
+
+exit(1)
+

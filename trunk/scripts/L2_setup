@@ -2,15 +2,25 @@
 
 ##################################
 # L2_setup 			 #
-# Last Modified Date:   14/03/11 #
+# Last Modified Date:   01/05/11 #
 ##################################
 
-######################
-# set up environment #
-######################
+############################
+# User defined environment #
+############################
 
 setenv L2_BASE_DIR `locate frodo_l2_pipeline/trunk | head -1`	# AUTO
-# setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# MANUAL:laptop
+# setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# MANUAL:rmb/laptop
+
+setenv L2_TIME_LOG_PATH "/home/rmb/Desktop/L2_time.log"		# rmb/laptop
+setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"		# rmb/laptop
+
+# DO NOT ALTER PAST THIS LINE
+# ----------------------------------------------------------------------------------- #
+
+##########################
+# Set up shell variables #
+##########################
 
 setenv L2_BIN_DIR $L2_BASE_DIR/bin
 setenv L2_LIB_DIR $L2_BASE_DIR/lib
@@ -19,7 +29,11 @@ setenv L2_SRC_DIR $L2_BASE_DIR/src
 setenv L2_SCRIPT_DIR $L2_BASE_DIR/scripts
 setenv L2_MAN_DIR $L2_BASE_DIR/man
 
+setenv L2_REFERENCE_ARCS_DIR $L2_CONFIG_DIR/reference_arcs
+setenv L2_LOOKUP_TABLES_DIR $L2_CONFIG_DIR/lookup_tables
+
 setenv L2_ERROR_CODES_FILE $L2_CONFIG_DIR/ERROR_CODES
+setenv L2_FITS_KEYS_TO_OMIT_FILE $L2_CONFIG_DIR/FITS_KEYS_TO_OMIT
 
 setenv L2_HEADER_FILE $L2_MAN_DIR/HEADER
 setenv L2_FRFS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_FINDPEAKS_SIMPLE
@@ -32,16 +46,18 @@ setenv L2_FRR_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REBIN
 setenv L2_FRS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_SUBSKY
 setenv L2_FRRF_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REFORMAT
 
+setenv L2_EXEC_BLURB_FILE $L2_MAN_DIR/L2_EXEC
+
 setenv L2_VERSION_FILE $L2_MAN_DIR/VERSION
 
 ################
-# set up shell #
+# Set up shell #
 ################
 
 limit stacksize unlimited
 
 ################
-# core aliases #
+# Core aliases #
 ################
 
 alias frfind $L2_BIN_DIR/frfind
@@ -56,15 +72,21 @@ alias frreformat $L2_BIN_DIR/frreformat
 
 alias modhead $L2_BIN_DIR/modhead
 alias imcopy $L2_BIN_DIR/imcopy
+alias liststruc $L2_BIN_DIR/liststruc
+
+alias frspec2tsv $L2_BIN_DIR/frspec2tsv
 
 ##################
-# script aliases #
+# Script aliases #
 ##################
 
 alias l2rfr $L2_SCRIPT_DIR/L2_calib_reduce-focus-run
+alias l2v cat $L2_MAN_DIR/VERSION
+
+alias l2exec $L2_SCRIPT_DIR/L2_exec
 
 ###########################
-# update man/VERSION file #
+# Update man/VERSION file #
 ###########################
 
 set author = `svn info $L2_BASE_DIR | grep "Last Changed Author" | awk -F "Author:" '{print $2}'`
@@ -79,3 +101,20 @@ echo $author > $L2_VERSION_FILE
 echo $rev >> $L2_VERSION_FILE	
 echo $date >> $L2_VERSION_FILE
 
+######################################################################################################
+# Create time log file ($L2_TIME_LOG_PATH) and fail log file ($L2_FAIL_LOG_PATH) if it doesn't exist #
+######################################################################################################
+
+if (! -e $L2_TIME_LOG_PATH) then
+
+	echo "L2_TIME_LOG\n\nConfig\tExecution Time (s)\n" > $L2_TIME_LOG_PATH
+
+endif
+
+if (! -e $L2_FAIL_LOG_PATH) then 
+
+	echo "L2_FAIL_LOG\n\nTarget File\tArc File\tContinuum File\tError Message\n" > $L2_FAIL_LOG_PATH
+
+endif
+
+exit(0)

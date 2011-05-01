@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple_clean.c
- Last Modified Date:     	07/03/11
+ Last Modified Date:     	01/05/11
 
 ************************************************************************/
 
@@ -29,19 +29,12 @@ int main(int argc, char *argv []) {
 
 	if (argc != 3) {
 
-		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", 1, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-		}
-
 		if(populate_env_variable(FRFSC_BLURB_FILE, "L2_FRFSC_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", 2, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
 
 		}
 
-		print_file(HEADER_FILE);
 		print_file(FRFSC_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", -1, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -304,7 +297,7 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", SUCCESS_FLAG, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", RETURN_FLAG, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 		return 0;
 

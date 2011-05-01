@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple.c
- Last Modified Date:     	03/03/11
+ Last Modified Date:     	01/05/11
 
 ************************************************************************/
 
@@ -28,19 +28,12 @@ int main(int argc, char *argv []) {
 
 	if (argc != 8) {
 
-		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", 1, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
-
-		}
-
 		if(populate_env_variable(FRFS_BLURB_FILE, "L2_FRFS_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", 2, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
 
 		}
 
-		print_file(HEADER_FILE);
 		print_file(FRFS_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -1, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
@@ -317,7 +310,7 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", SUCCESS_FLAG, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", RETURN_FLAG, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
 		return 0;
 

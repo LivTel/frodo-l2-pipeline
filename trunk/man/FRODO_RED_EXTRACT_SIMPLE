@@ -1,28 +1,28 @@
- ####################################### frodo_red_extract ########################################
+####################################### frodo_red_extract ########################################
 
- Usage:	frextract input_file 
+Usage:	frextract input_file
 		  half_aperture_num_pix
 		  flip_disp_axis
 		  output_file
 
- Synopsis:
+Synopsis:
 
- Extracts flux from a standard aperture.
+Extracts flux from a standard aperture.
 
- Description:
+Description:
 
- Uses the [FRTRACE_OUTPUTF_TRACES_FILE] tracing file to complete a simple aperture extraction of
- flux. The size of the aperture is determined by defining [half_aperture_num_pix], the number of
- pixels to be included in the summation either side of the centroid e.g. a [half_aperture_num_pix]
- of 2 would result in a total of 5 pixels in extraction; one for centroid and two either side.
+Uses the [FRTRACE_OUTPUTF_TRACES_FILE] tracing file to complete a simple aperture extraction of
+flux. The size of the aperture is determined by defining [half_aperture_num_pix], the number of
+pixels to be included in the summation either side of the centroid e.g. a [half_aperture_num_pix]
+of 2 would result in a total of 5 pixels in extraction; one for centroid and two either side.
 
- The routine has an option [flip_disp_axis] to reverse the data across the dispersion axis. This
- can be set to true by assigning a value of 1, and false by assigning a value of 0.
+The routine has an option [flip_disp_axis] to reverse the data across the dispersion axis. This
+can be set to true by assigning a value of 1, and false by assigning a value of 0.
 
- Example: 
+Example: 
 
- frextract target.fits 2 0 target_ext.fits
- frextract arc.fits 2 0 arc_ext.fits
- frextract continuum.fits 2 0 continuum_ext.fits
+frextract target.fits 2 0 target_ext.fits
+frextract arc.fits 2 0 arc_ext.fits
+frextract continuum.fits 2 0 continuum_ext.fits
 
- ##################################################################################################
+##################################################################################################

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_trace.c
- Last Modified Date:     	07/02/11
+ Last Modified Date:     	01/05/11
 
 ************************************************************************/
 
@@ -29,19 +29,12 @@ int main(int argc, char *argv []) {
 
 	if (argc != 4) {
 
-		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", 1, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-		}
-
 		if(populate_env_variable(FRT_BLURB_FILE, "L2_FRT_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", 2, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
 
 		}
 
-		print_file(HEADER_FILE);
 		print_file(FRT_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -1, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -385,7 +378,7 @@ int main(int argc, char *argv []) {
 
 		if ((chi_squared_min < FRTRACE_VAR_CHISQUARED_MIN) || (chi_squared_max > FRTRACE_VAR_CHISQUARED_MAX)) {	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", 3, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 2;
 
 		}
 
@@ -412,7 +405,7 @@ int main(int argc, char *argv []) {
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", SUCCESS_FLAG, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", RETURN_FLAG, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 		return 0;
 

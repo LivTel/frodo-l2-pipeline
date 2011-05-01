@@ -188,5 +188,5 @@ rm *.log
 rm FWHM
 rm CAMFOC
 
-
+exit 0
 
