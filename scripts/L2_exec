@@ -1,0 +1,239 @@
+#!/bin/csh
+
+##################################
+# L2_exec 			 #
+# Last Modified Date:   01/05/11 #
+##################################
+
+reset
+
+cat $L2_HEADER_FILE
+echo "Revision:      " `cat $L2_VERSION_FILE | grep "Revision" | awk -F " " '{print $4}'` "("`cat $L2_VERSION_FILE | grep "Date" | awk -F " " '{print $4}'`")\n" 
+
+################################################
+# Setup directory/files and parameter checking #
+################################################
+
+echo "##################################################################################################"
+echo 
+echo "- L2_exec:\tSetup directory/files and parameter checking."
+
+set current_dir = `pwd`
+set print_blurb_on_error = 0	# print blurb in error message
+set error_L2_exec = 0		# is the error in L2_exec?
+
+if ($#argv == "4") then
+
+	if (-e $1) then
+
+		set target_file = $1
+
+	else 
+
+		set error_msg = "! L2_exec:\tTarget file "$1" doesn't exist. (CRITICAL)"
+		set error_L2_exec = 1
+		goto error
+
+	endif
+
+	if (-e $2) then
+		set arc_file = $2
+	else 
+		set error_msg = "! L2_exec:\tArc file "$2" doesn't exist. (CRITICAL)"
+		set error_L2_exec = 1
+		goto error
+	endif
+
+	if (-e $3) then
+
+		set continuum_file = $3
+
+	else 
+
+		set error_msg = "! L2_exec:\tContinuum file "$3" doesn't exist. (CRITICAL)"
+		set error_L2_exec = 1
+		goto error
+
+	endif
+
+	if ($4 == 0 || $4 == 1) then
+
+		set is_verbose = $4
+
+	else 
+
+		set error_msg = "! L2_exec:\tVerbose flag must be either 1 (TRUE) or 0 (FALSE). (CRITICAL)"
+		set print_blurb_on_error = 1
+		set error_L2_exec = 1
+		goto error
+
+	endif
+
+	set target_file_stem = `basename $target_file .fits`
+	set arc_file_stem = `basename $arc_file .fits`
+	set continuum_file_stem = `basename $continuum_file .fits`
+
+	set dir_name = $target_file_stem
+
+	if (! -e $dir_name) then
+
+		mkdir $dir_name
+
+		cp $target_file $dir_name > /dev/null
+		cp $arc_file $dir_name > /dev/null
+		cp $continuum_file $dir_name > /dev/null
+
+		set target_file = `basename $target_file`
+		set arc_file = `basename $arc_file`
+		set continuum_file = `basename $continuum_file`
+
+		set output_file = $target_file_stem"_2.fits"
+		set output_file_stem = `basename $output_file .fits`
+
+		cd $dir_name
+
+	else 
+
+		set error_msg = "! L2_exec:\tDirectory "$dir_name" already exists. (CRITICAL)"
+		set error_L2_exec = 1
+		goto error
+
+	endif
+
+else 
+
+	set error_msg = "! L2_exec:\tIncorrect number of arguments on command line. (CRITICAL)" 
+	set print_blurb_on_error = 1
+	set error_L2_exec = 1
+	goto error
+
+endif
+
+############################
+# Set up output parameters #
+############################
+
+set log_file = $output_file_stem".log"
+set output_preview_file = $output_file_stem".png"
+
+#########################################################################
+# Find out which configuration we're using by evaluating the GRATID key #
+#########################################################################
+
+set target_key_GRATID = `modhead $target_file GRATID | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
+ 
+#########################################
+# Source processing script (L2_process) #
+#########################################
+
+set start_time = `date -d now +"%s"`
+set start_timestamp = `date '+%d/%m/%Y %H:%M:%S'`
+
+echo "- L2_exec:\tExecuting L2_process script."
+
+if ($is_verbose == "1") then
+
+	source $L2_SCRIPT_DIR/L2_process | tee $log_file
+
+	if ($? != 0) then	# check return status of L2_process
+		
+		goto error
+
+	endif
+
+else if ($is_verbose == "0") then
+
+	source $L2_SCRIPT_DIR/L2_process > $log_file
+
+	if ($? != 0) then	# check return status of L2_process
+		
+		goto error
+
+	endif
+
+endif
+
+set end_time = `date -d now +"%s"`
+
+@ exec_time = $end_time - $start_time
+
+echo "- L2_exec:\tL2_process execution complete. (run time: "$exec_time"s)"
+
+#############################
+# Cleanup files/directories #
+#############################
+
+echo "- L2_exec:\tCleaning up files/directories."
+
+mkdir tmp
+mkdir logs
+
+rm -f $target_file $arc_file $continuum_file > /dev/null			# remove source files
+
+mv `ls | grep .log | grep -v $log_file` logs					# move routine log files to logs/
+mv `ls | grep -v "$output_file_stem\." | grep -v tmp | grep -v logs` tmp	# move all files except the core output files to tmp/
+
+echo $target_key_GRATID"\t"$exec_time >> $L2_TIME_LOG_PATH
+
+cd $current_dir
+
+if ($?error_msg == 1) then
+
+	echo "$error_msg"
+	echo
+
+endif
+
+echo "- L2_exec:\tScript complete."
+echo
+
+exit(0)
+
+error:
+
+if ($error_L2_exec == 1) then
+
+	if ($?1) then
+		echo -n `basename $1`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?2) then
+		echo -n `basename $2`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?3) then
+		echo -n `basename $3`"\t" >> $L2_FAIL_LOG_PATH
+	else
+		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
+	endif
+
+	if ($?error_msg) then
+		echo $error_msg >> $L2_FAIL_LOG_PATH
+	else
+		echo "UNDEF"  >> $L2_FAIL_LOG_PATH
+	endif
+
+endif
+
+cd $current_dir
+
+if ($?error_msg == 1) then
+
+	echo "$error_msg"
+	echo
+
+endif
+
+if ($print_blurb_on_error == 1) then
+
+	cat $L2_EXEC_BLURB_FILE
+	echo 
+
+endif
+
+exit(1)
+

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_rebin.c
- Last Modified Date:     	03/03/11
+ Last Modified Date:     	01/05/11
 
 ************************************************************************/
 
@@ -31,19 +31,12 @@ int main (int argc, char *argv []) {
 
 	if (argc != 8) {
 
-		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", 1, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-		}
-
 		if(populate_env_variable(FRR_BLURB_FILE, "L2_FRR_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", 2, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
 
 		}
 
-		print_file(HEADER_FILE);
 		print_file(FRR_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -1, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -522,6 +515,41 @@ int main (int argc, char *argv []) {
 	        fprintf(outputfile, "# Dispersion:\t\t%.2f\n", dispersion);
 		fprintf(outputfile, "%d", EOF);
 
+		// 7.	Write these values to the [ADDITIONAL_KEYS_FILE] file
+
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE1", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT1", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL1", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT1", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE2", "a0", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT2", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX2", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE1", "a0", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT1", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL1", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT1", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE2", "a1", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT2", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX2", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE3", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT3", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL3", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT3", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX3", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CTYPE1", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CUNIT1", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRVAL1", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CDELT1", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+
 		// ***********************************************************************
 		// Set reb_cor_cc_ext_target frame parameters
 
@@ -629,7 +657,7 @@ int main (int argc, char *argv []) {
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", SUCCESS_FLAG, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", RETURN_FLAG, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 		return 0;
 

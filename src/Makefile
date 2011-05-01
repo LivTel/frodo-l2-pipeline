@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   14/03/11 #
+# Last Modified Date:   29/04/11 #
 ##################################
 
 #############################
@@ -43,7 +43,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									RMB/DEVEL/LAPTOP
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat imcopy modhead
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_red_spec2tsv
 
 #################
 # make routines #
@@ -93,7 +93,13 @@ imcopy: imcopy.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) -o imcopy imcopy.c $(LIBS)
 	$(MV) imcopy $(L2_BIN_DIR)
 
-# ------------------------------------------------------------------------------------------------------- #
+liststruc: liststruc.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o liststruc liststruc.c $(LIBS)
+	$(MV) liststruc $(L2_BIN_DIR)	
+
+frodo_red_spec2tsv: frodo_red_spec2tsv.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frspec2tsv frodo_red_spec2tsv.c $(LIBS)
+	$(MV) frspec2tsv $(L2_BIN_DIR)	
 
 frodo_functions: frodo_functions.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c frodo_functions.c
@@ -108,13 +114,13 @@ frodo_error_handling: frodo_error_handling.c
 libfrodo: frodo_functions frodo_error_handling
 	$(AR) rcs libfrodo.a frodo_functions.o frodo_error_handling.o
 	$(MV) libfrodo.a $(L2_LIB_DIR)
-	$(RM) -r *.o
+	$(RM) *.o
 
 ##############
 # make clean #
 ##############
 
 clean:
-	$(RM) -f $(L2_LIB_DIR)/*
-	$(RM) -f $(L2_BIN_DIR)/*
+	$(RM) $(L2_LIB_DIR)/*
+	$(RM) $(L2_BIN_DIR)/*
 

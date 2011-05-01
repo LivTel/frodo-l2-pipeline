@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_subsky.c
- Last Modified Date:     	03/03/11
+ Last Modified Date:     	01/05/11
 
 ************************************************************************/
 
@@ -31,19 +31,12 @@ int main (int argc, char *argv []) {
 
 	if (argc != 5) {
 
-		if(populate_env_variable(HEADER_FILE, "L2_HEADER_FILE")) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", 1, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-		}
-
 		if(populate_env_variable(FRS_BLURB_FILE, "L2_FRS_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", 2, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
 
 		}
 
-		print_file(HEADER_FILE);
 		print_file(FRS_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -1, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -101,8 +94,7 @@ int main (int argc, char *argv []) {
 		}
 
 		// ***********************************************************************
-		// Set the range limits using target fits file (ARG 1) n.b. this should
-		// be an arbitrary choice if all files have identical parameters
+		// Set the range limits using target fits file (ARG 1)
 
 		int cut_x [2] = {1, reb_cor_cc_ext_target_f_naxes[0]};
 		int cut_y [2] = {1, reb_cor_cc_ext_target_f_naxes[1]};
@@ -115,7 +107,7 @@ int main (int argc, char *argv []) {
 		long nyelements = (cut_y[1] - cut_y[0]) + 1;
 
 		// ***********************************************************************
-		// Create arrays to store pixel values from target fits file (ARG 1)
+		// Create array to store pixel values from target fits file (ARG 1)
 
 		double reb_cor_cc_ext_target_f_pixels [nxelements];
 
@@ -369,7 +361,7 @@ int main (int argc, char *argv []) {
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", SUCCESS_FLAG, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", RETURN_FLAG, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 		return 0;
 

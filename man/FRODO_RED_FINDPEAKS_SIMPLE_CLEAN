@@ -1,23 +1,23 @@
- ################################ frodo_red_findpeaks_simple_clean ################################
+################################ frodo_red_findpeaks_simple_clean ################################
 
- Usage:	frclean	pixel_tolerance 
+Usage:	frclean	pixel_tolerance 
 		max_bad_rows
 
- Synopsis:
+Synopsis:
 
- A routine to clean the [FRFIND_OUTPUTF_PEAKS_FILE] file of suspect rows containing incorrectly 
- flagged peaks.
+A routine to clean the [FRFIND_OUTPUTF_PEAKS_FILE] file of suspect rows containing incorrectly 
+flagged peaks.
 
- Description:
+Description:
 
- Duplicates the [FRFIND_OUTPUTF_PEAKS_FILE] file, erasing bad rows where ANY x-coordinate differs 
- more than [pixel_tolerance] from the average for that fibre. The output is recorded in the 
- [FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE].
+Duplicates the [FRFIND_OUTPUTF_PEAKS_FILE] file, erasing bad rows where ANY x-coordinate differs 
+more than [pixel_tolerance] from the average for that fibre. The output is recorded in the 
+[FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE].
 
- The program will terminate if the number of bad rows found is greater than [max_bad_rows].
+The program will terminate if the number of bad rows found is greater than [max_bad_rows].
 
- Example: 
+Example: 
 
- frclean 3 30
+frclean 3 30
 
- ##################################################################################################
+##################################################################################################

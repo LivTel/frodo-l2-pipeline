@@ -1,25 +1,25 @@
- ################################# frodo_red_correct_throughput ###################################
+################################# frodo_red_correct_throughput ###################################
 
- Usage:	frcorrect cc_ext_target_file
-		  cc_ext_cont_file
+Usage:	frcorrect target_file_ext_cc
+		  continuum_file_ext_cc
 		  start_wav
 		  end_wav
-		  cor_cc_ext_target_file
+		  target_file_ext_cc_cor
 		  
- Synopsis:
+Synopsis:
 
- Routine to correct for fibre-to-fibre throughput differences.
+Routine to correct for fibre-to-fibre throughput differences.
 
- Description:
+Description:
 
- Using the [FRARCFIT_OUTPUTF_WAVFITS_FILE] dispersion solutions file, the total fluxes for each
- fibre between the wavelengths [start_wav] and [end_wav] are found using the continuum
- [cc_ext_cont_file] file. The median of these totals is then calculated and used to determine
- normalisation coefficients for each fibre. These coefficients are then applied to the target
- [cc_ext_cont_file] file to produce a throughput corrected target [cor_cc_ext_target_file] file.
+Using the [FRARCFIT_OUTPUTF_WAVFITS_FILE] dispersion solutions file, the total fluxes for each
+fibre between the wavelengths [start_wav] and [end_wav] are found using the continuum
+[continuum_file_ext_cc] file. The median of these totals is then calculated and used to determine
+normalisation coefficients for each fibre. These coefficients are then applied to the target
+[target_file_ext_cc] file to produce a throughput corrected target [target_file_ext_cc_cor] file.
 
- Example:
+Example:
 
- frcorrect target_ext_cc.fits cont_ext_cc.fits 5750 9500 target_ext_cc_cor.fits
+frcorrect target_ext_cc.fits continuum_ext_cc.fits 5800 9400 target_ext_cc_cor.fits
 
- ##################################################################################################
+##################################################################################################

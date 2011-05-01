@@ -1,2 +1,162 @@
+#!/bin/csh
 
+##################################
+# L2_process_pipe-blue-high	 #
+# Last Modified Date:   30/04/11 #
+##################################
+
+##############################################
+# Define output file suffixes and extensions #
+##############################################
+
+set target_suffix 			= "_target"
+set arc_suffix 				= "_arc"
+set continuum_suffix 			= "_continuum"
+
+set extract_file_suffix 		= "_ext"
+set arcfit_file_suffix 			= "_cc"
+set correct_file_suffix			= "_cor"
+set rebin_file_suffix			= "_reb"
+set subsky_file_suffix			= "_ss"
+
+set extension_file 			= ".fits"
+
+set find_log_suffix			= "_frfind"
+set clean_log_suffix			= "_frclean"
+set trace_log_suffix			= "_frtrace"
+
+set extract_log_suffix			= "_extract"
+set arcfit_log_suffix			= "_arcfit"
+set correct_log_suffix			= "_correct"
+set rebin_log_suffix			= "_rebin"
+set subsky_log_suffix			= "_subsky"
+set reformat_log_suffix			= "_reformat"
+
+set extension_log 			= ".log"
+
+############################
+# Trace the continuum file #
+############################
+
+echo "###################################"
+echo "1. Find peaks in sky file. (frfind)"
+echo "###################################"
+
+set this_log_file = $output_file_stem$find_log_suffix$extension_log
+
+frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
+
+echo "##################################################################"
+echo "2. Clean [FRFIND_OUTPUTF_PEAKS_FILE] of suspect entries. (frclean)"
+echo "##################################################################"
+
+set this_log_file = $output_file_stem$clean_log_suffix$extension_log
+
+frclean 15 30 | tee $this_log_file
+
+echo "#####################################"
+echo "3. Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+set this_log_file = $output_file_stem$trace_log_suffix$extension_log
+
+frtrace 2 100 5 | tee $this_log_file
+
+######################################
+# Extract target/arc/continuum files #
+######################################
+
+set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
+
+echo "###############################################"
+echo "4a. Extract arc file using tracing. (frextract)"
+echo "###############################################"
+
+set this_input_file	= $arc_file
+set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee $this_log_file
+
+echo "##################################################"
+echo "4b. Extract target file using tracing. (frextract)"
+echo "##################################################"
+
+set this_input_file	= $target_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+echo "###################################################"
+echo "4c. Extract continuum file using tracing. (frtrace)"
+echo "###################################################"
+
+set this_input_file	= $continuum_file
+set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+echo "#####################################################################################################"
+echo "5. Remove pixel-scale offsets and ascertain resulting wavelength solutions for each fibre. (frarcfit)"
+echo "#####################################################################################################"
+
+set this_input_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+set this_input_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+set this_output_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
+
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 15 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+
+echo "######################################################"
+echo "6. Apply throughput corrections. (frcorrectthroughput)"
+echo "######################################################"
+
+set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+echo "###########################"
+echo "7. Rebin spectra. (frrebin)"
+echo "###########################"
+
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
+
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.35 1 $this_output_file | tee $this_log_file
+
+echo "#############################################################"
+echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
+echo "#############################################################"
+
+set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
+
+frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+echo "#################################################################"
+echo "9. Restructure and append all data to output MEF file. (frsubsky)"
+echo "#################################################################"
+
+set this_input_file_1 	= $target_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_input_file_3 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$reformat_log_suffix$extension_log
+
+frreformat $this_input_file_1 $this_input_file_1 L1_IMAGE $output_file | tee $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 RSS_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 CUBE_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 RSS_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 CUBE_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 SPEC_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 SPEC_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 COLCUBE_NONSS $output_file | tee -a $this_log_file
+
+exit(0)
 

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_error_handling.h
- Last Modified Date:     	07/03/11
+ Last Modified Date:     	14/03/11
 
 ************************************************************************/
 
@@ -13,5 +13,4 @@ char ERROR_CODES_FILE_WRITE_ACCESS [2]	 	= "a+";			// r readonly; w overwrite; a
 
 char REF_ERROR_CODES_FILE [100];					// variable to hold location of error codes reference file
 char ERROR_CODES_FILE [100] 			= "error_codes";	// location of file to write error codes to
-char ADDITIONAL_KEYS_FILE [100] 		= "additional_keys";	// location of file to write additional keys to
 
