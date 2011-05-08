@@ -2,17 +2,20 @@
 
 ##################################
 # L2_exec 			 #
-# Last Modified Date:   01/05/11 #
+# Last Modified Date:   06/05/11 #
 ##################################
 
 reset
 
 cat $L2_HEADER_FILE
-echo "Revision:      " `cat $L2_VERSION_FILE | grep "Revision" | awk -F " " '{print $4}'` "("`cat $L2_VERSION_FILE | grep "Date" | awk -F " " '{print $4}'`")\n" 
+echo "Revision:      " `cat $L2_VERSION_FILE | grep "Revision" | awk -F " " '{print $4}'` "("`cat $L2_VERSION_FILE | grep "Date" | awk -F " " '{print $4}'`")\n"
 
 ################################################
+# - STEP 1 - 				       #
 # Setup directory/files and parameter checking #
 ################################################
+
+set start_timestamp = `date -d now '+%d/%m/%Y %H:%M:%S'`
 
 echo "##################################################################################################"
 echo 
@@ -20,9 +23,8 @@ echo "- L2_exec:\tSetup directory/files and parameter checking."
 
 set current_dir = `pwd`
 set print_blurb_on_error = 0	# print blurb in error message
-set error_L2_exec = 0		# is the error in L2_exec?
 
-if ($#argv == "4") then
+if ($#argv == "3") then
 
 	if (-e $1) then
 
@@ -31,7 +33,6 @@ if ($#argv == "4") then
 	else 
 
 		set error_msg = "! L2_exec:\tTarget file "$1" doesn't exist. (CRITICAL)"
-		set error_L2_exec = 1
 		goto error
 
 	endif
@@ -40,7 +41,6 @@ if ($#argv == "4") then
 		set arc_file = $2
 	else 
 		set error_msg = "! L2_exec:\tArc file "$2" doesn't exist. (CRITICAL)"
-		set error_L2_exec = 1
 		goto error
 	endif
 
@@ -51,20 +51,6 @@ if ($#argv == "4") then
 	else 
 
 		set error_msg = "! L2_exec:\tContinuum file "$3" doesn't exist. (CRITICAL)"
-		set error_L2_exec = 1
-		goto error
-
-	endif
-
-	if ($4 == 0 || $4 == 1) then
-
-		set is_verbose = $4
-
-	else 
-
-		set error_msg = "! L2_exec:\tVerbose flag must be either 1 (TRUE) or 0 (FALSE). (CRITICAL)"
-		set print_blurb_on_error = 1
-		set error_L2_exec = 1
 		goto error
 
 	endif
@@ -95,7 +81,6 @@ if ($#argv == "4") then
 	else 
 
 		set error_msg = "! L2_exec:\tDirectory "$dir_name" already exists. (CRITICAL)"
-		set error_L2_exec = 1
 		goto error
 
 	endif
@@ -104,12 +89,12 @@ else
 
 	set error_msg = "! L2_exec:\tIncorrect number of arguments on command line. (CRITICAL)" 
 	set print_blurb_on_error = 1
-	set error_L2_exec = 1
 	goto error
 
 endif
 
 ############################
+# - STEP 2 - 		   #		  
 # Set up output parameters #
 ############################
 
@@ -117,51 +102,317 @@ set log_file = $output_file_stem".log"
 set output_preview_file = $output_file_stem".png"
 
 #########################################################################
+# - STEP 3 - 					 		        #
 # Find out which configuration we're using by evaluating the GRATID key #
 #########################################################################
 
 set target_key_GRATID = `modhead $target_file GRATID | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
- 
+
+###################################################
+# - STEP 4 - 					  #
+# Set associated configuration specific variables #
+###################################################
+
+if ("$target_key_GRATID" == "Red-Low") then
+
+	set config_dir 				= "red_g" 
+	set config_arm 				= "red" 
+	set config_res 				= "low" 
+	set L2_pipe_script_name 		= "pipe-red-low"
+
+	set WAV_LOW 				= 5800
+	set WAV_HIGH 				= 9400
+
+	set preview_orientation 		= "-rotate 270 -flip"
+
+else if ("$target_key_GRATID" == "Red-High") then
+
+	set config_dir 				= "red_vph" 
+	set config_arm 				= "red" 
+	set config_res 				= "high" 
+	set L2_pipe_script_name			= "pipe-red-high"	
+
+	set WAV_LOW 				= 5900
+	set WAV_HIGH 				= 8000
+
+	set preview_orientation			= "-rotate 270 -flip"
+
+else if ("$target_key_GRATID" == "Blue-Low") then
+
+	set config_dir 				= "blue_g" 
+	set config_arm 				= "blue" 
+	set config_res 				= "low" 
+	set L2_pipe_script_name 		= "pipe-blue-low"
+
+	set WAV_LOW 				= 3900
+	set WAV_HIGH 				= 5700
+
+	set preview_orientation 		= "-rotate 90"	
+
+else if ("$target_key_GRATID" == "Blue-High") then
+
+	set config_dir				= "blue_vph" 
+	set config_arm 				= "blue" 
+	set config_res				= "high" 
+	set L2_pipe_script_name 	= "pipe-blue-high"	
+
+	set WAV_LOW 				= 3900
+	set WAV_HIGH 				= 5100
+
+	set preview_orientation 		= "-rotate 90"	
+
+else 
+
+	set error_msg = "! L2_exec:\tConfiguration (GRATID) not recognised. (CRITICAL)"
+	goto error
+
+endif
+
+echo "- L2_exec:\tUsing $target_key_GRATID configuration."
+
+#######################
+# - STEP 5 -	      #
+# Process target date #
+#######################
+
+set target_key_DATE = `modhead $target_file DATE | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
+set target_key_TIME = `modhead $target_file UTSTART | awk -F "'" '{print $2}' | tr -s " "` # modhead/awk/tr implementation
+
+set target_key_DATE_formatted = `date -d "$target_key_DATE $target_key_TIME" +"%d/%m/%Y %T"`
+set target_key_DATE_unix = `date -d "$target_key_DATE $target_key_TIME" +"%s"`
+
 #########################################
-# Source processing script (L2_process) #
+# - STEP 6 - 				#
+# Set variables for directory structure #
 #########################################
 
-set start_time = `date -d now +"%s"`
-set start_timestamp = `date '+%d/%m/%Y %H:%M:%S'`
+set this_reference_arc_dir = "$L2_REFERENCE_ARCS_DIR/$config_dir/"
+set this_lookup_tables_dir = "$L2_LOOKUP_TABLES_DIR/$config_dir/"
 
-echo "- L2_exec:\tExecuting L2_process script."
+echo "- L2_exec:\tReference arc directory: $this_reference_arc_dir"
+echo "\t\tLookup tables directory: $this_lookup_tables_dir"
 
-if ($is_verbose == "1") then
+##################################################
+# - STEP 7 -			       		 #
+# Lookup nearest-in-time reference arc list file #
+##################################################
 
-	source $L2_SCRIPT_DIR/L2_process | tee $log_file
+set reference_arc_error = 1
 
-	if ($? != 0) then	# check return status of L2_process
+set i=`cat $this_lookup_tables_dir/arc.tab | wc -l`
+set j=1
+
+while ($j <= $i)
+
+	set line = `cat $this_lookup_tables_dir/arc.tab | head -$j | tail -1`
+
+	@ j = $j + 1
+
+	set from_day =  `echo $line[2] | awk -F "/" '{print $1}'`
+	set from_month =  `echo $line[2] | awk -F "/" '{print $2}'`
+	set from_year =  `echo $line[2] | awk -F "/" '{print $3}'`
+
+	set uk_locale_date_from = $from_day"/"$from_month"/"$from_year
+	set us_locale_date_from = $from_month"/"$from_day"/"$from_year
+
+	set date_from_unix = `date -d "$us_locale_date_from $line[3]" +"%s"`
+	set date_from_formatted = "$uk_locale_date_from $line[3]"
+
+	if ($line[4] == 'now') then
+	
+		set date_to_unix = `date -d $line[4] +"%s"`	
+		set date_to_formatted = "$line[4]"
 		
-		goto error
+	else
+
+		set to_day =  `echo $line[4] | awk -F "/" '{print $1}'`
+		set to_month =  `echo $line[4] | awk -F "/" '{print $2}'`
+		set to_year =  `echo $line[4] | awk -F "/" '{print $3}'`
+
+		set uk_locale_date_to = $to_day"/"$to_month"/"$to_year
+		set us_locale_date_to = $to_month"/"$to_day"/"$to_year
+
+		set date_to_unix = `date -d "$us_locale_date_to $line[5]" +"%s"`
+		set date_to_formatted = "$uk_locale_date_to $line[5]"
 
 	endif
 
-else if ($is_verbose == "0") then
+	if ("$target_key_DATE_unix" >= "$date_from_unix" && "$target_key_DATE_unix" <= "$date_to_unix") then
 
-	source $L2_SCRIPT_DIR/L2_process > $log_file
+		echo "- L2_exec:\tReference arc list ($line[1]) found for observation date $target_key_DATE_formatted."
+		echo "\t\tValid from $date_from_formatted to $date_to_formatted."
+		set reference_arc_list_file = "$this_reference_arc_dir$line[1]"
+		set reference_arc_error = 0
+		break
 
-	if ($? != 0) then	# check return status of L2_process
-		
+	endif
+
+end
+
+if ($reference_arc_error == 1) then
+
+	set error_msg = "! L2_exec:\tNo reference arc file found with dates spanning the required range. (CRITICAL)"
+	goto error
+
+endif
+
+##########################################################################
+# - STEP 8 -			    				       	 #
+# Define output file suffixes and extensions and goto appropriate script #
+##########################################################################
+
+set target_suffix 			= "_target"
+set arc_suffix 				= "_arc"
+set continuum_suffix 			= "_continuum"
+
+set extract_file_suffix 		= "_ext"
+set arcfit_file_suffix 			= "_cc"
+set correct_file_suffix			= "_cor"
+set rebin_file_suffix			= "_reb"
+set subsky_file_suffix			= "_ss"
+
+set extension_file 			= ".fits"
+
+set find_log_suffix			= "_frfind"
+set clean_log_suffix			= "_frclean"
+set trace_log_suffix			= "_frtrace"
+
+set extract_log_suffix			= "_extract"
+set arcfit_log_suffix			= "_arcfit"
+set correct_log_suffix			= "_correct"
+set rebin_log_suffix			= "_rebin"
+set subsky_log_suffix			= "_subsky"
+set reformat_log_suffix			= "_reformat"
+
+set extension_log 			= ".log"
+
+echo "- L2_exec:\tExecuting $L2_pipe_script_name script."
+echo
+
+set unix_start_time = `date -d now +"%s"`
+
+goto $L2_pipe_script_name
+
+########################################### continue ##############################################
+
+continue:
+
+set unix_end_time = `date -d now +"%s"`
+
+@ exec_time = $unix_end_time - $unix_start_time
+
+echo
+echo "- L2_exec:\tExecution complete."
+echo "- L2_exec:\tL2_process execution complete. (run time: "$exec_time"s)"
+
+if (! -e $output_file) then
+
+	set error_msg = "! L2_exec:\tNo output file "$output_file" found. (CRITICAL)"
+	goto error	
+
+else 
+
+	set num_HDUs = `liststruc $output_file | grep 'HDU' | tail -1 | awk -F "#" '{print $2}' | awk -F " " '{print $1}'`
+
+	if ($num_HDUs != 8) then
+
+		set error_msg = "! L2_exec:\tIncorrect number of HDUs ($num_HDUs) in output file "$output_file". (CRITICAL)"
 		goto error
 
 	endif
 
 endif
 
-set end_time = `date -d now +"%s"`
+###########################################################################################################
+# - STEP 9 -					   			   				  #
+# Check external preview creation software exists in $L2_EXTERNAL_SOFTWARE_PATH and create image previews #
+# n.b. HDUS are all indexed at 0									  #
+#													  #
+# REQUIRED:												  #
+#													  #
+# - GNUplot	  		   									  #
+# - ImageMagick:convert				 			        			  #
+# - ImageMagick:montage											  #
+###########################################################################################################
 
-@ exec_time = $end_time - $start_time
+if (`find $L2_EXTERNAL_SOFTWARE_PATH -name gnuplot | grep -c gnuplot` == 0) then
 
-echo "- L2_exec:\tL2_process execution complete. (run time: "$exec_time"s)"
+	set warning_msg = "! L2_exec:\tgnuplot routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
 
-#############################
-# Cleanup files/directories #
-#############################
+else if (`find $L2_EXTERNAL_SOFTWARE_PATH -name convert | grep -c convert` == 0) then
+
+	set warning_msg = "! L2_exec:\tconvert routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
+
+else if (`find $L2_EXTERNAL_SOFTWARE_PATH -name montage | grep -c montage` == 0) then
+
+	set warning_msg = "! L2_exec:\tmontage routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
+
+else  	
+
+	echo "- L2_exec:\tCreating image preview."
+
+	set output_preview_png_file = $output_file_stem".png"
+
+	#####################################################
+	# Process SPEC_NONSS extension to TSV file and plot #
+	#####################################################
+
+	set this_output_ext = 5
+
+	set output_SPECNONSS_TSV_file = $output_file_stem"_"$this_output_ext".dat"
+	frspec2tsv $output_file  $this_output_ext 1 $output_SPECNONSS_TSV_file
+
+	set output_SPECNONSS_gnuplot_file = $output_file_stem"_"$this_output_ext".p"
+	set output_SPECNONSS_png_file = $output_file_stem"_"$this_output_ext".png"
+
+	echo 'set term png size 1040,315' 						> $output_SPECNONSS_gnuplot_file
+	echo 'set output "'$output_SPECNONSS_png_file					>> $output_SPECNONSS_gnuplot_file
+	echo 'set autoscale' 								>> $output_SPECNONSS_gnuplot_file
+	echo 'set xrange ['$WAV_LOW':'$WAV_HIGH']' 					>> $output_SPECNONSS_gnuplot_file
+	echo 'set xlabel "Wavelength (Å)"' 						>> $output_SPECNONSS_gnuplot_file
+	echo 'set ylabel "Counts"' 							>> $output_SPECNONSS_gnuplot_file
+	echo 'plot "'$output_SPECNONSS_TSV_file'" index 0 using 1:2 with lines title ""' >> $output_SPECNONSS_gnuplot_file
+
+	gnuplot $output_SPECNONSS_gnuplot_file
+
+	###################################
+	# Generate L1_IMAGE preview image #
+	###################################
+
+	set this_output_ext = 0
+
+	set output_L1IMAGE_ext_file = $output_file_stem"_"$this_output_ext".fits"
+	set output_L1IMAGE_png_file = $output_file_stem"_"$this_output_ext".png"
+
+	imcopy $output_file"["$this_output_ext"]" $output_L1IMAGE_ext_file
+	/usr/bin/convert $output_L1IMAGE_ext_file -resize 25% -normalize $preview_orientation $output_L1IMAGE_png_file
+
+	########################################
+	# Generate COLCUBE_NONSS preview image #
+	########################################
+
+	set this_output_ext = 7
+
+	set output_COLCUBENONSS_ext_file = $output_file_stem"_"$this_output_ext".fits"
+	set output_COLCUBENONSS_png_file = $output_file_stem"_"$this_output_ext".png"
+
+	imcopy $output_file"["$this_output_ext"]" $output_COLCUBENONSS_ext_file
+	/usr/bin/convert $output_COLCUBENONSS_ext_file -resize 1000% -normalize $output_COLCUBENONSS_png_file
+
+	##################################
+	# Montage images		 #
+	##################################
+
+	montage -tile 1x3 -title "L2 Data Product Preview for $output_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non sky subtracted spectrum (SPEC_NONSS)" $output_SPECNONSS_png_file -label "Unextracted spectra (L1_IMAGE)" $output_L1IMAGE_png_file -label "Bundle reconstruction (COLCUBE_NONSS)" $output_COLCUBENONSS_png_file -bordercolor white -border 10 $output_preview_png_file
+
+	echo "- L2_exec:\tImage preview creation complete."
+
+endif
+
+##############################################################
+# - STEP 10 - 		    				     #
+# Cleanup files/directories and write to L2_SUCCESS_LOG_PATH #
+##############################################################
 
 echo "- L2_exec:\tCleaning up files/directories."
 
@@ -173,59 +424,58 @@ rm -f $target_file $arc_file $continuum_file > /dev/null			# remove source files
 mv `ls | grep .log | grep -v $log_file` logs					# move routine log files to logs/
 mv `ls | grep -v "$output_file_stem\." | grep -v tmp | grep -v logs` tmp	# move all files except the core output files to tmp/
 
-echo $target_key_GRATID"\t"$exec_time >> $L2_TIME_LOG_PATH
+set num_filled_exts = `frnumexts $output_file`
 
-cd $current_dir
+if ($num_filled_exts != 8 && $num_filled_exts != 5) then
 
-if ($?error_msg == 1) then
-
-	echo "$error_msg"
-	echo
+	set error_msg = "! L2_exec:\tIncorrect number of filled HDUs ($num_filled_exts) in output file "$output_file". (CRITICAL)"
+	goto error
 
 endif
+
+echo "" >> $L2_SUCCESS_LOG_PATH
+echo -n $start_timestamp"," >> $L2_SUCCESS_LOG_PATH
+echo -n $target_file"," >> $L2_SUCCESS_LOG_PATH
+echo -n $arc_file"," >> $L2_SUCCESS_LOG_PATH
+echo -n $continuum_file"," >> $L2_SUCCESS_LOG_PATH
+echo -n $target_key_GRATID"," >> $L2_SUCCESS_LOG_PATH
+echo -n $exec_time"," >> $L2_SUCCESS_LOG_PATH
+echo -n $num_filled_exts"," >> $L2_SUCCESS_LOG_PATH
+
+if ($?warning_msg) then
+	echo $warning_msg
+	echo -n $warning_msg >> $L2_SUCCESS_LOG_PATH 
+endif
+
+cd $current_dir
 
 echo "- L2_exec:\tScript complete."
 echo
 
 exit(0)
 
+############################################# error ###############################################
+
 error:
 
-if ($error_L2_exec == 1) then
+echo "" >> $L2_FAIL_LOG_PATH
 
-	if ($?1) then
-		echo -n `basename $1`"\t" >> $L2_FAIL_LOG_PATH
-	else
-		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
-	endif
+if ($?start_timestamp) echo -n $start_timestamp >> $L2_FAIL_LOG_PATH
+echo -n "," >> $L2_FAIL_LOG_PATH
 
-	if ($?2) then
-		echo -n `basename $2`"\t" >> $L2_FAIL_LOG_PATH
-	else
-		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
-	endif
+if ($?1) echo -n $1 >> $L2_FAIL_LOG_PATH
+echo -n "," >> $L2_FAIL_LOG_PATH
 
-	if ($?3) then
-		echo -n `basename $3`"\t" >> $L2_FAIL_LOG_PATH
-	else
-		echo -n "UNDEF\t"  >> $L2_FAIL_LOG_PATH
-	endif
+if ($?2) echo -n $2 >> $L2_FAIL_LOG_PATH
+echo -n "," >> $L2_FAIL_LOG_PATH	
 
-	if ($?error_msg) then
-		echo $error_msg >> $L2_FAIL_LOG_PATH
-	else
-		echo "UNDEF"  >> $L2_FAIL_LOG_PATH
-	endif
+if ($?3) echo -n $3 >> $L2_FAIL_LOG_PATH
+echo -n "," >> $L2_FAIL_LOG_PATH	
 
-endif
-
-cd $current_dir
-
-if ($?error_msg == 1) then
-
+if ($?error_msg) then
 	echo "$error_msg"
 	echo
-
+	echo -n $error_msg >> $L2_FAIL_LOG_PATH
 endif
 
 if ($print_blurb_on_error == 1) then
@@ -235,5 +485,644 @@ if ($print_blurb_on_error == 1) then
 
 endif
 
+cd $current_dir
+
 exit(1)
+
+########################################### pipe-red-low ##########################################
+
+pipe-red-low:
+
+echo "###################################"
+echo "1. Find peaks in sky file. (frfind)"
+echo "###################################"
+
+set this_log_file = $output_file_stem$find_log_suffix$extension_log
+
+frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
+
+echo "##################################################################"
+echo "2. Clean [FRFIND_OUTPUTF_PEAKS_FILE] of suspect entries. (frclean)"
+echo "##################################################################"
+
+set this_log_file = $output_file_stem$clean_log_suffix$extension_log
+
+frclean 3 30 | tee $this_log_file
+
+echo "#####################################"
+echo "3. Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+set this_log_file = $output_file_stem$trace_log_suffix$extension_log
+
+frtrace 2 100 5 | tee $this_log_file
+
+
+set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
+
+echo "###############################################"
+echo "4a. Extract arc file using tracing. (frextract)"
+echo "###############################################"
+
+set this_input_file	= $arc_file
+set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (ARC)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "##################################################"
+echo "4b. Extract target file using tracing. (frextract)"
+echo "##################################################"
+
+set this_input_file	= $target_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (TARGET)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "###################################################"
+echo "4c. Extract continuum file using tracing. (frtrace)"
+echo "###################################################"
+
+set this_input_file	= $continuum_file
+set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (CONT)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "#####################################################################################################"
+echo "5. Remove pixel-scale offsets and ascertain resulting wavelength solutions for each fibre. (frarcfit)"
+echo "#####################################################################################################"
+
+set this_input_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+set this_input_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+set this_output_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
+
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+
+echo "######################################################"
+echo "6. Apply throughput corrections. (frcorrectthroughput)"
+echo "######################################################"
+
+set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+echo "###########################"
+echo "7. Rebin spectra. (frrebin)"
+echo "###########################"
+
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
+
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 1.6 1 $this_output_file | tee $this_log_file
+
+echo "#############################################################"
+echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
+echo "#############################################################"
+
+set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
+
+frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+echo "#################################################################"
+echo "9. Restructure and append all data to output MEF file. (frsubsky)"
+echo "#################################################################"
+
+set this_input_file_1 	= $target_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_input_file_3 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$reformat_log_suffix$extension_log
+
+frreformat $this_input_file_1 $this_input_file_1 L1_IMAGE $output_file | tee $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 RSS_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 CUBE_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 RSS_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 CUBE_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 SPEC_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 SPEC_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 COLCUBE_NONSS $output_file | tee -a $this_log_file
+
+goto continue
+
+########################################## pipe-red-high ##########################################
+
+pipe-red-high:
+
+echo "###################################"
+echo "1. Find peaks in sky file. (frfind)"
+echo "###################################"
+
+set this_log_file = $output_file_stem$find_log_suffix$extension_log
+
+frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
+
+echo "##################################################################"
+echo "2. Clean [FRFIND_OUTPUTF_PEAKS_FILE] of suspect entries. (frclean)"
+echo "##################################################################"
+
+set this_log_file = $output_file_stem$clean_log_suffix$extension_log
+
+frclean 3 30 | tee $this_log_file
+
+echo "#####################################"
+echo "3. Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+set this_log_file = $output_file_stem$trace_log_suffix$extension_log
+
+frtrace 2 100 5 | tee $this_log_file
+
+
+set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
+
+echo "###############################################"
+echo "4a. Extract arc file using tracing. (frextract)"
+echo "###############################################"
+
+set this_input_file	= $arc_file
+set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (ARC)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "##################################################"
+echo "4b. Extract target file using tracing. (frextract)"
+echo "##################################################"
+
+set this_input_file	= $target_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (TARGET)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "###################################################"
+echo "4c. Extract continuum file using tracing. (frtrace)"
+echo "###################################################"
+
+set this_input_file	= $continuum_file
+set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (CONT)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "#####################################################################################################"
+echo "5. Remove pixel-scale offsets and ascertain resulting wavelength solutions for each fibre. (frarcfit)"
+echo "#####################################################################################################"
+
+set this_input_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+set this_input_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+set this_output_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
+
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+
+echo "######################################################"
+echo "6. Apply throughput corrections. (frcorrectthroughput)"
+echo "######################################################"
+
+set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+echo "###########################"
+echo "7. Rebin spectra. (frrebin)"
+echo "###########################"
+
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
+
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.8 1 $this_output_file | tee $this_log_file
+
+echo "#############################################################"
+echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
+echo "#############################################################"
+
+set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
+
+frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+echo "#################################################################"
+echo "9. Restructure and append all data to output MEF file. (frsubsky)"
+echo "#################################################################"
+
+set this_input_file_1 	= $target_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_input_file_3 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$reformat_log_suffix$extension_log
+
+frreformat $this_input_file_1 $this_input_file_1 L1_IMAGE $output_file | tee $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 RSS_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 CUBE_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 RSS_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 CUBE_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 SPEC_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 SPEC_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 COLCUBE_NONSS $output_file | tee -a $this_log_file
+
+goto continue
+
+########################################## pipe-blue-low ##########################################
+
+pipe-blue-low:
+
+echo "###################################"
+echo "1. Find peaks in sky file. (frfind)"
+echo "###################################"
+
+set this_log_file = $output_file_stem$find_log_suffix$extension_log
+
+frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
+
+echo "##################################################################"
+echo "2. Clean [FRFIND_OUTPUTF_PEAKS_FILE] of suspect entries. (frclean)"
+echo "##################################################################"
+
+set this_log_file = $output_file_stem$clean_log_suffix$extension_log
+
+frclean 15 30 | tee $this_log_file
+
+echo "#####################################"
+echo "3. Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+set this_log_file = $output_file_stem$trace_log_suffix$extension_log
+
+frtrace 2 100 5 | tee $this_log_file
+
+
+set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
+
+echo "###############################################"
+echo "4a. Extract arc file using tracing. (frextract)"
+echo "###############################################"
+
+set this_input_file	= $arc_file
+set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (ARC)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "##################################################"
+echo "4b. Extract target file using tracing. (frextract)"
+echo "##################################################"
+
+set this_input_file	= $target_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (TARGET)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "###################################################"
+echo "4c. Extract continuum file using tracing. (frtrace)"
+echo "###################################################"
+
+set this_input_file	= $continuum_file
+set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (CONT)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "#####################################################################################################"
+echo "5. Remove pixel-scale offsets and ascertain resulting wavelength solutions for each fibre. (frarcfit)"
+echo "#####################################################################################################"
+
+set this_input_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+set this_input_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+set this_output_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
+
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 10 10 $reference_arc_list_file 15 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+
+echo "######################################################"
+echo "6. Apply throughput corrections. (frcorrectthroughput)"
+echo "######################################################"
+
+set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+echo "###########################"
+echo "7. Rebin spectra. (frrebin)"
+echo "###########################"
+
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
+
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.8 1 $this_output_file | tee $this_log_file
+
+echo "#############################################################"
+echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
+echo "#############################################################"
+
+set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
+
+frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+echo "#################################################################"
+echo "9. Restructure and append all data to output MEF file. (frsubsky)"
+echo "#################################################################"
+
+set this_input_file_1 	= $target_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_input_file_3 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$reformat_log_suffix$extension_log
+
+frreformat $this_input_file_1 $this_input_file_1 L1_IMAGE $output_file | tee $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 RSS_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 CUBE_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 RSS_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 CUBE_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 SPEC_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 SPEC_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 COLCUBE_NONSS $output_file | tee -a $this_log_file
+
+goto continue
+
+######################################### pipe-blue-high ##########################################
+
+pipe-blue-high:
+
+echo "###################################"
+echo "1. Find peaks in sky file. (frfind)"
+echo "###################################"
+
+set this_log_file = $output_file_stem$find_log_suffix$extension_log
+
+frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
+
+echo "##################################################################"
+echo "2. Clean [FRFIND_OUTPUTF_PEAKS_FILE] of suspect entries. (frclean)"
+echo "##################################################################"
+
+set this_log_file = $output_file_stem$clean_log_suffix$extension_log
+
+frclean 15 30 | tee $this_log_file
+
+echo "#####################################"
+echo "3. Trace peaks in sky file. (frtrace)"
+echo "#####################################"
+
+set this_log_file = $output_file_stem$trace_log_suffix$extension_log
+
+frtrace 2 100 5 | tee $this_log_file
+
+
+set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
+
+echo "###############################################"
+echo "4a. Extract arc file using tracing. (frextract)"
+echo "###############################################"
+
+set this_input_file	= $arc_file
+set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (ARC)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "##################################################"
+echo "4b. Extract target file using tracing. (frextract)"
+echo "##################################################"
+
+set this_input_file	= $target_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (TARGET)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+echo "###################################################"
+echo "4c. Extract continuum file using tracing. (frtrace)"
+echo "###################################################"
+
+set this_input_file	= $continuum_file
+set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+
+frextract $this_input_file 2 0 $this_output_file | tee -a $this_log_file
+
+# The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
+if (`cat error_codes | grep -c L2STATEX` == 1) then
+	set EX_VALUE = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $2 }'`
+	set EX_COMMENT = `cat error_codes | grep L2STATEX | awk -F "\t" '{ print $3 }'`
+	set EX_COMMENT = "$EX_COMMENT (CONT)"
+	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
+	cat error_codes_tmp > error_codes
+	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
+else
+	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
+endif
+
+
+echo "#####################################################################################################"
+echo "5. Remove pixel-scale offsets and ascertain resulting wavelength solutions for each fibre. (frarcfit)"
+echo "#####################################################################################################"
+
+set this_input_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
+set this_input_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
+set this_output_file_1 	= $arc_file_stem$arc_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
+
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 15 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+
+echo "######################################################"
+echo "6. Apply throughput corrections. (frcorrectthroughput)"
+echo "######################################################"
+
+set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+echo "###########################"
+echo "7. Rebin spectra. (frrebin)"
+echo "###########################"
+
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
+
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.35 1 $this_output_file | tee $this_log_file
+
+echo "#############################################################"
+echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
+echo "#############################################################"
+
+set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
+
+frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+
+echo "#################################################################"
+echo "9. Restructure and append all data to output MEF file. (frsubsky)"
+echo "#################################################################"
+
+set this_input_file_1 	= $target_file
+set this_input_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
+set this_input_file_3 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
+set this_log_file	= $output_file_stem$reformat_log_suffix$extension_log
+
+frreformat $this_input_file_1 $this_input_file_1 L1_IMAGE $output_file | tee $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 RSS_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 CUBE_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 RSS_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 CUBE_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 SPEC_NONSS $output_file | tee -a $this_log_file
+frreformat $this_input_file_3 $this_input_file_1 SPEC_SS $output_file | tee -a $this_log_file
+frreformat $this_input_file_2 $this_input_file_1 COLCUBE_NONSS $output_file | tee -a $this_log_file
+
+goto continue
 

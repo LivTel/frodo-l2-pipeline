@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   29/04/11 #
+# Last Modified Date:   08/05/11 #
 ##################################
 
 #############################
@@ -25,9 +25,9 @@ GREP		= /bin/grep
 MV		= /bin/mv
 RM		= /bin/rm
 
-####################
+################
 # $(LIBS) flag #
-####################
+################
 
 #LIBS 		= /space/home/eng/frodo_pipeline/cfitsio3.13/lib/libcfitsio.a /usr/lib/libm.a# 					RMB/DEPLOY/LTDEVSRV
 LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#	RMB/DEVEL/LAPTOP
@@ -43,7 +43,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									RMB/DEVEL/LAPTOP
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_red_spec2tsv
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts
 
 #################
 # make routines #
@@ -97,9 +97,13 @@ liststruc: liststruc.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) -o liststruc liststruc.c $(LIBS)
 	$(MV) liststruc $(L2_BIN_DIR)	
 
-frodo_red_spec2tsv: frodo_red_spec2tsv.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frspec2tsv frodo_red_spec2tsv.c $(LIBS)
+frodo_aux_spec2tsv: frodo_aux_spec2tsv.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frspec2tsv frodo_aux_spec2tsv.c $(LIBS)
 	$(MV) frspec2tsv $(L2_BIN_DIR)	
+
+frodo_aux_numexts: frodo_aux_numexts.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) -o frnumexts frodo_aux_numexts.c $(LIBS)
+	$(MV) frnumexts $(L2_BIN_DIR)	
 
 frodo_functions: frodo_functions.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c frodo_functions.c

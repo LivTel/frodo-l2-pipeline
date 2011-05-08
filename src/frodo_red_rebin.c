@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_rebin.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -35,9 +35,11 @@ int main (int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRR_BLURB_FILE);
+			print_file(FRR_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -1, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -74,6 +76,12 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -2, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(cor_cc_ext_target_f);
+					free(interpolation_type);
+					free(reb_cor_cc_ext_target_f);
+
+					if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 					return 1;
 	
 				}
@@ -83,6 +91,12 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -3, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cor_cc_ext_target_f_status); 
 
+				free(cor_cc_ext_target_f);
+				free(interpolation_type);
+				free(reb_cor_cc_ext_target_f);
+
+				if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 				return 1; 
 
 			}
@@ -91,6 +105,10 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -4, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cor_cc_ext_target_f_status); 
+
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
 
 			return 1; 
 
@@ -128,6 +146,12 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -5, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 			return 1;
 
 		}	
@@ -152,7 +176,7 @@ int main (int argc, char *argv []) {
 			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &polynomial_order);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_polynomialorder_comment = 1;
+				find_polynomialorder_comment = TRUE;
 				break;
 
 
@@ -160,9 +184,17 @@ int main (int argc, char *argv []) {
 
 		}
 
-		if (find_polynomialorder_comment != 1) {	// error check - didn't find the comment in the [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
+		if (find_polynomialorder_comment == FALSE) {	// error check - didn't find the comment in the [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -6, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 			return 1;
 
@@ -182,8 +214,8 @@ int main (int argc, char *argv []) {
 	
 		char *token;
 
-		double coeffs [FIBRES][polynomial_order+1];
-		memset(coeffs, 0, sizeof(double)*FIBRES*(polynomial_order+1));
+		double coeffs [nyelements][polynomial_order+1];
+		memset(coeffs, 0, sizeof(double)*nyelements*(polynomial_order+1));
 
 		while(!feof(dispersion_solutions_f)) {
 
@@ -241,7 +273,7 @@ int main (int argc, char *argv []) {
 
 		int ii, jj;
 
-		for (ii=0; ii<FIBRES; ii++) {
+		for (ii=0; ii<nyelements; ii++) {
 
 			this_fibre_smallest_wav = 0.0; this_fibre_largest_wav = 0.0;
 
@@ -345,11 +377,27 @@ int main (int argc, char *argv []) {
 		  
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -7, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 			return 1; 
 
 		} else if (end_wav > largest_wav) { // Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -8, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 			return 1; 
 
@@ -443,6 +491,14 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -9, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(cor_cc_ext_target_f);
+					free(interpolation_type);
+					free(reb_cor_cc_ext_target_f);
+
+					fclose(dispersion_solutions_f);
+
+					if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 					return 1; 
 
 				}
@@ -480,7 +536,15 @@ int main (int argc, char *argv []) {
 			} else { 
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -10, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
-				fits_report_error(stdout, cor_cc_ext_target_f_status); 
+				fits_report_error(stdout, cor_cc_ext_target_f_status);
+
+				free(cor_cc_ext_target_f);
+				free(interpolation_type);
+				free(reb_cor_cc_ext_target_f);
+
+				fclose(dispersion_solutions_f);
+
+				if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 				return 1; 
 
@@ -497,6 +561,14 @@ int main (int argc, char *argv []) {
 		if (!outputfile) { 
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -11, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 			return 1;
 
@@ -517,38 +589,43 @@ int main (int argc, char *argv []) {
 
 		// 7.	Write these values to the [ADDITIONAL_KEYS_FILE] file
 
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE1", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT1", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL1", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT1", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE2", "a0", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT2", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX2", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE1", "Wavelength", "Type of co-ordinate on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT1", "Angstroms", "Units for axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL1", bin_wavelengths[0], "[pixel] Value at ref. pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT1", dispersion, "[pixel] Pixel scale on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX1", 0.5, "[pixel] Reference pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CTYPE2", "a2", "Type of co-ordinate on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CUNIT2", "Pixels", "Units for axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRVAL2", 1, "[pixel] Value at ref. pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CDELT2", 1, "[pixel] Pixel scale on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "RSS_CALIBRATION", "CRPIX2", 0.5, "[pixel] Reference pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE1", "a0", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT1", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL1", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT1", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE2", "a1", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT2", "Pixels", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT2", 1, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX2", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE3", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT3", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL3", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT3", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX3", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE1", "a1", "Type of co-ordinate on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT1", "Pixels", "Units for axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL1", 1, "[pixel] Value at ref. pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT1", 1, "[pixel] Pixel scale on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX1", 0.5, "[pixel] Reference pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE2", "a2", "Type of co-ordinate on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT2", "Pixels", "Units for axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL2", 1, "[pixel] Value at ref. pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT2", 1, "[pixel] Pixel scale on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX2", 0.5, "[pixel] Reference pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CTYPE3", "Wavelength", "Type of co-ordinate on axis 3", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CUNIT3", "Angstroms", "Units for axis 3", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRVAL3", bin_wavelengths[0], "[pixel] Value at ref. pixel on axis 3", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CDELT3", dispersion, "[pixel] Pixel scale on axis 3", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "CUBE_CALIBRATION", "CRPIX3", 0.5, "[pixel] Reference pixel on axis 3", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CTYPE1", "Wavelength", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CUNIT1", "Angstroms", "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRVAL1", bin_wavelengths[0], "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CDELT1", dispersion, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
-		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRPIX1", 0.5, "", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CTYPE1", "Wavelength", "Type of co-ordinate on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CUNIT1", "Angstroms", "Units for axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRVAL1", bin_wavelengths[0], "[pixel] Value at ref. pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CDELT1", dispersion, "[pixel] Pixel scale on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRPIX1", 0.5, "[pixel] Reference pixel on axis 1", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CTYPE2", "a2", "Type of co-ordinate on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CUNIT2", "Pixels", "Units for axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRVAL2", 1, "[pixel] Value at ref. pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CDELT2", 1, "[pixel] Pixel scale on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+		write_additional_key_to_file_dbl(ADDITIONAL_KEYS_FILE, "SPEC_CALIBRATION", "CRPIX2", 0.5, "[pixel] Reference pixel on axis 2", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
 		// ***********************************************************************
 		// Set reb_cor_cc_ext_target frame parameters
@@ -595,6 +672,16 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -12, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
 
+					free(cor_cc_ext_target_f);
+					free(interpolation_type);
+					free(reb_cor_cc_ext_target_f);
+
+					fclose(dispersion_solutions_f);
+					fclose(outputfile);
+
+					if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+					if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)); 
+
 					return 1; 
 
 				}
@@ -603,6 +690,16 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -13, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
+
+				free(cor_cc_ext_target_f);
+				free(interpolation_type);
+				free(reb_cor_cc_ext_target_f);
+
+				fclose(dispersion_solutions_f);
+				fclose(outputfile);
+
+				if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+				if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)); 
 
 				return 1; 
 
@@ -613,35 +710,14 @@ int main (int argc, char *argv []) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -14, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
 
-			return 1; 
+			free(cor_cc_ext_target_f);
+			free(interpolation_type);
+			free(reb_cor_cc_ext_target_f);
 
-		}
+			fclose(dispersion_solutions_f);
+			fclose(outputfile);
 
-		// ***********************************************************************
-		// Close input file (ARG 1), output file (ARG 7) and 
-		// [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
-
-		if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -15, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cor_cc_ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -16, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if (fclose(dispersion_solutions_f)) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -17, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 			return 1; 
 
@@ -655,6 +731,54 @@ int main (int argc, char *argv []) {
 		free(reb_cor_cc_ext_target_f);
 
 		// ***********************************************************************
+		// Close input file (ARG 1), output file (ARG 7) and 
+		// [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
+
+		if (fclose(dispersion_solutions_f)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -15, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(outputfile);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)); 
+
+			return 1; 
+
+		}
+
+		if (fclose(outputfile)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -16, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)); 
+
+			return 1; 
+
+		}
+
+		if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -17, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)); 
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -18, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
+			return 1; 
+
+	    	}
+
+		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", RETURN_FLAG, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -664,3 +788,4 @@ int main (int argc, char *argv []) {
 	}
 
 }
+

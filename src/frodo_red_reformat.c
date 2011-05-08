@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_reformat.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -32,11 +32,13 @@ int main (int argc, char *argv []) {
 
 		if(populate_env_variable(FRRF_BLURB_FILE, "L2_FRRF_BLURB_FILE")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", 2, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			RETURN_FLAG = 1;
+
+		} else {
+
+			print_file(FRRF_BLURB_FILE);
 
 		}
-
-		print_file(FRRF_BLURB_FILE);
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -1, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -57,7 +59,13 @@ int main (int argc, char *argv []) {
 
 		if (strcmp(operation, "L1_IMAGE") && strcmp(operation, "RSS_NONSS") && strcmp(operation, "RSS_SS") && strcmp(operation, "CUBE_NONSS") && strcmp(operation, "CUBE_SS") && strcmp(operation, "SPEC_NONSS") && strcmp(operation, "SPEC_SS") && strcmp(operation, "COLCUBE_NONSS")) {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -25, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -2, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(input_f);
+			free(headers_f);
+			free(operation);
+			free(output_f);
+
 			return 1;
 
 		}
@@ -83,8 +91,15 @@ int main (int argc, char *argv []) {
 
 				if(!populate_img_parameters(input_f, input_f_ptr, input_f_maxdim, &input_f_bitpix, &input_f_naxis, input_f_naxes, &input_f_status, "INPUT FRAME")) {} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -6, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -3, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, input_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
 
 					return 1; 
 
@@ -92,8 +107,13 @@ int main (int argc, char *argv []) {
 
 			} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -7, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -4, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, input_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
 
 				return 1; 
 
@@ -110,8 +130,15 @@ int main (int argc, char *argv []) {
 
 		if(!fits_open_file(&headers_f_ptr, headers_f, READONLY, &headers_f_status)) {} else { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -4, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -5, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, headers_f_status); 
+
+			free(input_f);
+			free(headers_f);
+			free(operation);
+			free(output_f);
+
+			if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
 
 			return 1; 
 
@@ -131,8 +158,16 @@ int main (int argc, char *argv []) {
 
 			} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -2, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -6, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
 
 				return 1; 
 			
@@ -144,8 +179,16 @@ int main (int argc, char *argv []) {
 
 			} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -3, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -7, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
 
 				return 1; 
 
@@ -160,8 +203,17 @@ int main (int argc, char *argv []) {
 
 		if(!fits_get_num_hdus(output_f_ptr, &hdunum, &output_f_status)) {} else {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -5, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -8, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, output_f_status); 
+
+			free(input_f);
+			free(headers_f);
+			free(operation);
+			free(output_f);
+
+			if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+			if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+			if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 			return 1; 
 
@@ -170,7 +222,7 @@ int main (int argc, char *argv []) {
 		printf("\nOperation:\t%s\n", operation);
 		printf("Current HDU:\t%d\n", hdunum+1);
 
-		// SPECIFIC DATA HANDLING
+		// SPECIFIC FRAME DATA HANDLING
 		// ***********************************************************************
 
 		int ii, jj;
@@ -184,6 +236,7 @@ int main (int argc, char *argv []) {
 			// CREATE BLANK EXTENSION IN OUTPUT FILE 			   (BLANK)
 			// ***********************************************************************
 			// 1.	Set output file (ARG 4) parameters
+
 			long output_f_naxes[1] = {1};
 			int output_f_bitpix = 16, output_f_naxis = 1;
 
@@ -191,8 +244,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_create_img(output_f_ptr, output_f_bitpix, output_f_naxis, output_f_naxes, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -7, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -9, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -213,8 +275,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_create_img(output_f_ptr, output_f_bitpix, output_f_naxis, output_f_naxes, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -8, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -10, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -224,8 +295,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_copy_data(input_f_ptr, output_f_ptr, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -9, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -11, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -282,8 +362,17 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -26, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -12, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, input_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+					if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 					return 1; 
 
@@ -310,8 +399,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_create_img(output_f_ptr, output_f_bitpix, output_f_naxis, output_f_naxes, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -27, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -13, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -321,8 +419,17 @@ int main (int argc, char *argv []) {
 
 			if (!fits_write_img(output_f_ptr, INTERMEDIATE_IMG_ACCURACY[1], output_f_fpixel, FRREFORMAT_VAR_IFU_DIM_X*FRREFORMAT_VAR_IFU_DIM_Y*nxelements, output_frame_values, &output_f_status)) {} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -29, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -14, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -392,8 +499,17 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -26, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -15, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, input_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+					if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 					return 1; 
 
@@ -423,8 +539,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_create_img(output_f_ptr, output_f_bitpix, output_f_naxis, output_f_naxes, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -27, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -16, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -434,8 +559,17 @@ int main (int argc, char *argv []) {
 
 			if (!fits_write_img(output_f_ptr, INTERMEDIATE_IMG_ACCURACY[1], output_f_fpixel, nxelements, output_frame_values, &output_f_status)) {} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -29, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -17, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -494,8 +628,17 @@ int main (int argc, char *argv []) {
 
 				} else { 
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -26, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -18, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, input_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+					if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 					return 1; 
 
@@ -518,8 +661,17 @@ int main (int argc, char *argv []) {
 
 			if(!fits_create_img(output_f_ptr, output_f_bitpix, output_f_naxis, output_f_naxes, &output_f_status)) {} else {
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -27, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -19, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -529,8 +681,17 @@ int main (int argc, char *argv []) {
 
 			if (!fits_write_img(output_f_ptr, INTERMEDIATE_IMG_ACCURACY[1], output_f_fpixel, FRREFORMAT_VAR_IFU_DIM_X*FRREFORMAT_VAR_IFU_DIM_Y, output_frame_values, &output_f_status)){} else { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -29, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -20, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(headers_f);
+				free(operation);
+				free(output_f);
+
+				if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -544,24 +705,36 @@ int main (int argc, char *argv []) {
 
 		if (!fits_write_key(output_f_ptr, TSTRING, "EXTNAME", operation, NULL, &output_f_status)) {} else {
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -32, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -21, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, output_f_status); 
+
+			free(input_f);
+			free(headers_f);
+			free(operation);
+			free(output_f);
+
+			if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+			if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+			if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 			return 1; 
 
 		}
 
+		// GENERIC HEADERS HANDLING
 		// ***********************************************************************
-		// Copy SCALE keywords from input file (ARG 1) to output file (ARG 4) if
-		// they exist
 
 		if (missing_input_file == FALSE) {
 
 			if(populate_env_variable(FITS_KEYS_TO_OMIT, "L2_FITS_KEYS_TO_OMIT_FILE")) {	// this file contains a list of keywords to be omitted from each extension
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", 3, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				RETURN_FLAG = 2;
 
 			} else {
+
+				// ***********************************************************************
+				// Copy SCALE keywords from input file (ARG 1) to output file (ARG 4) if
+				// they exist
 
 				char card [FLEN_CARD];
 				bool found_key;
@@ -570,8 +743,17 @@ int main (int argc, char *argv []) {
 
 				if(!fits_get_hdrspace(input_f_ptr, &nkeys, NULL, &input_f_status)) {} else {
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -10, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -22, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, headers_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+					if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 					return 1; 
 
@@ -583,8 +765,17 @@ int main (int argc, char *argv []) {
 
 					if(!fits_read_record(input_f_ptr, ii, card, &input_f_status)) {} else {
 
-						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -11, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -23, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 						fits_report_error(stdout, input_f_status); 
+
+						free(input_f);
+						free(headers_f);
+						free(operation);
+						free(output_f);
+
+						if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+						if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+						if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 						return 1; 
 
@@ -614,8 +805,17 @@ int main (int argc, char *argv []) {
 
 				if(!fits_get_hdrspace(headers_f_ptr, &nkeys, NULL, &headers_f_status)) {} else {
 
-					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -12, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -24, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, headers_f_status); 
+
+					free(input_f);
+					free(headers_f);
+					free(operation);
+					free(output_f);
+
+					if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+					if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 					return 1; 
 
@@ -629,14 +829,23 @@ int main (int argc, char *argv []) {
 
 					if(!fits_read_record(headers_f_ptr, ii, card, &headers_f_status)) {} else {
 
-						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -13, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -25, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 						fits_report_error(stdout, headers_f_status); 
+
+						free(input_f);
+						free(headers_f);
+						free(operation);
+						free(output_f);
+
+						if (fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+						if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+						if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 						return 1; 
 
 					}
 
-					if (fits_get_keyclass(card) >= TYP_WCS_KEY) {
+					if (fits_get_keyclass(card) >= TYP_WCS_KEY && fits_get_keyclass(card) != TYP_COMM_KEY) {
 
 						check_key_to_omit(FITS_KEYS_TO_OMIT, card, operation, &found_key);
 
@@ -646,7 +855,7 @@ int main (int argc, char *argv []) {
 
 						} else {
 
-							// printf("%d\t%s\n", fits_get_keyclass(card), card);
+							// printf("%d\t%s\n", fits_get_keyclass(card), card);	// DEBUG
 
 							fits_write_record(output_f_ptr, card, &output_f_status);
 
@@ -662,58 +871,176 @@ int main (int argc, char *argv []) {
 
 		}
 
-		// SPECIFIC HEADERS HANDLING
+		// SPECIFIC HEADERS HANDLING (ADDITIONAL KEYS, ERROR CODES etc.)
 		// ***********************************************************************
 
 		if (!strcmp(operation, "L1_IMAGE")) {	
 
 		} else if (!strcmp(operation, "RSS_NONSS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "RSS_CALIBRATION", 2, &output_f_status);
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "RSS_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
 
 		} else if (!strcmp(operation, "CUBE_NONSS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "CUBE_CALIBRATION", 2, &output_f_status);
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "CUBE_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
 
 		} else if (!strcmp(operation, "RSS_SS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "RSS_CALIBRATION", 2, &output_f_status);
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "RSS_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+	
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
 
 		} else if (!strcmp(operation, "CUBE_SS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "CUBE_CALIBRATION", 2, &output_f_status);
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "CUBE_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
 
 		} else if (!strcmp(operation, "SPEC_NONSS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "SPEC_CALIBRATION", 2, &output_f_status);	
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "SPEC_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+			
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}	
 
 		} else if (!strcmp(operation, "SPEC_SS")) {
 
-			write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "SPEC_CALIBRATION", 2, &output_f_status);
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "SPEC_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+	
+			}
+
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
 
 		} else if (!strcmp(operation, "COLCUBE_NONSS")) {
 
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 4;
+
+			}
+
+			if (write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status) == 1) {
+
+				RETURN_FLAG = 5;
+
+			}
+
 		}
-
-		// Write L2 status keywords
-		// ***********************************************************************
-
-		write_error_codes_file_to_header(ERROR_CODES_FILE, output_f_ptr, &output_f_status);
 
 		// ***********************************************************************
 		// Write checksums
 
-	  	fits_write_chksum(output_f_ptr, &output_f_status);
+	  	if (fits_write_chksum(output_f_ptr, &output_f_status)) {
+
+			RETURN_FLAG = 6;	
+	
+		}
 
 		// ***********************************************************************
-		// Close input file (ARG 1), headers file (ARG 3) and output file (ARG 4)
+		// Clean up heap memory
+
+		free(input_f);
+		free(headers_f);
+		free(operation);
+		free(output_f);
+
+		// ***********************************************************************
+		// Close input file (ARG 1), headers file (ARG 2) and output file (ARG 4)
 
 		if (missing_input_file == FALSE) {
 
 			if (fits_close_file(input_f_ptr, &input_f_status)) { 
 
-				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -14, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -26, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error (stdout, input_f_status); 
+
+				if (fits_close_file(headers_f_ptr, &headers_f_status)) fits_report_error (stdout, headers_f_status); 
+				if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 				return 1; 
 
@@ -723,8 +1050,10 @@ int main (int argc, char *argv []) {
 
 		if (fits_close_file(headers_f_ptr, &headers_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -15, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -27, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, headers_f_status); 
+
+			if (fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status); 
 
 			return 1; 
 
@@ -732,7 +1061,7 @@ int main (int argc, char *argv []) {
 
 		if (fits_close_file(output_f_ptr, &output_f_status)) { 
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -16, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", -28, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, output_f_status); 
 
 			return 1; 
@@ -740,11 +1069,13 @@ int main (int argc, char *argv []) {
 		}
 
 		// ***********************************************************************
-		// Clean up heap memory
-
-		// ***********************************************************************
 		// Return success
+
+		//write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRF", RETURN_FLAG, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS); // don't want to use this, otherwise consecutive calls to frreformat will result in the headers for the current file being populated with the resulting flag from the previous file
+
+		return 0;
 
 	}
 
 }
+

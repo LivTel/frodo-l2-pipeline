@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	05/05/11
 
 ************************************************************************/
 
@@ -32,15 +32,26 @@ int main(int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRFS_BLURB_FILE);
+			print_file(FRFS_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -1, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
 		return 1;
 
 	} else {
+
+		char time_start [80];
+		memset(time_start, '\0', sizeof(char)*80);
+
+		find_time(time_start);
+
+		printf("%s\n", time_start);
+
+		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "STARTDATE", "L2DATE", time_start, "when this reduction was performed", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
 		// ***********************************************************************
 		// Redefine routine input parameters
@@ -70,6 +81,9 @@ int main(int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -2, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
+					free(cont_f);
+					if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
+
 					return 1;
 	
 				}
@@ -79,6 +93,9 @@ int main(int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -3, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cont_f_status); 
 
+				free(cont_f);
+				if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
+
 				return 1; 
 
 			}
@@ -87,6 +104,8 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -4, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cont_f_status); 
+
+			free(cont_f);
 
 			return 1; 
 
@@ -134,6 +153,9 @@ int main(int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -5, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cont_f_status); 
+
+				free(cont_f);
+				if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
 
 				return 1; 
 
@@ -201,6 +223,9 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -6, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
+			free(cont_f);
+			if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
+
 			return 1;
 
 		} 
@@ -215,6 +240,9 @@ int main(int argc, char *argv []) {
 		if (!outputfile) { 
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -7, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
+
+			free(cont_f);
+			if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
 
 			return 1;
 
@@ -257,6 +285,10 @@ int main(int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -8, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
 
+				free(cont_f);
+				fclose(outputfile);
+				if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
+
 				return 1; 		
 
 			}
@@ -282,12 +314,19 @@ int main(int argc, char *argv []) {
 		fprintf(outputfile, "%d", EOF);
 
 		// ***********************************************************************
+		// Clean up heap memory
+
+		free(cont_f);
+
+		// ***********************************************************************
 		// Close [FRFIND_OUTPUTF_PEAKS_FILE] output file and continuum file 
 		// (ARG 1)
 
 		if (fclose(outputfile)) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATFI", -9, "Status flag for L2 frfind routine", ERROR_CODES_INITIAL_FILE_WRITE_ACCESS);
+
+			if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
 
 			return 1; 
 
@@ -301,11 +340,6 @@ int main(int argc, char *argv []) {
 			return 1; 
 
 	    	}
-
-		// ***********************************************************************
-		// Clean up heap memory
-
-		free(cont_f);
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]

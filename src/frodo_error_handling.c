@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_error_handling.c
- Last Modified Date:     	27/01/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -99,6 +99,57 @@ int get_error_description(FILE *REF_ERROR_CODES_FILE, int fits_key_value, char f
 	}
 
 }
+
+/************************************************************************
+
+ Function:		write_error_codes_file_to_header
+ Last Modified Date:    08/05/11
+ Purpose:		writes an error codes file to the header
+ Required By:		frodo_red_reformat.c
+ Additional Notes:	None
+
+************************************************************************/
+
+int write_error_codes_file_to_header(char ERROR_CODES_FILE [], fitsfile *f_ptr, int *status) {
+
+	FILE *file_ptr;
+	file_ptr = fopen(ERROR_CODES_FILE, "r");
+
+	char input_string [300];
+
+	char this_keyname [300];
+	int this_int_value;
+	char this_comment [300];
+
+	if (file_ptr) {
+	
+		while(!feof(file_ptr)) {
+
+			memset(input_string, '\0', 300);
+			fgets (input_string, 300, file_ptr);
+
+			sscanf(input_string, "%s\t%d\t%[^\n]", this_keyname, &this_int_value, this_comment);
+
+			if (!fits_update_key_lng(f_ptr, this_keyname, this_int_value, this_comment, status)) {
+		
+			} else {
+
+				return 1;
+
+			}
+
+		}
+
+	} else {
+
+		return 1;
+
+	}
+
+	return 0;
+
+}
+
 
 /************************************************************************
 

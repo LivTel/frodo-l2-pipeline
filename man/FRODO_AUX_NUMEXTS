@@ -1,0 +1,17 @@
+####################################### frodo_aux_numexts #########################################
+
+Usage:	frnumexts input_file
+
+Synopsis:
+
+Returns the number of non-blank HDUs in a MEF file.
+
+Description:
+
+A blank HDU is defined as having only one axis.
+
+Example: 
+ 
+frnumexts input_file
+
+###################################################################################################

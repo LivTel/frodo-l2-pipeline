@@ -1,0 +1,22 @@
+####################################### frodo_aux_spec2tsv ########################################
+
+Usage:	frspec2tsv input_file
+		   HDU
+		   is_wavelength_calibrated
+		   output_file
+
+Synopsis:
+
+Outputs data from a single axis spectral HDU to a TSV file.
+
+Description:
+
+Takes an input file [input_file], moves to the corresponding HDU [HDU] (indexed at 0), and outputs
+columns of wavelength (if [is_wavelength_calibrated] == 1) or corresponding pixel
+(if [is_wavelength_calibrated] == 0) and value.
+
+Example: 
+ 
+frspec2tsv input_file 5 1 output_file
+
+###################################################################################################

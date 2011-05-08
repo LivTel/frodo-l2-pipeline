@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_correct_throughput.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -36,9 +36,11 @@ int main (int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRCT_BLURB_FILE);
+			print_file(FRCT_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -1, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -73,6 +75,12 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -2, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+					free(cor_cc_ext_target_f);
+
+					if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+
 					return 1;
 	
 				}
@@ -82,6 +90,12 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -3, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_target_f_status); 
 
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+				free(cor_cc_ext_target_f);
+
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+
 				return 1; 
 
 			}
@@ -90,6 +104,10 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -4, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_target_f_status); 
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
 
 			return 1; 
 
@@ -113,6 +131,13 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -5, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+					free(cor_cc_ext_target_f);
+
+					if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+					if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 					return 1;
 	
 				}
@@ -122,6 +147,13 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -6, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_cont_f_status); 
 
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+				free(cor_cc_ext_target_f);
+
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+				if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 				return 1; 
 
 			}
@@ -130,6 +162,12 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -7, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_cont_f_status); 
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
 
 			return 1; 
 
@@ -143,39 +181,95 @@ int main (int argc, char *argv []) {
 		printf("\n-----------------\n");
 
 		printf("\nBits per pixel:\t\t");
+
 		if (cc_ext_target_f_bitpix != cc_ext_cont_f_bitpix) {
+
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -8, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status); 
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 
 		printf("Number of axes:\t\t");
-		if (cc_ext_target_f_naxis != cc_ext_cont_f_naxis) {		
-			printf("FAIL\n"); 
+
+		if (cc_ext_target_f_naxis != cc_ext_cont_f_naxis) {	
+	
+			printf("FAIL\n");
+ 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -9, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 	
 		printf("First axis dimension:\t");
-		if (cc_ext_target_f_naxes[0] != cc_ext_cont_f_naxes[0]) {		
+
+		if (cc_ext_target_f_naxes[0] != cc_ext_cont_f_naxes[0]) {
+		
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -10, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 	
 		printf("Second axis dimension:\t"); 
-		if (cc_ext_target_f_naxes[1] != cc_ext_cont_f_naxes[1]) {		
+
+		if (cc_ext_target_f_naxes[1] != cc_ext_cont_f_naxes[1]) {	
+	
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -11, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 
 		// ***********************************************************************
@@ -226,6 +320,13 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -12, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_cont_f_status); 
 
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+				free(cor_cc_ext_target_f);
+
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+				if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 				return 1; 
 
 			}
@@ -244,6 +345,13 @@ int main (int argc, char *argv []) {
 		} else {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -13, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
 
 			return 1;
 
@@ -269,7 +377,7 @@ int main (int argc, char *argv []) {
 			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &polynomial_order);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_polynomialorder_comment = 1;
+				find_polynomialorder_comment = TRUE;
 				break;
 
 
@@ -277,9 +385,18 @@ int main (int argc, char *argv []) {
 
 		}
 
-		if (find_polynomialorder_comment != 1) {	// error check - didn't find the comment in the [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
+		if (find_polynomialorder_comment == FALSE) {	// error check - didn't find the comment in the [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -14, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
 
 			return 1;
 
@@ -299,8 +416,8 @@ int main (int argc, char *argv []) {
 	
 		char *token;
 
-		double coeffs [FIBRES][polynomial_order+1];
-		memset(coeffs, 0, sizeof(double)*FIBRES*(polynomial_order+1));
+		double coeffs [nyelements][polynomial_order+1];
+		memset(coeffs, 0, sizeof(double)*nyelements*(polynomial_order+1));
 
 		while(!feof(dispersion_solutions_f)) {
 
@@ -358,7 +475,7 @@ int main (int argc, char *argv []) {
 
 		int jj;
 
-		for (ii=0; ii<FIBRES; ii++) {
+		for (ii=0; ii<nyelements; ii++) {
 
 			this_fibre_smallest_wav = 0.0; this_fibre_largest_wav = 0.0;
 
@@ -462,11 +579,29 @@ int main (int argc, char *argv []) {
 		  
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -15, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 			return 1; 
 
 		} else if (end_wav > largest_wav) {	// Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -16, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
+
+			fclose(dispersion_solutions_f);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
 
 			return 1; 
 
@@ -555,6 +690,15 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -17, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_target_f_status); 
 
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+				free(cor_cc_ext_target_f);
+
+				fclose(dispersion_solutions_f);
+
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+				if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 				return 1; 
 
 			}
@@ -566,7 +710,7 @@ int main (int argc, char *argv []) {
 		fitsfile *cor_cc_ext_target_f_ptr;
 	
 		int cor_cc_ext_target_f_status = 0;
-		long cor_cc_ext_target_f_naxes [2] = {nxelements,FIBRES};
+		long cor_cc_ext_target_f_naxes [2] = {nxelements,nyelements};
 	
 		long cor_cc_ext_target_f_fpixel = 1;
 
@@ -603,6 +747,16 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -18, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cor_cc_ext_target_f_status); 
 
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+					free(cor_cc_ext_target_f);
+
+					fclose(dispersion_solutions_f);
+
+					if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+					if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+					if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
 					return 1; 
 
 				}
@@ -611,6 +765,16 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -19, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cor_cc_ext_target_f_status); 
+
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+				free(cor_cc_ext_target_f);
+
+				fclose(dispersion_solutions_f);
+
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+				if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+				if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
 
 				return 1; 
 
@@ -621,44 +785,14 @@ int main (int argc, char *argv []) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -20, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cor_cc_ext_target_f_status); 
 
-			return 1; 
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+			free(cor_cc_ext_target_f);
 
-		}
+			fclose(dispersion_solutions_f);
 
-		// ***********************************************************************
-		// Close input files (ARGS 1 and 2), output file (ARG 5) and 
-		// [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
-
-		if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -21, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cc_ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -22, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cc_ext_cont_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -23, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cor_cc_ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if (fclose(dispersion_solutions_f)) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -24, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status); 
 
 			return 1; 
 
@@ -670,6 +804,54 @@ int main (int argc, char *argv []) {
 		free(cc_ext_target_f);
 		free(cc_ext_cont_f);
 		free(cor_cc_ext_target_f);
+
+		// ***********************************************************************
+		// Close input files (ARGS 1 and 2), output file (ARG 5) and 
+		// [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
+
+		if (fclose(dispersion_solutions_f)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -21, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status);
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
+			return 1; 
+
+		}
+
+		if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -22, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cc_ext_target_f_status); 
+
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -23, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cc_ext_cont_f_status); 
+
+			if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(cor_cc_ext_target_f_ptr, &cor_cc_ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCO", -24, "Status flag for L2 frcorrect routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cor_cc_ext_target_f_status); 
+
+			return 1; 
+
+	    	}
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
