@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_findpeaks_simple_clean.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -33,9 +33,11 @@ int main(int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRFSC_BLURB_FILE);
+			print_file(FRFSC_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", -1, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -195,6 +197,8 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", -3, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1;
 
 
@@ -211,6 +215,8 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", -4, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1;
 
 
@@ -220,7 +226,7 @@ int main(int argc, char *argv []) {
 		memset(timestr, '\0', sizeof(char)*80);
 
 		find_time(timestr);
-	
+
 		fprintf(outputfile, "#### %s ####\n\n", FRCLEAN_OUTPUTF_PEAKSCLEANED_FILE);
 		fprintf(outputfile, "# File cleaned using the frclean program.\n\n");
 		fprintf(outputfile, "# Run datetime:\t%s\n", timestr);
@@ -281,6 +287,8 @@ int main(int argc, char *argv []) {
 		if (fclose(inputfile)) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATCL", -5, "Status flag for L2 frclean routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(outputfile);
 
 			return 1; 
 

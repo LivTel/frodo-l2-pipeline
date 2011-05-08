@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_arcfit.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	05/05/11
 
 ************************************************************************/
 
@@ -34,9 +34,11 @@ int main (int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRA_BLURB_FILE);
+			print_file(FRA_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -1, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -83,6 +85,16 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -2, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+
 					return 1;
 	
 				}
@@ -92,6 +104,16 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -3, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_arc_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+
 				return 1; 
 
 			}
@@ -100,6 +122,14 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -4, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, ext_arc_f_status); 
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
 
 			return 1; 
 
@@ -123,6 +153,17 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -5, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+					if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+
 					return 1;
 	
 				}
@@ -132,6 +173,17 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -6, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_target_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+
 				return 1; 
 
 			}
@@ -140,6 +192,16 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -7, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, ext_target_f_status); 
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
 
 			return 1; 
 
@@ -163,6 +225,18 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -8, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+					if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+					if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 					return 1;
 	
 				}
@@ -172,6 +246,18 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -9, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_cont_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 				return 1; 
 
 			}
@@ -180,6 +266,17 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -10, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, ext_cont_f_status); 
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
 
 			return 1; 
 
@@ -192,39 +289,115 @@ int main (int argc, char *argv []) {
 		printf("\n-----------------\n");
 
 		printf("\nBits per pixel:\t\t");
+
 		if (ext_arc_f_bitpix != ext_target_f_bitpix && ext_target_f_bitpix != ext_cont_f_bitpix) { 	// if a = b and b = c then a must = c
+
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -11, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 
 		printf("Number of axes:\t\t");
-		if (ext_arc_f_naxis != ext_target_f_naxis && ext_target_f_naxis != ext_cont_f_naxis) {		
+
+		if (ext_arc_f_naxis != ext_target_f_naxis && ext_target_f_naxis != ext_cont_f_naxis) {	
+	
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -12, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 	
 		printf("First axis dimension:\t");
-		if (ext_arc_f_naxes[0] != ext_target_f_naxes[0] && ext_target_f_naxes[0] != ext_cont_f_naxes[0]) {		
+
+		if (ext_arc_f_naxes[0] != ext_target_f_naxes[0] && ext_target_f_naxes[0] != ext_cont_f_naxes[0]) {	
+	
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -13, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 	
 		printf("Second axis dimension:\t"); 
-		if (ext_arc_f_naxes[1] != ext_target_f_naxes[1] && ext_target_f_naxes[1] != ext_cont_f_naxes[1]) {		
+
+		if (ext_arc_f_naxes[1] != ext_target_f_naxes[1] && ext_target_f_naxes[1] != ext_cont_f_naxes[1]) {
+		
 			printf("FAIL\n"); 
+
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -14, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1; 
+
 		} else { 
+
 			printf("OK\n"); 
+
 		} 
 
 		// ***********************************************************************
@@ -275,6 +448,18 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -15, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_arc_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 				return 1; 
 
 			}
@@ -304,6 +489,18 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -16, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_target_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 				return 1; 
 
 			}
@@ -332,6 +529,18 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -17, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ext_cont_f_status); 
+
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
 
 				return 1; 
 
@@ -478,6 +687,28 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -18, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1; 
 
 		}
@@ -534,6 +765,28 @@ int main (int argc, char *argv []) {
 		} else {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -19, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
 
 			return 1;
 
@@ -691,6 +944,30 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -20, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			fclose(arc_line_list_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 			return 1;
 
 		}
@@ -781,12 +1058,12 @@ int main (int argc, char *argv []) {
 
 		if (sample_list_diff > max_av_wavelength_diff) {	// comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 
-			RETURN_FLAG = 3;
+			RETURN_FLAG = 2;
 
 		}
 
-		// FIND THE DISPERSION SOLUTION AND WRITE TO [FRARCFIT_OUTPUTF_PFITS_FILE]
-		// OUTPUT FILE
+		// FIND THE DISPERSION SOLUTION AND WRITE TO 
+		// [FRARCFIT_OUTPUTF_WAVFITS_FILE] OUTPUT FILE
 		// ***********************************************************************
 
 		// 1.	Perform a few checks to ensure the input fitting parameters 
@@ -795,6 +1072,30 @@ int main (int argc, char *argv []) {
 		if ((fit_order < FRARCFIT_VAR_POLYORDER_LO) || (fit_order > FRARCFIT_VAR_POLYORDER_HI)) {	// Check [fit_order] is within config limits
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -21, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			fclose(arc_line_list_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
 
 			return 1; 
 
@@ -809,6 +1110,30 @@ int main (int argc, char *argv []) {
 		if (!outputfile) { 
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -22, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			fclose(arc_line_list_f);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
 
 			return 1;
 
@@ -866,6 +1191,31 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -23, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				for(ii=0; ii<nyelements; ii++) {
+
+					free(trim_offset_ext_arc_frame_values[ii]);
+					free(peaks[ii]);
+
+				}
+
+				free(peaks);
+				free(trim_offset_ext_arc_frame_values);
+
+				fclose(arc_line_list_f);
+				fclose(outputfile);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
 				return 1; 
 
 			}
@@ -912,7 +1262,7 @@ int main (int argc, char *argv []) {
 
 		if ((chi_squared_min < FRARCFIT_VAR_CHISQUARED_MIN) || (chi_squared_max > FRARCFIT_VAR_CHISQUARED_MAX)) {
 
-			RETURN_FLAG = 4;
+			RETURN_FLAG = 3;
 
 		}
 
@@ -973,6 +1323,32 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -24, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_arc_f_status); 
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					for(ii=0; ii<nyelements; ii++) {
+
+						free(trim_offset_ext_arc_frame_values[ii]);
+						free(peaks[ii]);
+
+					}
+
+					free(peaks);
+					free(trim_offset_ext_arc_frame_values);
+
+					fclose(arc_line_list_f);
+					fclose(outputfile);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+					if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+					if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+					if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+
 					return 1; 
 
 				}
@@ -981,6 +1357,33 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -25, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_arc_f_status); 
+
+
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				for(ii=0; ii<nyelements; ii++) {
+
+					free(trim_offset_ext_arc_frame_values[ii]);
+					free(peaks[ii]);
+
+				}
+
+				free(peaks);
+				free(trim_offset_ext_arc_frame_values);
+
+				fclose(arc_line_list_f);
+				fclose(outputfile);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+				if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
 
 				return 1; 
 
@@ -991,7 +1394,32 @@ int main (int argc, char *argv []) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -26, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_arc_f_status); 
 
-			return 1; 
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			fclose(arc_line_list_f);
+			fclose(outputfile);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+
+			return 1;
 
 		}
 
@@ -1009,6 +1437,33 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -27, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_target_f_status); 
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					for(ii=0; ii<nyelements; ii++) {
+
+						free(trim_offset_ext_arc_frame_values[ii]);
+						free(peaks[ii]);
+
+					}
+
+					free(peaks);
+					free(trim_offset_ext_arc_frame_values);
+
+					fclose(arc_line_list_f);
+					fclose(outputfile);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+					if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+					if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+					if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+					if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+
 					return 1; 
 
 				}
@@ -1018,6 +1473,33 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -28, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_target_f_status); 
 
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				for(ii=0; ii<nyelements; ii++) {
+
+					free(trim_offset_ext_arc_frame_values[ii]);
+					free(peaks[ii]);
+
+				}
+
+				free(peaks);
+				free(trim_offset_ext_arc_frame_values);
+
+				fclose(arc_line_list_f);
+				fclose(outputfile);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+				if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+
 				return 1; 
 
 			}
@@ -1026,6 +1508,32 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -29, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_target_f_status); 
+
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
+
+			for(ii=0; ii<nyelements; ii++) {
+
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
+
+			}
+
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
+
+			fclose(arc_line_list_f);
+			fclose(outputfile);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
 
 			return 1; 
 
@@ -1045,6 +1553,34 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -30, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, cc_ext_cont_f_status); 
 
+					free(ext_arc_f);
+					free(ext_target_f);
+					free(ext_cont_f);
+					free(arc_line_list_filename);
+					free(cc_ext_arc_f);
+					free(cc_ext_target_f);
+					free(cc_ext_cont_f);
+
+					for(ii=0; ii<nyelements; ii++) {
+
+						free(trim_offset_ext_arc_frame_values[ii]);
+						free(peaks[ii]);
+
+					}
+
+					free(peaks);
+					free(trim_offset_ext_arc_frame_values);
+
+					fclose(arc_line_list_f);
+					fclose(outputfile);
+
+					if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+					if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+					if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+					if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+					if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+					if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
 					return 1; 
 
 				}
@@ -1053,6 +1589,34 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -31, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, cc_ext_cont_f_status); 
+
+				free(ext_arc_f);
+				free(ext_target_f);
+				free(ext_cont_f);
+				free(arc_line_list_filename);
+				free(cc_ext_arc_f);
+				free(cc_ext_target_f);
+				free(cc_ext_cont_f);
+
+				for(ii=0; ii<nyelements; ii++) {
+
+					free(trim_offset_ext_arc_frame_values[ii]);
+					free(peaks[ii]);
+
+				}
+
+				free(peaks);
+				free(trim_offset_ext_arc_frame_values);
+
+				fclose(arc_line_list_f);
+				fclose(outputfile);
+
+				if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+				if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+				if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+				if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+				if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+				if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
 
 				return 1; 
 
@@ -1063,79 +1627,32 @@ int main (int argc, char *argv []) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -32, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, cc_ext_cont_f_status); 
 
-			return 1; 
+			free(ext_arc_f);
+			free(ext_target_f);
+			free(ext_cont_f);
+			free(arc_line_list_filename);
+			free(cc_ext_arc_f);
+			free(cc_ext_target_f);
+			free(cc_ext_cont_f);
 
-		}
+			for(ii=0; ii<nyelements; ii++) {
 
-		// ***********************************************************************
-		// Close input files (ARGS 1,2 and 3), output files (ARGS 16, 17 and 18)
-		// and arc list file (ARG 11)
+				free(trim_offset_ext_arc_frame_values[ii]);
+				free(peaks[ii]);
 
-		if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) { 
+			}
 
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -33, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, ext_arc_f_status); 
+			free(peaks);
+			free(trim_offset_ext_arc_frame_values);
 
-			return 1; 
+			fclose(arc_line_list_f);
+			fclose(outputfile);
 
-	    	}
-
-		if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -34, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -35, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, ext_cont_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -36, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cc_ext_arc_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -37, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cc_ext_target_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -38, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, cc_ext_cont_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if (fclose(arc_line_list_f)) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -39, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
-
-			return 1; 
-
-		}
-
-		if (fclose(outputfile)) {
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -40, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
 
 			return 1; 
 
@@ -1143,6 +1660,14 @@ int main (int argc, char *argv []) {
 
 		// ***********************************************************************
 		// Clean up heap memory
+
+		free(ext_arc_f);
+		free(ext_target_f);
+		free(ext_cont_f);
+		free(arc_line_list_filename);
+		free(cc_ext_arc_f);
+		free(cc_ext_target_f);
+		free(cc_ext_cont_f);
 
 		for(ii=0; ii<nyelements; ii++) {
 
@@ -1154,13 +1679,115 @@ int main (int argc, char *argv []) {
 		free(peaks);
 		free(trim_offset_ext_arc_frame_values);
 
-		free(ext_arc_f);
-		free(ext_target_f);
-		free(ext_cont_f);
-		free(arc_line_list_filename);
-		free(cc_ext_arc_f);
-		free(cc_ext_target_f);
-		free(cc_ext_cont_f);
+		// ***********************************************************************
+		// Close input files (ARGS 1,2 and 3), output files (ARGS 16, 17 and 18),
+		// arc list file (ARG 11) and [FRARCFIT_OUTPUTF_WAVFITS_FILE] file
+
+		if (fclose(arc_line_list_f)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -33, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(outputfile);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+		}
+
+		if (fclose(outputfile)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -34, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) fits_report_error (stdout, ext_arc_f_status); 
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+		}
+
+		if(fits_close_file(ext_arc_f_ptr, &ext_arc_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -35, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, ext_arc_f_status); 
+
+			if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) fits_report_error (stdout, ext_target_f_status); 
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(ext_target_f_ptr, &ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -36, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, ext_target_f_status); 
+
+			if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) fits_report_error (stdout, ext_cont_f_status); 
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(ext_cont_f_ptr, &ext_cont_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -37, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, ext_cont_f_status); 
+
+			if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) fits_report_error (stdout, cc_ext_arc_f_status); 
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(cc_ext_arc_f_ptr, &cc_ext_arc_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -38, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cc_ext_arc_f_status); 
+
+			if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) fits_report_error (stdout, cc_ext_target_f_status); 
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(cc_ext_target_f_ptr, &cc_ext_target_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -39, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cc_ext_target_f_status); 
+
+			if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) fits_report_error (stdout, cc_ext_cont_f_status);
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(cc_ext_cont_f_ptr, &cc_ext_cont_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATAR", -40, "Status flag for L2 frarcfit routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, cc_ext_cont_f_status); 
+
+			return 1; 
+
+	    	}
 
 		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]

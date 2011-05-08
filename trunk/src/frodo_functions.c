@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	28/04/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -21,6 +21,7 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_math.h>
+#include <gsl_randist.h>
 
 /************************************************************************
 
@@ -236,7 +237,7 @@ int check_file_exists(char filename []) {
 /************************************************************************
 
  Function:		check_key_to_omit
- Last Modified Date:    17/03/11
+ Last Modified Date:    08/05/11
  Purpose:		checks the [FITS_KEYS_TO_OMIT] file for the 
 			existence of [card] in hdu number [hdunum]
 			and assigns [found_key] to TRUE if found
@@ -247,22 +248,22 @@ int check_file_exists(char filename []) {
 
 int check_key_to_omit(char * FITS_KEYS_TO_OMIT, char * card, char * operation, int * found_key) {
 
-	FILE *FITS_KEYS_TO_OMIT_FILE_fptr;
-	FITS_KEYS_TO_OMIT_FILE_fptr = fopen(FITS_KEYS_TO_OMIT, "r");
+	FILE *FITS_KEYS_TO_OMIT_FILE_ptr;
+	FITS_KEYS_TO_OMIT_FILE_ptr = fopen(FITS_KEYS_TO_OMIT, "r");
 
 	char input_string [300];
 
 	char file_fits_op [100];
 	char file_fits_key [81];
 
-	while(!feof(FITS_KEYS_TO_OMIT_FILE_fptr)) {
+	while(!feof(FITS_KEYS_TO_OMIT_FILE_ptr)) {
 
 		memset(input_string, '\0', sizeof(char)*300);
 
 		memset(file_fits_op, '\0', sizeof(char)*100);
 		memset(file_fits_key, '\0', sizeof(char)*81);
 
-		fgets (input_string, 300, FITS_KEYS_TO_OMIT_FILE_fptr);
+		fgets (input_string, 300, FITS_KEYS_TO_OMIT_FILE_ptr);
 	
 		sscanf(input_string, "%[^\t]\t%[^\n]", file_fits_op, file_fits_key);	// last argument in sscanf means read characters as one string up to newline char
 
@@ -284,11 +285,11 @@ int check_key_to_omit(char * FITS_KEYS_TO_OMIT, char * card, char * operation, i
 
 	} 
 
-	fclose(FITS_KEYS_TO_OMIT_FILE_fptr);
+	fclose(FITS_KEYS_TO_OMIT_FILE_ptr);
 
 	return 0;
 	
-} 
+}
 
 /************************************************************************
 
@@ -356,11 +357,10 @@ int find_centroid_parabolic(double row_values [], int peaks [], int num_peaks, d
 /************************************************************************
 
  Function:		find_peaks
- Last Modified Date:    03/03/11	
+ Last Modified Date:    02/05/11	
  Purpose:		finds the peaks in a dataset
  Required By:		frodo_red_findpeaks_simple.c
-			frodo_red_arcfit.c > frodo_functions.c 	
-						(find_peaks_contiguous)
+			frodo_red_arcfit.c
  Additional Notes:	
 
 
@@ -596,7 +596,7 @@ int flip_array_dbl(double array [], int size) {
 /************************************************************************
 
  Function:		interpolate
- Last Modified Date:    03/03/11	
+ Last Modified Date:    02/05/11	
  Purpose:		interpolates a dataset [x] to find all values
 			between [interpolation_start] and 
 			[interpolation_end] with a spacing of [spacing]
@@ -609,7 +609,7 @@ int flip_array_dbl(double array [], int size) {
 
 ************************************************************************/
 
-int interpolate(char interpolation_type [], double x [], double cor_cc_ext_target_f_pixels [], int nxelements, double interpolation_start, double interpolation_end, double spacing, double reb_cor_cc_ext_target_f_pixels []) {
+int interpolate(char interpolation_type [], double x_wav [], double x_val [], int nxelements, double interpolation_start, double interpolation_end, double spacing, double x_val_out []) {
 
 	gsl_spline *spline;
 
@@ -645,7 +645,7 @@ int interpolate(char interpolation_type [], double x [], double cor_cc_ext_targe
 
 	gsl_interp_accel *acc = gsl_interp_accel_alloc();
 		     
-	gsl_spline_init(spline, x, cor_cc_ext_target_f_pixels, nxelements);
+	gsl_spline_init(spline, x_wav, x_val, nxelements);
 
 	int this_interpolation_index = 0;
 
@@ -653,8 +653,8 @@ int interpolate(char interpolation_type [], double x [], double cor_cc_ext_targe
 
 	for (xi = interpolation_start; gsl_fcmp(xi, interpolation_end+spacing, 1e-5); xi += spacing) {	// checking to see if xi is equal to interpolation_end+spacing (i.e. no more iterations)
 
-		reb_cor_cc_ext_target_f_pixels[this_interpolation_index] = gsl_spline_eval(spline, xi, acc);
-		// printf("\n%f\t%g", xi, reb_cor_cc_ext_target_f_pixels[this_interpolation_index]);	// DEBUG
+		x_val_out[this_interpolation_index] = gsl_spline_eval(spline, xi, acc);
+		// printf("\n%f\t%g", xi, x_val_out[this_interpolation_index]);	// DEBUG
 
 		this_interpolation_index++;
 
@@ -937,7 +937,7 @@ int populate_img_parameters(char f [], fitsfile *f_ptr, int maxdim, int *bitpix,
 /************************************************************************
 
  Function:		print_file
- Last Modified Date:    26/01/11
+ Last Modified Date:    08/05/11
  Purpose:		prints content of file to screen
  Required By:		all
  Additional Notes:	None
@@ -946,18 +946,18 @@ int populate_img_parameters(char f [], fitsfile *f_ptr, int maxdim, int *bitpix,
 
 int print_file(char text_file [200]) {
 
-	FILE *text_file_fptr;
-	text_file_fptr = fopen(text_file, "r");
+	FILE *text_file_ptr;
+	text_file_ptr = fopen(text_file, "r");
 
 	char input_string [300];
 
-	if (text_file_fptr) {
+	if (text_file_ptr) {
 	
-		while(!feof(text_file_fptr)) {
+		while(!feof(text_file_ptr)) {
 
 			memset(input_string, '\0', 300);
 
-			fgets (input_string, 300, text_file_fptr);
+			fgets (input_string, 300, text_file_ptr);
 	
 			printf("%s", input_string);
 	
@@ -977,8 +977,8 @@ int print_file(char text_file [200]) {
 /************************************************************************
 
  Function:		write_additional_keys_file_to_header
- Last Modified Date:    27/04/11
- Purpose:		writes an additional keys to a header
+ Last Modified Date:    08/05/11
+ Purpose:		writes an additional keys file to a header
  Required By:		frodo_red_reformat.c
  Additional Notes:	None
 
@@ -986,8 +986,8 @@ int print_file(char text_file [200]) {
 
 int write_additional_keys_file_to_header(char ADDITIONAL_KEYS_FILE [], fitsfile *f_ptr, char operation [], int decimals, int *status) {
 
-	FILE *file_fptr;
-	file_fptr = fopen(ADDITIONAL_KEYS_FILE, "r");
+	FILE *file_ptr;
+	file_ptr = fopen(ADDITIONAL_KEYS_FILE, "r");
 
 	char input_string [300];
 
@@ -997,16 +997,16 @@ int write_additional_keys_file_to_header(char ADDITIONAL_KEYS_FILE [], fitsfile 
 	double this_double_value;
 	char this_comment [300];
 
-	if (file_fptr) {
+	if (file_ptr) {
 	
-		while(!feof(file_fptr)) {
+		while(!feof(file_ptr)) {
 
 			memset(input_string, '\0', 300);
-			fgets (input_string, 300, file_fptr);
+			fgets (input_string, 300, file_ptr);
 
 			if (strncmp(input_string, "str", 3) == 0) { 		// we're dealing with a string
 
-				sscanf(input_string, "%*s\t%s\t%s\t%s\t%s", this_operation, this_keyname, this_string_value, this_comment);
+				sscanf(input_string, "%*s\t%s\t%s\t%[^\t]\t%[^\n]", this_operation, this_keyname, this_string_value, this_comment);
 
 				if (strncmp(operation, this_operation, strlen(operation)) == 0) { 	// we need to insert this key
 
@@ -1022,7 +1022,7 @@ int write_additional_keys_file_to_header(char ADDITIONAL_KEYS_FILE [], fitsfile 
 
 			} else if (strncmp(input_string, "dbl", 3) == 0) { 	// we're dealing with a double
 
-				sscanf(input_string, "%*s\t%s\t%s\t%lf\t%s", this_operation, this_keyname, &this_double_value, this_comment);
+				sscanf(input_string, "%*s\t%s\t%s\t%lf\t%[^\n]", this_operation, this_keyname, &this_double_value, this_comment);
 
 				if (strncmp(operation, this_operation, strlen(operation)) == 0) { 	// we need to insert this key
 
@@ -1052,58 +1052,8 @@ int write_additional_keys_file_to_header(char ADDITIONAL_KEYS_FILE [], fitsfile 
 
 /************************************************************************
 
- Function:		write_error_codes_file_to_header
- Last Modified Date:    28/04/11
- Purpose:		writes an error codes file to the header
- Required By:		frodo_red_reformat.c
- Additional Notes:	None
-
-************************************************************************/
-
-int write_error_codes_file_to_header(char ERROR_CODES_FILE [], fitsfile *f_ptr, int *status) {
-
-	FILE *file_fptr;
-	file_fptr = fopen(ERROR_CODES_FILE, "r");
-
-	char input_string [300];
-
-	char this_keyname [300];
-	int this_int_value;
-	char this_comment [300];
-
-	if (file_fptr) {
-	
-		while(!feof(file_fptr)) {
-
-			memset(input_string, '\0', 300);
-			fgets (input_string, 300, file_fptr);
-
-			sscanf(input_string, "%s\t%d\t%[^\n]", this_keyname, &this_int_value, this_comment);
-
-			if (!fits_update_key_lng(f_ptr, this_keyname, this_int_value, this_comment, status)) {
-		
-			} else {
-
-				return 1;
-
-			}
-
-		}
-
-	} else {
-
-		return 1;
-
-	}
-
-	return 0;
-
-}
-
-/************************************************************************
-
  Function:		write_additional_key_to_file_dbl
- Last Modified Date:    14/03/11
+ Last Modified Date:    08/05/11
  Purpose:		writes an additional key to file (double)
  Required By:		frodo_red_rebin.c
  Additional Notes:	None
@@ -1112,19 +1062,19 @@ int write_error_codes_file_to_header(char ERROR_CODES_FILE [], fitsfile *f_ptr, 
 
 int write_additional_key_to_file_dbl(char ADDITIONAL_KEYS_FILE [], char id [], char fits_key [], double fits_key_value, char fits_key_comment [], char ADDITIONAL_KEYS_FILE_WRITE_ACCESS []) {
 
-	FILE *ADDITIONAL_KEYS_FILE_fptr;
-	ADDITIONAL_KEYS_FILE_fptr = fopen(ADDITIONAL_KEYS_FILE, ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+	FILE *ADDITIONAL_KEYS_FILE_ptr;
+	ADDITIONAL_KEYS_FILE_ptr = fopen(ADDITIONAL_KEYS_FILE, ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
-	if (ADDITIONAL_KEYS_FILE_fptr) {
+	if (ADDITIONAL_KEYS_FILE_ptr) {
 
-		fprintf(ADDITIONAL_KEYS_FILE_fptr, "dbl\t%s\t%s\t%f\t%s\n", id, fits_key, fits_key_value, fits_key_comment);
-		fclose(ADDITIONAL_KEYS_FILE_fptr);
+		fprintf(ADDITIONAL_KEYS_FILE_ptr, "dbl\t%s\t%s\t%f\t%s\n", id, fits_key, fits_key_value, fits_key_comment);
+		fclose(ADDITIONAL_KEYS_FILE_ptr);
 		return 0;
 
 	} else {
 
-		printf("\nWARNING:\tUnable to additional key to file. File %s doesn't exist.\n\n", ADDITIONAL_KEYS_FILE);
-		fclose(ADDITIONAL_KEYS_FILE_fptr);
+		printf("\nWARNING:\tUnable to write additional key to file. File %s doesn't exist.\n\n", ADDITIONAL_KEYS_FILE);
+		fclose(ADDITIONAL_KEYS_FILE_ptr);
 		return 1;
 
 	}
@@ -1134,7 +1084,7 @@ int write_additional_key_to_file_dbl(char ADDITIONAL_KEYS_FILE [], char id [], c
 /************************************************************************
 
  Function:		write_additional_key_to_file_str
- Last Modified Date:    14/03/11
+ Last Modified Date:    08/05/11
  Purpose:		writes an additional key to file (string)
  Required By:		frodo_red_rebin.c
  Additional Notes:	None
@@ -1143,19 +1093,19 @@ int write_additional_key_to_file_dbl(char ADDITIONAL_KEYS_FILE [], char id [], c
 
 int write_additional_key_to_file_str(char ADDITIONAL_KEYS_FILE [], char id [], char fits_key [], char fits_key_value [], char fits_key_comment [], char ADDITIONAL_KEYS_FILE_WRITE_ACCESS []) {
 
-	FILE *ADDITIONAL_KEYS_FILE_fptr;
-	ADDITIONAL_KEYS_FILE_fptr = fopen(ADDITIONAL_KEYS_FILE, ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
+	FILE *ADDITIONAL_KEYS_FILE_ptr;
+	ADDITIONAL_KEYS_FILE_ptr = fopen(ADDITIONAL_KEYS_FILE, ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
-	if (ADDITIONAL_KEYS_FILE_fptr) {
+	if (ADDITIONAL_KEYS_FILE_ptr) {
 
-		fprintf(ADDITIONAL_KEYS_FILE_fptr, "str\t%s\t%s\t%s\t%s\n", id, fits_key, fits_key_value, fits_key_comment);
-		fclose(ADDITIONAL_KEYS_FILE_fptr);
+		fprintf(ADDITIONAL_KEYS_FILE_ptr, "str\t%s\t%s\t%s\t%s\n", id, fits_key, fits_key_value, fits_key_comment);
+		fclose(ADDITIONAL_KEYS_FILE_ptr);
 		return 0;
 
 	} else {
 
-		printf("\nWARNING:\tUnable to additional key to file. File %s doesn't exist.\n\n", ADDITIONAL_KEYS_FILE);
-		fclose(ADDITIONAL_KEYS_FILE_fptr);
+		printf("\nWARNING:\tUnable to write additional key to file. File %s doesn't exist.\n\n", ADDITIONAL_KEYS_FILE);
+		fclose(ADDITIONAL_KEYS_FILE_ptr);
 		return 1;
 
 	}

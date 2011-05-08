@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_extract_simple.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -33,9 +33,11 @@ int main ( int argc, char *argv [] ) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRES_BLURB_FILE);
+			print_file(FRES_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -1, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -78,6 +80,10 @@ int main ( int argc, char *argv [] ) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -2, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(input_f);
+					free(output_f);
+					if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
 					return 1;
 	
 				}
@@ -87,6 +93,10 @@ int main ( int argc, char *argv [] ) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -3, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, input_f_status); 
 
+				free(input_f);
+				free(output_f);
+				if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
 				return 1; 
 
 			}
@@ -95,6 +105,9 @@ int main ( int argc, char *argv [] ) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -4, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, input_f_status); 
+
+			free(input_f);
+			free(output_f);
 
 			return 1; 
 
@@ -131,6 +144,10 @@ int main ( int argc, char *argv [] ) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -5, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(input_f);
+			free(output_f);
+			if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
 			return 1;
 
 		}
@@ -155,7 +172,7 @@ int main ( int argc, char *argv [] ) {
 			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &polynomial_order);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_polynomialorder_comment = 1;
+				find_polynomialorder_comment = TRUE;
 				break;
 
 
@@ -163,9 +180,14 @@ int main ( int argc, char *argv [] ) {
 
 		}
 
-		if (find_polynomialorder_comment != 1) {	// error check - didn't find the comment in the [FRTRACE_OUTPUTF_TRACES_FILE] file
+		if (find_polynomialorder_comment == FALSE) {	// error check - didn't find the comment in the [FRTRACE_OUTPUTF_TRACES_FILE] file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -6, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(input_f);
+			free(output_f);
+			fclose(traces_file);
+			if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
 
 			return 1;
 
@@ -281,6 +303,11 @@ int main ( int argc, char *argv [] ) {
 						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -7, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 						fits_report_error(stdout, input_f_status); 
 
+						free(input_f);
+						free(output_f);
+						fclose(traces_file);
+						if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
 						return 1;
 
 					}
@@ -305,6 +332,11 @@ int main ( int argc, char *argv [] ) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -8, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, input_f_status); 
+
+				free(input_f);
+				free(output_f);
+				fclose(traces_file);
+				if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
 
 				return 1; 
 
@@ -377,6 +409,12 @@ int main ( int argc, char *argv [] ) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -9, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, output_f_status); 
 
+					free(input_f);
+					free(output_f);
+					fclose(traces_file);
+					if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+					if(fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status);
+
 					return 1; 
 
 				}
@@ -385,6 +423,12 @@ int main ( int argc, char *argv [] ) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -10, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, output_f_status); 
+
+				free(input_f);
+				free(output_f);
+				fclose(traces_file);
+				if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+				if(fits_close_file(output_f_ptr, &output_f_status)) fits_report_error (stdout, output_f_status);
 
 				return 1; 
 
@@ -395,30 +439,14 @@ int main ( int argc, char *argv [] ) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -11, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, output_f_status); 
 
+			free(input_f);
+			free(output_f);
+			fclose(traces_file);
+			if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
 			return 1; 
 
 		}
-
-		// ***********************************************************************
-		// Close input file (ARG 1) and output file (ARG 4)
-
-		if(fits_close_file(input_f_ptr, &input_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -12, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, input_f_status); 
-
-			return 1; 
-
-	    	}
-
-		if(fits_close_file(output_f_ptr, &output_f_status)) { 
-
-			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -13, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
-			fits_report_error (stdout, output_f_status); 
-
-			return 1; 
-
-	    	}
 
 		// ***********************************************************************
 		// Free arrays on heap
@@ -427,12 +455,43 @@ int main ( int argc, char *argv [] ) {
 		free(output_f);
 
 		// ***********************************************************************
+		// Close [FRTRACE_OUTPUTF_TRACES_FILE] file, input file (ARG 1) and output 
+		// file (ARG 4)
+
+		if (fclose(traces_file)) {
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -12, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			return 1; 
+
+		}
+
+		if(fits_close_file(input_f_ptr, &input_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -13, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, input_f_status); 
+
+			return 1; 
+
+	    	}
+
+		if(fits_close_file(output_f_ptr, &output_f_status)) { 
+
+			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -14, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+			fits_report_error (stdout, output_f_status); 
+
+			return 1; 
+
+	    	}
+
+		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
-		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", RETURN_FLAG, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", RETURN_FLAG, "Status flag for L2 frreformat routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 		return 0;
 
 	}
 
 }
+

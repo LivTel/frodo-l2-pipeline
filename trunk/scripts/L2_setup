@@ -2,7 +2,7 @@
 
 ##################################
 # L2_setup 			 #
-# Last Modified Date:   01/05/11 #
+# Last Modified Date:   06/05/11 #
 ##################################
 
 ############################
@@ -10,10 +10,13 @@
 ############################
 
 setenv L2_BASE_DIR `locate frodo_l2_pipeline/trunk | head -1`	# AUTO
-# setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# MANUAL:rmb/laptop
+# setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# rmb/laptop
 
-setenv L2_TIME_LOG_PATH "/home/rmb/Desktop/L2_time.log"		# rmb/laptop
+setenv L2_SUCCESS_LOG_PATH "/home/rmb/Desktop/L2_success.log"	# rmb/laptop
+
 setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"		# rmb/laptop
+
+setenv L2_EXTERNAL_SOFTWARE_PATH "/usr/bin"			# rmb/laptop
 
 # DO NOT ALTER PAST THIS LINE
 # ----------------------------------------------------------------------------------- #
@@ -45,6 +48,8 @@ setenv L2_FRCT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_CORRECT_THROUGHPUT
 setenv L2_FRR_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REBIN
 setenv L2_FRS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_SUBSKY
 setenv L2_FRRF_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REFORMAT
+setenv L2_FAN_BLURB_FILE $L2_MAN_DIR/FRODO_AUX_NUMEXTS
+setenv L2_FAS_BLURB_FILE $L2_MAN_DIR/FRODO_AUX_SPEC2TSV
 
 setenv L2_EXEC_BLURB_FILE $L2_MAN_DIR/L2_EXEC
 
@@ -75,6 +80,8 @@ alias imcopy $L2_BIN_DIR/imcopy
 alias liststruc $L2_BIN_DIR/liststruc
 
 alias frspec2tsv $L2_BIN_DIR/frspec2tsv
+alias frnumexts $L2_BIN_DIR/frnumexts
+alias frfindcentroid $L2_BIN_DIR/frfindcentroid
 
 ##################
 # Script aliases #
@@ -105,15 +112,15 @@ echo $date >> $L2_VERSION_FILE
 # Create time log file ($L2_TIME_LOG_PATH) and fail log file ($L2_FAIL_LOG_PATH) if it doesn't exist #
 ######################################################################################################
 
-if (! -e $L2_TIME_LOG_PATH) then
+if (! -e $L2_SUCCESS_LOG_PATH) then
 
-	echo "L2_TIME_LOG\n\nConfig\tExecution Time (s)\n" > $L2_TIME_LOG_PATH
+	echo "L2_SUCCESS_LOG\n\nStart Timestamp,Target File,Arc File,Continuum File,Configuration,Execution Time (s),Number of filled HDUs,Warning Message" > $L2_SUCCESS_LOG_PATH
 
 endif
 
 if (! -e $L2_FAIL_LOG_PATH) then 
 
-	echo "L2_FAIL_LOG\n\nTarget File\tArc File\tContinuum File\tError Message\n" > $L2_FAIL_LOG_PATH
+	echo "L2_FAIL_LOG\n\nStart Timestamp,Target File,Arc File,Continuum File,Error Message" > $L2_FAIL_LOG_PATH
 
 endif
 

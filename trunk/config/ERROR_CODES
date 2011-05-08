@@ -1,7 +1,7 @@
 # DO NOT MODIFY FORMAT
 #
 # File:				ERROR_CODES
-# Last Modified Date:     	01/05/11
+# Last Modified Date:     	08/05/11
 #
 
 # key		code	comment	
@@ -58,8 +58,9 @@ L2STATEX	-8	Failed to read row of input frame
 L2STATEX	-9	Failed to write output img
 L2STATEX	-10	Failed to create output img
 L2STATEX	-11	Failed to create output FITS file (ARG 4)
-L2STATEX	-12	Failed to close input FITS file (ARG 1)
-L2STATEX	-13	Failed to close output FITS file (ARG 4)
+L2STATEX	-12	Failed to close [FRTRACE_OUTPUTF_TRACES_FILE] file
+L2STATEX	-13	Failed to close input FITS file (ARG 1)
+L2STATEX	-14	Failed to close output FITS file (ARG 4)
 
 L2STATAR	3	Possible poor fit, χ² not within [FRARCFIT_VAR_CHISQUARED_MIN] and [FRARCFIT_VAR_CHISQUARED_MAX]
 L2STATAR	2	Distribution of matched arc lines may not be well sampled over the wavelength range
@@ -97,14 +98,14 @@ L2STATAR	-29	Failed to create output target FITS file (ARG 16)
 L2STATAR	-30	Failed to write output continuum img
 L2STATAR	-31	Failed to create output continuum img
 L2STATAR	-32	Failed to create output continuum FITS file (ARG 17)
-L2STATAR	-33	Failed to close input arc FITS file (ARG 1)
-L2STATAR	-34	Failed to close input target FITS file (ARG 2)
-L2STATAR	-35	Failed to close input continuum FITS file (ARG 3)
-L2STATAR	-36	Failed to close output arc FITS file (ARG 15)
-L2STATAR	-37	Failed to close output target FITS file (ARG 16)
-L2STATAR	-38	Failed to close output continuum FITS file (ARG 17)
-L2STATAR	-39	Failed to close arc line list reference file (ARG 11)
-L2STATAR	-40	Failed to close [FRARCFIT_OUTPUTF_WAVFITS_FILE] output file
+L2STATAR	-33	Failed to close arc line list reference file (ARG 11)
+L2STATAR	-34	Failed to close [FRARCFIT_OUTPUTF_WAVFITS_FILE] output file
+L2STATAR	-35	Failed to close input arc FITS file (ARG 1)
+L2STATAR	-36	Failed to close input target FITS file (ARG 2)
+L2STATAR	-37	Failed to close input continuum FITS file (ARG 3)
+L2STATAR	-38	Failed to close output arc FITS file (ARG 15)
+L2STATAR	-39	Failed to close output target FITS file (ARG 16)
+L2STATAR	-40	Failed to close output continuum FITS file (ARG 17)
 
 L2STATCO	1	Failed to get L2_FRCT_BLURB_FILE environment variable
 L2STATCO	0	No errors encountered
@@ -128,10 +129,10 @@ L2STATCO	-17	Failed to read row of target frame
 L2STATCO	-18	Failed to write output target img
 L2STATCO	-19	Failed to create output target img
 L2STATCO	-20	Failed to create output target FITS file (ARG 5)
-L2STATCO	-21	Failed to close input target FITS file (ARG 1)
-L2STATCO	-22	Failed to close input continuum FITS file (ARG 2)
-L2STATCO	-23	Failed to close output target FITS file (ARG 5)
-L2STATCO	-24	Failed to close dispersion solutions file
+L2STATCO	-21	Failed to close dispersion solutions file
+L2STATCO	-22	Failed to close input target FITS file (ARG 1)
+L2STATCO	-23	Failed to close input continuum FITS file (ARG 2)
+L2STATCO	-24	Failed to close output target FITS file (ARG 5)
 
 L2STATRE	1	Failed to get L2_FRR_BLURB_FILE environment variable
 L2STATRE	0	No errors encountered
@@ -149,9 +150,10 @@ L2STATRE	-11	Failed to create [FRREBIN_OUTPUTF_REBIN_WAVFITS_FILE] output file
 L2STATRE	-12	Failed to write output target img
 L2STATRE	-13	Failed to create output target img
 L2STATRE	-14	Failed to create output target FITS file (ARG 7)
-L2STATRE	-15	Failed to close input target FITS file (ARG 1)
-L2STATRE	-16	Failed to close output target FITS file (ARG 7)
-L2STATRE	-17	Failed to close dispersion solutions file
+L2STATRE	-15	Failed to close dispersion solutions file
+L2STATRE	-16	Failed to close [FRREBIN_OUTPUTF_REBIN_WAVFITS_FILE] file
+L2STATRE	-17	Failed to close input target FITS file (ARG 1)
+L2STATRE	-18	Failed to close output target FITS file (ARG 7)
 
 L2STATSU	1	Failed to get L2_FRS_BLURB_FILE environment variable
 L2STATSU	0	No errors encountered
@@ -167,26 +169,39 @@ L2STATSU	-9	Failed to write output target img
 L2STATSU	-10	Failed to create output target img
 L2STATSU	-11	Failed to create output target FITS file (ARG 4)
 
+L2STATRF	6	Failed to write checksum for output file (ARG 4)
+L2STATRF	5	Failed to write error codes file to header of output file (ARG 4)
+L2STATRF	4	Failed to write STARTDATE additional key to header of output file (ARG 4)
+L2STATRF	3	Failed to write CALIBRATION additional key to header of output file (ARG 4)
 L2STATRF	2	Failed to get L2_FITS_KEYS_TO_ACTION_FILE environment variable, unable to write headers from headers file (ARG 2)
 L2STATRF	1	Failed to get L2_FRRF_BLURB_FILE environment variable
 L2STATRF	0	No errors encountered
 L2STATRF	-1	Failed on command line
-L2STATRF	-2	Failed to create output FITS file (ARG 4)
-L2STATRF	-3	Failed to open output FITS fits (ARG 4)
-L2STATRF	-4	Failed to open headers FITS fits (ARG 4)
-L2STATRF	-5	Failed to get number of HDUs in output FITS file (ARG 4)
-L2STATRF	-6	Failed to get image parameters of input frame
-L2STATRF	-7	Failed to open input FITS file (ARG 1)
-L2STATRF	-8	Failed to create output img
-L2STATRF	-9	Failed to copy data from primary extension of input file (ARG 1) to current extension of output file (ARG 4)
-L2STATRF	-10	Failed to get hdrspace from input file (ARG 1)
-L2STATRF	-11	Failed to read record from input file (ARG 1)
-L2STATRF	-12	Failed to get hdrspace from headers file (ARG 2)
-L2STATRF	-13	Failed to read record from headers file (ARG 2)
-L2STATRF	-14	Failed to close input FITS file (ARG 1)
-L2STATRF	-15	Failed to close headers FITS file (ARG 2)
-L2STATRF	-16	Failed to close output FITS file (ARG 4)
-
-
-
+L2STATRF	-2	Operation not recognised (ARG 3)
+L2STATRF	-3	Failed to get image parameters of input frame
+L2STATRF	-4	Failed to open input FITS file (ARG 1)
+L2STATRF	-5	Failed to open headers FITS fits (ARG 2)
+L2STATRF	-6	Failed to create output FITS file (ARG 4)
+L2STATRF	-7	Failed to open output FITS fits (ARG 4)
+L2STATRF	-8	Failed to get number of HDUs in output FITS file (ARG 4)
+L2STATRF	-9	Failed to create output img (BLANK)
+L2STATRF	-10	Failed to create output img (COPY)
+L2STATRF	-11	Failed to copy data (COPY)
+L2STATRF	-12	Failed to read row of input frame (DATACUBE)
+L2STATRF	-13	Failed to create output img (DATACUBE)
+L2STATRF	-14	Failed to write output img (DATACUBE)
+L2STATRF	-15	Failed to read row of input frame (SPECTRUM)
+L2STATRF	-16	Failed to create output img (SPECTRUM)
+L2STATRF	-17	Failed to write output img (SPECTRUM)
+L2STATRF	-18	Failed to read row of input frame (IFU BUNDLE)
+L2STATRF	-19	Failed to create output img (IFU BUNDLE)
+L2STATRF	-20	Failed to write output img (IFU BUNDLE)
+L2STATRF	-21	Failed to write EXTNAME key to output frame
+L2STATRF	-22	Failed to get hdrspace from input file (ARG 1)
+L2STATRF	-23	Failed to read record from input file (ARG 1)
+L2STATRF	-24	Failed to get hdrspace from headers file (ARG 2)
+L2STATRF	-25	Failed to read record from headers file (ARG 2)
+L2STATRF	-26	Failed to close input FITS file (ARG 1)
+L2STATRF	-27	Failed to close headers FITS file (ARG 2)
+L2STATRF	-28	Failed to close output FITS file (ARG 4)
 

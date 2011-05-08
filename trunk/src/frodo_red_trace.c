@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_trace.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	08/05/11
 
 ************************************************************************/
 
@@ -33,9 +33,11 @@ int main(int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRT_BLURB_FILE);
+			print_file(FRT_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -1, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -84,7 +86,7 @@ int main(int argc, char *argv []) {
 
 		while(!feof(inputfile)) {
 
-			if ((find_ymin_comment == 1) && (find_ymax_comment == 1) && (find_ybad_comment == 1)) {		// have we found what we need?
+			if ((find_ymin_comment == TRUE) && (find_ymax_comment == TRUE) && (find_ybad_comment == TRUE)) {		// have we found what we need?
 
 				break;
 
@@ -97,40 +99,46 @@ int main(int argc, char *argv []) {
 			if (strncmp(input_string, search_string_1, strlen(search_string_1)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &y_min);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_ymin_comment = 1;
+				find_ymin_comment = TRUE;
 
 
 			} else if (strncmp(input_string, search_string_2, strlen(search_string_2)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &y_max);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_ymax_comment = 1;
+				find_ymax_comment = TRUE;
 
 
 			} else if (strncmp(input_string, search_string_3, strlen(search_string_3)) == 0) { 
 
 				sscanf(input_string, "%*[^\t]%d", &y_bad);		// read all data up to tab as string ([^\t]), but do not store (*)
-				find_ybad_comment = 1;
+				find_ybad_comment = TRUE;
 
 
 			} 
 
 		}
 
-		if (find_ymin_comment != 1) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
+		if (find_ymin_comment == FALSE) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -3, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1;
 
-		} else if (find_ymax_comment != 1) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
+		} else if (find_ymax_comment == FALSE) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -4, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1;
 
-		} else if (find_ybad_comment != 1) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
+		} else if (find_ybad_comment == FALSE) {	// error check - didn't find the comment in the [FRCLEAN_OUTPUTF_PEAKSCLEANSED_FILE] input file
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -5, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(inputfile);
 
 			return 1;
 
@@ -144,6 +152,8 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -6, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1; 
 
 		}
@@ -153,6 +163,8 @@ int main(int argc, char *argv []) {
 		if (bins > range) { 								// Check there aren't more bins than rows available
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -7, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(inputfile);
 
 			return 1; 
 
@@ -196,6 +208,8 @@ int main(int argc, char *argv []) {
 		if ((min_rows_per_bin > bins) || (min_rows_per_bin == 0)) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -8, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(inputfile);
 
 			return 1; 
 
@@ -274,6 +288,8 @@ int main(int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -9, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			fclose(inputfile);
+
 			return 1;
 
 
@@ -332,6 +348,9 @@ int main(int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -10, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+				fclose(inputfile);
+				fclose(outputfile);
+
 				return 1; 
 
 			}
@@ -389,6 +408,8 @@ int main(int argc, char *argv []) {
 		if (fclose(inputfile)) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATTR", -11, "Status flag for L2 frtrace routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			fclose(outputfile);
 
 			return 1; 
 

@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_subsky.c
- Last Modified Date:     	01/05/11
+ Last Modified Date:     	05/05/11
 
 ************************************************************************/
 
@@ -35,9 +35,11 @@ int main (int argc, char *argv []) {
 
 			RETURN_FLAG = 1;
 
-		}
+		} else {
 
-		print_file(FRS_BLURB_FILE);
+			print_file(FRS_BLURB_FILE);
+
+		}
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -1, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
@@ -71,6 +73,11 @@ int main (int argc, char *argv []) {
 
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -2, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+					free(reb_cor_cc_ext_target_f);
+					free(ss_reb_cor_cc_ext_target_f);
+
+					if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 					return 1;
 	
 				}
@@ -80,6 +87,11 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -3, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
 
+				free(reb_cor_cc_ext_target_f);
+				free(ss_reb_cor_cc_ext_target_f);
+
+				if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 				return 1; 
 
 			}
@@ -88,6 +100,9 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -4, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
+
+			free(reb_cor_cc_ext_target_f);
+			free(ss_reb_cor_cc_ext_target_f);
 
 			return 1; 
 
@@ -154,6 +169,11 @@ int main (int argc, char *argv []) {
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -5, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, reb_cor_cc_ext_target_f_status); 
 
+				free(reb_cor_cc_ext_target_f);
+				free(ss_reb_cor_cc_ext_target_f);
+
+				if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 				return 1; 
 
 			}
@@ -181,11 +201,21 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -6, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(reb_cor_cc_ext_target_f);
+			free(ss_reb_cor_cc_ext_target_f);
+
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 			return 1; 	
 
 		} else if (num_sky_fibres == 0) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -7, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
+
+			free(reb_cor_cc_ext_target_f);
+			free(ss_reb_cor_cc_ext_target_f);
+
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
 
 			return 1; 	
 
@@ -258,6 +288,11 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -8, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
+			free(reb_cor_cc_ext_target_f);
+			free(ss_reb_cor_cc_ext_target_f);
+
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 			return 1; 
 
 		}
@@ -309,6 +344,12 @@ int main (int argc, char *argv []) {
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -9, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 					fits_report_error(stdout, ss_reb_cor_cc_ext_target_f_status); 
 
+					free(reb_cor_cc_ext_target_f);
+					free(ss_reb_cor_cc_ext_target_f);
+
+					if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+					if(fits_close_file(ss_reb_cor_cc_ext_target_f_ptr, &ss_reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, ss_reb_cor_cc_ext_target_f_status); 
+
 					return 1; 
 
 				}
@@ -317,6 +358,12 @@ int main (int argc, char *argv []) {
 
 				write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -10, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 				fits_report_error(stdout, ss_reb_cor_cc_ext_target_f_status); 
+
+				free(reb_cor_cc_ext_target_f);
+				free(ss_reb_cor_cc_ext_target_f);
+
+				if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+				if(fits_close_file(ss_reb_cor_cc_ext_target_f_ptr, &ss_reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, ss_reb_cor_cc_ext_target_f_status); 
 
 				return 1; 
 
@@ -327,9 +374,20 @@ int main (int argc, char *argv []) {
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -11, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error(stdout, ss_reb_cor_cc_ext_target_f_status); 
 
+			free(reb_cor_cc_ext_target_f);
+			free(ss_reb_cor_cc_ext_target_f);
+
+			if(fits_close_file(reb_cor_cc_ext_target_f_ptr, &reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
 			return 1; 
 
 		}
+
+		// ***********************************************************************
+		// Clean up heap memory
+
+		free(reb_cor_cc_ext_target_f);
+		free(ss_reb_cor_cc_ext_target_f);
 
 		// ***********************************************************************
 		// Close input file (ARG 1) and output file (ARG 4)
@@ -338,6 +396,8 @@ int main (int argc, char *argv []) {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -12, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
 			fits_report_error (stdout, reb_cor_cc_ext_target_f_status); 
+
+			if(fits_close_file(ss_reb_cor_cc_ext_target_f_ptr, &ss_reb_cor_cc_ext_target_f_status)) fits_report_error (stdout, ss_reb_cor_cc_ext_target_f_status); 
 
 			return 1; 
 
@@ -353,12 +413,6 @@ int main (int argc, char *argv []) {
 	    	}
 
 		// ***********************************************************************
-		// Clean up heap memory
-
-		free(reb_cor_cc_ext_target_f);
-		free(ss_reb_cor_cc_ext_target_f);
-
-		// ***********************************************************************
 		// Write success to [ERROR_CODES_FILE]
 
 		write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", RETURN_FLAG, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -368,3 +422,4 @@ int main (int argc, char *argv []) {
 	}
 
 }
+
