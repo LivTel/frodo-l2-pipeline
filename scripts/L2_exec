@@ -536,6 +536,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (ARC)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -557,6 +558,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (TARGET)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -578,6 +580,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (CONT)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -695,6 +698,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (ARC)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -716,6 +720,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (TARGET)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -737,6 +742,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (CONT)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -854,6 +860,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (ARC)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -875,6 +882,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (TARGET)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -896,6 +904,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (CONT)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -1013,6 +1022,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (ARC)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXA\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -1034,6 +1044,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (TARGET)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXT\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
@@ -1055,6 +1066,7 @@ if (`cat error_codes | grep -c L2STATEX` == 1) then
 	set EX_COMMENT = "$EX_COMMENT (CONT)"
 	sed -e '/L2STATEX/d' error_codes > error_codes_tmp
 	cat error_codes_tmp > error_codes
+	rm -f error_codes_tmp
 	echo "L2STATXC\t"$EX_VALUE"\t"$EX_COMMENT >> error_codes
 else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
