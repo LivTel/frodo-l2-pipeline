@@ -998,6 +998,12 @@ int main (int argc, char *argv []) {
 
 		} else if (!strcmp(operation, "COLCUBE_NONSS")) {
 
+			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "COLCUBE_CALIBRATION", 2, &output_f_status) == 1) {
+
+				RETURN_FLAG = 3;
+	
+			}
+
 			if (write_additional_keys_file_to_header(ADDITIONAL_KEYS_FILE, output_f_ptr, "STARTDATE", 2, &output_f_status) == 1) {
 
 				RETURN_FLAG = 4;
