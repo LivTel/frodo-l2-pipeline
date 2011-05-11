@@ -29,15 +29,15 @@ RM		= /bin/rm
 # $(LIBS) flag #
 ################
 
-#LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#		rmb/laptop
-LIBS		= -L/space/home/dev/src/cfitsio3200 -L$(L2_LIB_DIR)#									lt/ltdevsrv
+LIBS		= -L$(L2_LIB_DIR)#						rmb/laptop
+#LIBS		= -L/space/home/dev/src/cfitsio3200 -L$(L2_LIB_DIR)#		lt/ltdevsrv
 
 ####################
 # $(INCLUDES) flag #
 ####################
 
-#INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop
-INCLUDES	= -I/space/home/dev/src/cfitsio3200 -I/usr/include/gsl#		lt/ltdevsrv
+INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop
+#INCLUDES	= -I/space/home/dev/src/cfitsio3200 -I/usr/include/gsl#		lt/ltdevsrv
 
 ################
 # make default #

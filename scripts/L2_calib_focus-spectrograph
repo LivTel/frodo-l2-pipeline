@@ -1,0 +1,444 @@
+#!/bin/csh
+
+# ***************************************************************************
+# FRODO_SPECFOCUS - A SPECTROGRAPH FOCUS AND THROUGHPUT SCRIPT FOR FRODOSPEC
+# ***************************************************************************
+
+# !! CONFIG SPECIFIC VARIABLES !!
+
+set pipelined	=	0	# DEFINES IF THE INPUT IS PIPELINE PROCESSED
+
+# SOURCE SCRIPTS
+
+source $STARLINK_DIR/etc/login
+source $STARLINK_DIR/etc/cshrc
+
+source $script_dir/c-source
+
+# DEFINITIONS AND INPUT
+
+convert > /dev/null
+figaro > /dev/null
+kappa > /dev/null
+
+# FILE CHECK
+
+clear
+
+echo ""
+echo "### frodo_cal ###";
+echo ""
+echo " _____ ____   ___  ____   ___  ____"
+echo "|  ___|  _ \\ / _ \\|  _ \\ / _ \\/ ___| _ __   ___  ___"
+echo "| |_  | |_) | | | | | | | | | \\___ \\| '_ \\ / _ \\/ __|"
+echo "|  _| |  _ <| |_| | |_| | |_| |___) | |_) |  __/ (__ "
+echo "|_|   |_| \\_\\\\___/|____/ \\___/|____/| .__/ \\___|\\___|"
+echo "				    |_|"
+echo ""
+echo "An IFU fibre-optic spectrograph for the LT."
+echo ""
+echo "Author: Rob Barnsley (LJMU)"
+echo "Email: rmb@astro.livjm.ac.uk"
+echo ""
+
+if ($#argv == "3" || ! -e "$1" || ! -e "$2") then
+
+	echo "Usage: frodo_cal sky_file arc_file";
+	echo ""
+	echo "Synopsis:"
+	echo ""
+	echo "The L2 prototype pipeline for FRODOSpec."
+	echo 
+	echo "ERROR: Check your input."
+	echo
+	goto error
+
+else 
+
+	##############################################
+	## 1) MAKE DIRECTORIES AND COPY REQUIRED FILES
+	##############################################
+
+	set dir = `basename $2 .fits`
+	mkdir $dir
+
+	cp $1 $dir
+	cp $2 $dir
+
+	cd $dir
+
+	## SET INPUT ARC/SKY FILENAMES
+
+	set arc_file = `basename $2`
+	set sky_file = `basename $1`
+
+	## PROBE HEADERS FOR KEYS
+
+	set arc_dateval = `frkeyval $arc_file DATE-OBS`
+	set sky_dateval = `frkeyval $sky_file DATE-OBS`
+	set arc_gratval = `frkeyval $arc_file GRATID`
+	set sky_gratval = `frkeyval $sky_file GRATID`
+
+	##############################################
+	## 2) DEBIAS AND TRIM IF NOT PIPELINE PROCESSED
+	###############################################
+
+	if ($pipelined == 0) then
+
+		## SET SOME INTERMEDIATE FILENAME TARGETS
+
+		set arc_file_debias = arc_file_debias
+		set sky_file_debias = sky_file_debias
+	
+		set arc_file_processed = arc_file_processed.fits	
+		set sky_file_processed = sky_file_processed.fits
+
+		set new_arc_file = new_arc_file.fits
+		set new_sky_file = new_sky_file.fits
+
+		## SET SOME DEBIAS/CUT RANGE PARAMETERS
+
+		if ("$arc_gratval" == "Red-High" || "$arc_gratval" == "Red-Low") then
+
+			set debias_range = "[4:65,15:4080]"	
+			set cut_range = "699 1821 1 4096"	
+
+		else if ("$arc_gratval" == "Blue-High" || "$arc_gratval" == "Blue-Low") then
+
+			set debias_range = "[2065:2146,15:4080]"
+			set cut_range = "386 1580 1 4096"	
+
+		endif	
+
+		## EXEC DEBIAS
+
+		set mean_arc = `imstat "$arc_file$debias_range" | grep "mean value" | awk -F ' ' '{print $4}'`
+		icsub $arc_file $mean_arc $arc_file_debias
+		set mean_sky = `imstat "$sky_file$debias_range" | grep "mean value" | awk -F ' ' '{print $4}'`
+		icsub $sky_file $mean_sky $sky_file_debias
+
+		ndf2fits $arc_file_debias $arc_file_processed
+		ndf2fits $sky_file_debias $sky_file_processed		
+
+		# EXEC TRIM
+
+		frsubset $arc_file_processed $new_arc_file $cut_range
+		frsubset $sky_file_processed $new_sky_file $cut_range
+
+		# RESET INPUT ARC/SKY FILENAMES TO PROCESSED FILES
+
+		set arc_file = $new_arc_file
+		set sky_file = $new_sky_file
+
+	endif
+
+	####################################################
+	## 3) CREATE GNUPLOT FILE AND SET INITIAL PARAMETERS
+	####################################################
+
+	echo 'set term png size 1280,1024' > plot_$arc_dateval.p
+	echo 'set output "focus.png"' >> plot_$arc_dateval.p
+
+	##########################################################
+	## 4) TRACE AND EXTRACT ARC/SKY FILES WITH NON-LINEAR POLY
+	##########################################################
+
+	echo ""
+	echo "###################################"
+	echo "1: Find peaks in sky file. (frfind)"
+	echo "###################################"
+
+	frfind $sky_file 3 3 0 100 2 1000
+
+	echo "####################################################"
+	echo "2: Clean peak sky file of suspect entries. (frclean)"
+	echo "####################################################"
+
+	frclean 15
+	
+	echo "#####################################"
+	echo "3: Trace peaks in sky file. (frtrace)"
+	echo "#####################################"
+
+	frtrace 2 100
+
+	echo "#############################################"
+	echo "4: Extract sky file using tracing. (frtrace)"
+	echo "#############################################"
+
+	set arc_ext = arc_ext.fits
+	set flat_ext = flat_ext.fits
+	frextract $arc_file $arc_ext pix 3
+	frextract $sky_file $flat_ext pix 3
+
+	##########################################################
+	## 5) FOCUS MEASUREMENT
+	##########################################################
+
+	## SET SOME PARAMETERS
+
+	if ("$arc_gratval" == "Blue-Low") then
+		set emlt_maxlines =	13
+	else if ("$arc_gratval" == "Blue-High") then	
+		set emlt_maxlines =	25
+	else if ("$arc_gratval" == "Red-Low") then
+		set emlt_maxlines =	16
+	else if ("$arc_gratval" == "Red-High") then	
+		set emlt_maxlines =	22
+	endif
+
+	set range_lo		=	1000
+	set range_hi		=	4000	
+
+	set fibres_to_coadd	=	2			# SHOULD BE AN EVEN NUMBER		
+
+	## EMLT (ALL)
+
+	emlt $arc_ext $range_lo $range_hi $emlt_maxlines
+
+	set i=`cat emlt.lis | wc -l`
+	set j=1
+	set k=0
+	set fibre_count = 1
+	set MEANS = ""
+	set mean_fwhm_total = 0
+	set fibres = 144
+
+	while ($j <= $i)
+
+		set line=`cat emlt.lis | head -$j | tail -1`
+
+		if (`echo $line | grep -c "Spectrum"` == 1) then	## WHAT SPECTRUM ARE WE DEALING WITH?
+
+			if ($k > 0) then
+				
+				echo "" >> dispersion_focus
+				echo "" >> dispersion_focus
+
+			endif
+
+			@ k = $k + 1	
+
+		endif
+
+		if (`echo $line | grep -c " -- "` == 1) then		## VALID LINE
+
+			set wavelength = `echo $line | awk -F " -- " '{print $1}'`
+			set fwhm = `echo $line | awk -F " -- " '{print $2}'`
+
+			echo "$wavelength	$fwhm" >> dispersion_focus
+			
+		endif
+
+		if (`echo $line | grep -c "Mean fullwidth at half maximum"` == 1) then		## MEAN COUNT
+
+			set mean = `echo $line | awk -F " " '{print $7}'`
+
+			set mean_fwhm_total = `echo "scale = 3; $mean_fwhm_total + $mean" | bc`
+
+			set MEANS = "$MEANS $mean"
+
+			@ fibre_count = $fibre_count + 1
+			
+		endif
+
+		@ j = $j + 1
+
+	end
+
+	set MEANS = ($MEANS)
+	set MEAN_FWHM = `echo "scale = 3; $mean_fwhm_total / $fibres" | bc`
+
+	## CALCULATE STANDARD DEVIATION OF ENTIRE DATASET
+
+	set sigma_cutoff = 5
+
+	set sigma_total = 0
+	set sigma = 0
+	set k = 1
+
+	while ($k < $fibres)
+
+		set sigma_total = `echo "scale = 3; $sigma_total + ($MEANS[$k] - $MEAN_FWHM)^2" | bc`
+
+		@ k = $k + 1
+
+	end	
+
+	set sigma = `echo "scale=3; $sigma_total / $fibres" | bc`
+
+	set max_deviation = `echo "scale = 3; $sigma * $sigma_cutoff" | bc`
+
+	# CALCULATE AVERAGE SPATIAL SPREAD
+
+	set greatest = 0
+	set least = 1000 # arbitrarily high
+
+	set k = 1
+
+	while ($k < $fibres)
+
+		set greater_flag = `echo "$MEANS[$k] > $greatest" | bc`	
+		set less_flag = `echo "$MEANS[$k] < $least" | bc`		
+
+		if ($k == 1 || $greater_flag == 1) then
+			set greatest = $MEANS[$k]
+		else if ($k == 1 || $less_flag == 1) then
+			set least = $MEANS[$k]
+		endif
+
+		@ k = $k + 1
+
+	end
+
+	set spatial_spread = `echo "scale=3; $greatest - $least" | bc`	
+
+	## FILTER SOME "BAD" DATA
+
+	set sigma_cutoff = 3
+
+	set i=`cat dispersion_focus | wc -l`
+	set j=1
+	set fwhm_total = 0
+	set fwhm_av = 0
+	set sigma_total = 0
+	set sigma = 0;
+
+	set FWHMS = ""
+	set WAVELENGTHS = ""
+
+	while ($j <= $i)
+
+		set k=1
+
+		set line=`cat dispersion_focus | head -$j | tail -1`
+
+		if ("$line" != "") then
+
+			set wavelength	= `echo $line | awk -F ' ' '{print $1}'`
+			set fwhm	= `echo $line | awk -F ' ' '{print $2}'`
+
+			set FWHMS = "$FWHMS $fwhm"
+			set WAVELENGTHS = "$WAVELENGTHS $wavelength"
+
+			set fwhm_total = `echo "$fwhm + $fwhm_total" | bc` 
+
+		else if ("$line" == "") then
+
+			if ($fwhm_total != 0) then
+				set FWHMS = ($FWHMS)
+				set WAVELENGTHS = ($WAVELENGTHS)
+				set fwhm_av = `echo "scale = 3; $fwhm_total / $emlt_maxlines" | bc`
+
+				## CALCULATE STANDARD DEVIATION
+
+				while ($k < $emlt_maxlines)
+
+					set sigma_total = `echo "scale = 3; $sigma_total + ($FWHMS[$k] - $fwhm_av)^2" | bc`
+
+					@ k = $k + 1
+
+				end	
+
+				set sigma = `echo "scale=3; $sigma_total / $emlt_maxlines" | bc`
+
+				set max_deviation = `echo "scale = 3; $sigma * $sigma_cutoff" | bc`
+
+				## CREATE NEW FILE
+
+				set k = 1
+
+				while ($k < $emlt_maxlines)
+
+					set deviation = `echo "scale = 3; $FWHMS[$k] - $fwhm_av" | bc`
+
+					set is_negative_deviation = `echo "$deviation < 0" | bc`
+
+					if ($is_negative_deviation == 1) then
+						set deviation = `echo "$deviation * -1" | bc`
+					endif
+
+					# echo "$fwhm_av	$sigma	$deviation	$max_deviation"
+
+					set is_less_than_max_deviation = `echo "$deviation < $max_deviation" | bc`
+
+					if ($is_less_than_max_deviation == 1) then
+						echo "$WAVELENGTHS[$k]	$FWHMS[$k]" >> dispersion_focus_filtered_$arc_dateval
+					endif
+
+					if ($k == $emlt_maxlines - 1) then
+						echo "" >> dispersion_focus_filtered_$arc_dateval
+						echo ""	>> dispersion_focus_filtered_$arc_dateval
+					endif
+
+					@ k = $k + 1
+
+				end	
+
+			endif
+
+			set fwhm_total = 0
+			set FWHMS = ()
+			set WAVELENGTHS = ()
+			set sigma_total = 0
+
+		endif
+
+		@ j = $j + 1
+
+	end
+
+	## WRITE TO GNUPLOT FILE
+
+	echo 'set autoscale' >> plot_$arc_dateval.p
+
+	echo 'set title ""' >> plot_$arc_dateval.p
+
+	echo 'set key left top' >> plot_$arc_dateval.p
+
+	echo 'set xlabel "Dispersion (px)"' >> plot_$arc_dateval.p
+	echo 'set ylabel "FWHM (px)"' >> plot_$arc_dateval.p
+
+	echo 'j(x) = (i * x) + j' >> plot_$arc_dateval.p
+	echo 'fit j(x) "dispersion_focus_filtered_'$arc_dateval'" using 1:2 via i, j' >> plot_$arc_dateval.p 
+
+	echo 'save "gnuplot.log"' >> plot_$arc_dateval.p
+
+	## GET FIT PARAMETERS
+
+	gnuplot plot_$arc_dateval.p		# ascertain fit parameters
+	rm -f focus.png
+
+	set i = `cat gnuplot.log | grep "i =" | awk -F " " '{print $3}'`
+	set j = `cat gnuplot.log | grep "j =" | awk -F " " '{print $3}'`
+
+	set i = `echo $i | awk '{printf ("%20f", $i)}'`
+	set j = `echo $j | awk '{printf ("%20f", $j)}'`
+
+	rm -f gnuplot.log
+
+	## APPEND FIT PARAMETERS TO PLOT
+
+	echo 'plot "dispersion_focus_filtered_'$arc_dateval'" using 1:2 with points title "Average Spatial FWHM spread = '$spatial_spread'" \' >> plot_$arc_dateval.p
+	echo ', j(x) with lines title "Gradient = '$i'"' >> plot_$arc_dateval.p
+	echo "" >> plot_$arc_dateval.p
+
+	##################
+	## 6) CREATE PLOTS
+	##################
+
+	## EXECUTE PLOT FILE	# second run to get image
+
+	gnuplot plot_$arc_dateval.p
+
+	################
+	## 7) VIEW PLOTS
+	################
+
+	eog focus.png
+
+endif
+
+
+error:
+exit 1

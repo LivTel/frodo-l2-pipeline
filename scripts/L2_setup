@@ -9,17 +9,20 @@
 # User defined environment #
 ############################
 
-#setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"	# rmb/laptop
-#setenv L2_BASE_DIR "/space/home/eng/rmb"
-setenv L2_BASE_DIR "/home/eng/rmb/frodo_l2_pipeline/trunk"
+setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"		# rmb/laptop
+#setenv L2_BASE_DIR "/space/home/eng/rmb"			# lt/ltdevsrv
+#setenv L2_BASE_DIR "/home/eng/rmb/frodo_l2_pipeline/trunk"	# lt/lt-archive
 
-#setenv L2_SUCCESS_LOG_PATH "/home/rmb/Desktop/L2_success.log"	# rmb/laptop
-setenv L2_SUCCESS_LOG_PATH "/home/eng/rmb/L2_success.log"	# lt/lt-archive
+setenv L2_SUCCESS_LOG_PATH "/home/rmb/Desktop/L2_success.log"	# rmb/laptop
+#setenv L2_SUCCESS_LOG_PATH "/home/eng/rmb/L2_success.log"	# lt/lt-archive
 
-#setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"	# rmb/laptop
-setenv L2_FAIL_LOG_PATH "/home/eng/rmb/L2_fail.log"		# lt/lt-archive
+setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"		# rmb/laptop
+#setenv L2_FAIL_LOG_PATH "/home/eng/rmb/L2_fail.log"		# lt/lt-archive
 
-setenv LD_LIBRARY_PATH /usr/lib:/usr/lib/gsl			# lt/lt-archive
+setenv LD_LIBRARY_PATH /usr/lib:/usr/lib/gsl			# rmb/laptop
+#setenv LD_LIBRARY_PATH /usr/lib:/usr/lib/gsl			# lt/lt-archive
+
+setenv L2_EXTERNAL_SOFTWARE_PATH "/usr/bin"			# all
 
 # DO NOT ALTER PAST THIS LINE
 # ----------------------------------------------------------------------------------- #
@@ -58,14 +61,44 @@ setenv L2_EXEC_BLURB_FILE $L2_MAN_DIR/L2_EXEC
 
 setenv L2_VERSION_FILE $L2_MAN_DIR/VERSION
 
-setenv L2_EXTERNAL_SOFTWARE_PATH "/usr/bin"
-
 ################
 # Set up shell #
 ################
 
 limit stacksize unlimited
-source $L2_SCRIPT_DIR/L2_aliases
+
+################
+# Core aliases #
+################
+
+alias frfind $L2_BIN_DIR/frfind
+alias frclean $L2_BIN_DIR/frclean
+alias frtrace $L2_BIN_DIR/frtrace
+alias frextract $L2_BIN_DIR/frextract
+alias frarcfit $L2_BIN_DIR/frarcfit
+alias frcorrect $L2_BIN_DIR/frcorrect
+alias frrebin $L2_BIN_DIR/frrebin
+alias frsubsky $L2_BIN_DIR/frsubsky
+alias frreformat $L2_BIN_DIR/frreformat
+
+alias modhead $L2_BIN_DIR/modhead
+alias imcopy $L2_BIN_DIR/imcopy
+alias liststruc $L2_BIN_DIR/liststruc
+
+alias frspec2tsv $L2_BIN_DIR/frspec2tsv
+alias frnumexts $L2_BIN_DIR/frnumexts
+alias frfindcentroid $L2_BIN_DIR/frfindcentroid
+
+##################
+# Script aliases #
+##################
+
+chmod +x $L2_SCRIPT_DIR/* 
+
+alias l2rfr $L2_SCRIPT_DIR/L2_calib_reduce-focus-run
+alias l2v cat $L2_MAN_DIR/VERSION
+
+alias l2exec $L2_SCRIPT_DIR/L2_exec
 
 ###########################
 # Update man/VERSION file #
