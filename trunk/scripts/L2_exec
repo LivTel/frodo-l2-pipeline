@@ -7,6 +7,8 @@
 
 reset
 
+source $L2_SCRIPT_DIR/L2_aliases
+
 cat $L2_HEADER_FILE
 echo "Revision:      " `cat $L2_VERSION_FILE | grep "Revision" | awk -F " " '{print $4}'` "("`cat $L2_VERSION_FILE | grep "Date" | awk -F " " '{print $4}'`")\n"
 
