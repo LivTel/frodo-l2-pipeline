@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	09/05/11
+ Last Modified Date:     	11/05/11
 
 ************************************************************************/
 
@@ -979,7 +979,13 @@ int print_file(char text_file [200]) {
  Function:              strdup
  Last Modified Date:    09/05/11
  Purpose:               duplicates a string
- Required By:           
+ Required By:           frodo_red_findpeaks_simple.c
+			frodo_red_extract_simple.c
+			frodo_red_arcfit.c
+			frodo_red_correct_throughput.c
+			frodo_red_rebin.c
+			frodo_red_subsky.c
+			frodo_red_reformat.c
  Additional Notes:      None
 
 ************************************************************************/

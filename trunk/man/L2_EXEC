@@ -3,7 +3,6 @@
 Usage:	L2_exec	target_file
 		arc_file
 		continuum_file
-		verbose
 
 Synopsis:
 
@@ -12,10 +11,10 @@ Executes the FRODOSpec L2 pipeline.
 Description:
 
 A target file [target_file], arc file [arc_file] and continuum file [continuum_file] must be
-supplied as input. The verbose flag is set to either 0 (FALSE) or 1 (TRUE). 
+supplied as input.
 
 Example:
 
-L2_exec target_file.fits arc_file.fits continuum_file.fits 1
+L2_exec target_file.fits arc_file.fits continuum_file.fits
 
 ##################################################################################################
