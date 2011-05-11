@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   08/05/11 #
+# Last Modified Date:   11/05/11 #
 ##################################
 
 #############################
@@ -14,7 +14,7 @@ AR		= /usr/bin/ar
 # compiler flags #
 ##################
 
-CFLAGS		= -Wall -g
+CFLAGS		= -Wall -g -std=c99
 
 #########################
 # csh terminal commands #
@@ -29,15 +29,15 @@ RM		= /bin/rm
 # $(LIBS) flag #
 ################
 
-#LIBS 		= /space/home/eng/frodo_pipeline/cfitsio3.13/lib/libcfitsio.a /usr/lib/libm.a# 					RMB/DEPLOY/LTDEVSRV
-LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#	RMB/DEVEL/LAPTOP
+#LIBS		= /usr/lib/libcfitsio.so /usr/lib/libm.so /usr/lib/libgsl.so /usr/lib/libgslcblas.so $(L2_LIB_DIR)/libfrodo.a#		rmb/laptop
+LIBS		= -L/space/home/dev/src/cfitsio3200 -L$(L2_LIB_DIR)#									lt/ltdevsrv
 
 ####################
 # $(INCLUDES) flag #
 ####################
 
-#INCLUDES	= -I/space/home/eng/frodo_pipeline/cfitsio3.13/include#								RMB/DEPLOY/LTDEVSRV
-INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#									RMB/DEVEL/LAPTOP
+#INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop
+INCLUDES	= -I/space/home/dev/src/cfitsio3200 -I/usr/include/gsl#		lt/ltdevsrv
 
 ################
 # make default #
@@ -50,59 +50,59 @@ all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace
 #################
 
 frodo_red_findpeaks_simple: frodo_red_findpeaks_simple.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frfind frodo_red_findpeaks_simple.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_findpeaks_simple.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frfind
 	$(MV) frfind $(L2_BIN_DIR)
 
 frodo_red_findpeaks_simple_clean: frodo_red_findpeaks_simple_clean.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frclean frodo_red_findpeaks_simple_clean.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_findpeaks_simple_clean.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frclean
 	$(MV) frclean $(L2_BIN_DIR)
 
 frodo_red_trace: frodo_red_trace.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frtrace frodo_red_trace.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_trace.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frtrace
 	$(MV) frtrace $(L2_BIN_DIR)
 
 frodo_red_extract_simple: frodo_red_extract_simple.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frextract frodo_red_extract_simple.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_extract_simple.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frextract
 	$(MV) frextract $(L2_BIN_DIR)
 
 frodo_red_arcfit: frodo_red_arcfit.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frarcfit frodo_red_arcfit.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_arcfit.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frarcfit
 	$(MV) frarcfit $(L2_BIN_DIR)
 
 frodo_red_correct_throughput: frodo_red_correct_throughput.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frcorrect frodo_red_correct_throughput.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_correct_throughput.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frcorrect
 	$(MV) frcorrect $(L2_BIN_DIR)		
 
 frodo_red_rebin: frodo_red_rebin.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frrebin frodo_red_rebin.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_rebin.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frrebin
 	$(MV) frrebin $(L2_BIN_DIR)
 
 frodo_red_subsky: frodo_red_subsky.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frsubsky frodo_red_subsky.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_subsky.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frsubsky
 	$(MV) frsubsky $(L2_BIN_DIR)
 
 frodo_red_reformat: frodo_red_reformat.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frreformat frodo_red_reformat.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_reformat.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frreformat
 	$(MV) frreformat $(L2_BIN_DIR)
 
 modhead: modhead.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o modhead modhead.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) modhead.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o modhead
 	$(MV) modhead $(L2_BIN_DIR)	
 
 imcopy: imcopy.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o imcopy imcopy.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) imcopy.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o imcopy
 	$(MV) imcopy $(L2_BIN_DIR)
 
 liststruc: liststruc.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o liststruc liststruc.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) liststruc.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o liststruc
 	$(MV) liststruc $(L2_BIN_DIR)	
 
 frodo_aux_spec2tsv: frodo_aux_spec2tsv.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frspec2tsv frodo_aux_spec2tsv.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_aux_spec2tsv.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frspec2tsv
 	$(MV) frspec2tsv $(L2_BIN_DIR)	
 
 frodo_aux_numexts: frodo_aux_numexts.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) -o frnumexts frodo_aux_numexts.c $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_aux_numexts.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frnumexts
 	$(MV) frnumexts $(L2_BIN_DIR)	
 
 frodo_functions: frodo_functions.c
