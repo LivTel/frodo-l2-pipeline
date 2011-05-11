@@ -1,11 +1,13 @@
-#!/bin/csh
+#!/usr/bin/env tcsh
 
 ##################################
 # L2_exec 			 #
-# Last Modified Date:   06/05/11 #
+# Last Modified Date:   11/05/11 #
 ##################################
 
 reset
+
+source $L2_SCRIPT_DIR/L2_aliases
 
 cat $L2_HEADER_FILE
 echo "Revision:      " `cat $L2_VERSION_FILE | grep "Revision" | awk -F " " '{print $4}'` "("`cat $L2_VERSION_FILE | grep "Date" | awk -F " " '{print $4}'`")\n"
@@ -385,7 +387,7 @@ else
 	set output_L1IMAGE_png_file = $output_file_stem"_"$this_output_ext".png"
 
 	imcopy $output_file"["$this_output_ext"]" $output_L1IMAGE_ext_file
-	/usr/bin/convert $output_L1IMAGE_ext_file -resize 25% -normalize $preview_orientation $output_L1IMAGE_png_file
+	$L2_EXTERNAL_SOFTWARE_PATH/convert $output_L1IMAGE_ext_file -resize 25% -normalize $preview_orientation $output_L1IMAGE_png_file
 
 	########################################
 	# Generate COLCUBE_NONSS preview image #
@@ -397,13 +399,13 @@ else
 	set output_COLCUBENONSS_png_file = $output_file_stem"_"$this_output_ext".png"
 
 	imcopy $output_file"["$this_output_ext"]" $output_COLCUBENONSS_ext_file
-	/usr/bin/convert $output_COLCUBENONSS_ext_file -resize 1000% -normalize $output_COLCUBENONSS_png_file
+	$L2_EXTERNAL_SOFTWARE_PATH/convert $output_COLCUBENONSS_ext_file -resize 1000% -normalize $output_COLCUBENONSS_png_file
 
 	##################################
 	# Montage images		 #
 	##################################
 
-	montage -tile 1x3 -title "L2 Data Product Preview for $output_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non sky subtracted spectrum (SPEC_NONSS)" $output_SPECNONSS_png_file -label "Unextracted spectra (L1_IMAGE)" $output_L1IMAGE_png_file -label "Bundle reconstruction (COLCUBE_NONSS)" $output_COLCUBENONSS_png_file -bordercolor white -border 10 $output_preview_png_file
+	$L2_EXTERNAL_SOFTWARE_PATH/montage -font Courier-Bold -tile 1x3 -title "L2 Data Product Preview for $output_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non sky subtracted spectrum (SPEC_NONSS)" $output_SPECNONSS_png_file -label "Unextracted spectra (L1_IMAGE)" $output_L1IMAGE_png_file -label "Bundle reconstruction (COLCUBE_NONSS)" $output_COLCUBENONSS_png_file -bordercolor white -border 10 $output_preview_png_file
 
 	echo "- L2_exec:\tImage preview creation complete."
 

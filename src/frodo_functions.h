@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.h
- Last Modified Date:     	08/05/11
+ Last Modified Date:     	09/05/11
 
 ************************************************************************/
 
@@ -23,6 +23,7 @@ int median_filter (double [], double [], int, int);
 int populate_img_parameters (char [], fitsfile *, int, int *, int *, long [], int *, char []);
 int populate_env_variable (char [], char []);
 int print_file (char *);
+char * strdup(char *);
 int write_additional_keys_file_to_header(char [], fitsfile *, char [], int, int *);
 int write_additional_key_to_file_dbl (char *, char *, char *, double, char *, char *);
 int write_additional_key_to_file_str (char *, char *, char *, char *, char *, char *);

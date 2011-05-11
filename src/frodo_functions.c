@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	08/05/11
+ Last Modified Date:     	09/05/11
 
 ************************************************************************/
 
@@ -971,6 +971,31 @@ int print_file(char text_file [200]) {
 	}
 
 	return 0;
+
+}
+
+/************************************************************************
+
+ Function:              strdup
+ Last Modified Date:    09/05/11
+ Purpose:               duplicates a string
+ Required By:           
+ Additional Notes:      None
+
+************************************************************************/
+
+char *strdup(const char *str) {
+
+	int n = strlen(str) + 1;
+	char *dup = malloc(n);
+
+	if(dup) {
+
+		strcpy(dup, str);
+
+	}
+
+	return dup;
 
 }
 

@@ -49,8 +49,6 @@ int main(int argc, char *argv []) {
 
 		find_time(time_start);
 
-		printf("%s\n", time_start);
-
 		write_additional_key_to_file_str(ADDITIONAL_KEYS_FILE, "STARTDATE", "L2DATE", time_start, "when this reduction was performed", ADDITIONAL_KEYS_FILE_WRITE_ACCESS);
 
 		// ***********************************************************************
