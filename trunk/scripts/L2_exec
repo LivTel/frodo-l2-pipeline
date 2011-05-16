@@ -2,7 +2,7 @@
 
 ##################################
 # L2_exec 			 #
-# Last Modified Date:   11/05/11 #
+# Last Modified Date:   16/05/11 #
 ##################################
 
 reset
@@ -327,27 +327,26 @@ endif
 
 ###########################################################################################################
 # - STEP 9 -					   			   				  #
-# Check external preview creation software exists in $L2_EXTERNAL_SOFTWARE_PATH and create image previews #
+# Check external preview creation software exists in $L2_EXT_SOFTWARE_PATH_* and create image previews	  #
 # n.b. HDUS are all indexed at 0									  #
 #													  #
 # REQUIRED:												  #
 #													  #
 # - GNUplot	  		   									  #
-# - ImageMagick:convert				 			        			  #
 # - ImageMagick:montage											  #
 ###########################################################################################################
 
-if (`find $L2_EXTERNAL_SOFTWARE_PATH -name gnuplot | grep -c gnuplot` == 0) then
+if (`find $L2_EXT_SOFTWARE_PATH_GNUPLOT -name gnuplot | grep -c gnuplot` == 0) then
 
-	set warning_msg = "! L2_exec:\tgnuplot routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
+	set warning_msg = "! L2_exec:\tgnuplot routine doesn't exist in $L2_EXT_SOFTWARE_PATH_GNUPLOT. No previews were made. (WARNING)"	
 
-else if (`find $L2_EXTERNAL_SOFTWARE_PATH -name convert | grep -c convert` == 0) then
+else if (`find $L2_EXT_SOFTWARE_PATH_IM -name convert | grep -c convert` == 0) then
 
-	set warning_msg = "! L2_exec:\tconvert routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
+	set warning_msg = "! L2_exec:\tconvert routine doesn't exist in $L2_EXT_SOFTWARE_PATH_IM. No previews were made. (WARNING)"	
 
-else if (`find $L2_EXTERNAL_SOFTWARE_PATH -name montage | grep -c montage` == 0) then
+else if (`find $L2_EXT_SOFTWARE_PATH_IM -name montage | grep -c montage` == 0) then
 
-	set warning_msg = "! L2_exec:\tmontage routine doesn't exist in $L2_EXTERNAL_SOFTWARE_PATH. No previews were made. (WARNING)"	
+	set warning_msg = "! L2_exec:\tmontage routine doesn't exist in $L2_EXT_SOFTWARE_PATH_IM. No previews were made. (WARNING)"	
 
 else  	
 
@@ -375,7 +374,7 @@ else
 	echo 'set ylabel "Counts"' 							>> $output_SPECNONSS_gnuplot_file
 	echo 'plot "'$output_SPECNONSS_TSV_file'" index 0 using 1:2 with lines title ""' >> $output_SPECNONSS_gnuplot_file
 
-	gnuplot $output_SPECNONSS_gnuplot_file
+	$L2_EXT_SOFTWARE_PATH_GNUPLOT/gnuplot $output_SPECNONSS_gnuplot_file
 
 	###################################
 	# Generate L1_IMAGE preview image #
@@ -384,10 +383,12 @@ else
 	set this_output_ext = 0
 
 	set output_L1IMAGE_ext_file = $output_file_stem"_"$this_output_ext".fits"
+	set output_L1IMAGE_jpg_file = $output_file_stem"_"$this_output_ext".jpg"
 	set output_L1IMAGE_png_file = $output_file_stem"_"$this_output_ext".png"
 
 	imcopy $output_file"["$this_output_ext"]" $output_L1IMAGE_ext_file
-	$L2_EXTERNAL_SOFTWARE_PATH/convert $output_L1IMAGE_ext_file -resize 25% -normalize $preview_orientation $output_L1IMAGE_png_file
+	FITS2jpeg -fits $output_L1IMAGE_ext_file -jpeg $output_L1IMAGE_jpg_file -nonLinear -quality 100
+	$L2_EXT_SOFTWARE_PATH_IM/convert $output_L1IMAGE_jpg_file -resize 25% $preview_orientation $output_L1IMAGE_png_file
 
 	########################################
 	# Generate COLCUBE_NONSS preview image #
@@ -396,16 +397,18 @@ else
 	set this_output_ext = 7
 
 	set output_COLCUBENONSS_ext_file = $output_file_stem"_"$this_output_ext".fits"
+	set output_COLCUBENONSS_jpg_file = $output_file_stem"_"$this_output_ext".jpg"
 	set output_COLCUBENONSS_png_file = $output_file_stem"_"$this_output_ext".png"
 
 	imcopy $output_file"["$this_output_ext"]" $output_COLCUBENONSS_ext_file
-	$L2_EXTERNAL_SOFTWARE_PATH/convert $output_COLCUBENONSS_ext_file -resize 1000% -normalize $output_COLCUBENONSS_png_file
+	FITS2jpeg -fits $output_COLCUBENONSS_ext_file -jpeg $output_COLCUBENONSS_jpg_file -nonLinear -quality 100
+	$L2_EXT_SOFTWARE_PATH_IM/convert $output_COLCUBENONSS_jpg_file -resize 1000% $output_COLCUBENONSS_png_file
 
 	##################################
 	# Montage images		 #
 	##################################
 
-	$L2_EXTERNAL_SOFTWARE_PATH/montage -font Courier-Bold -tile 1x3 -title "L2 Data Product Preview for $output_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non sky subtracted spectrum (SPEC_NONSS)" $output_SPECNONSS_png_file -label "Unextracted spectra (L1_IMAGE)" $output_L1IMAGE_png_file -label "Bundle reconstruction (COLCUBE_NONSS)" $output_COLCUBENONSS_png_file -bordercolor white -border 10 $output_preview_png_file
+	$L2_EXT_SOFTWARE_PATH_IM/montage -font Courier-Bold -tile 1x3 -title "L2 Data Product Preview for $output_file" -pointsize 17 -geometry 1100x315+0+10 -quality 100 -label "Non sky subtracted spectrum (SPEC_NONSS)" $output_SPECNONSS_png_file -label "Unextracted spectra (L1_IMAGE)" $output_L1IMAGE_png_file -label "Bundle reconstruction (COLCUBE_NONSS)" $output_COLCUBENONSS_png_file -bordercolor white -border 10 $output_preview_png_file
 
 	echo "- L2_exec:\tImage preview creation complete."
 

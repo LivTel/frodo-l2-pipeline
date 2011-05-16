@@ -1,3 +1,10 @@
+#!/usr/bin/env tcsh
+
+##################################
+# L2_aliases 			 #
+# Last Modified Date:   16/05/11 #
+##################################
+
 ################
 # Core aliases #
 ################
@@ -18,7 +25,8 @@ alias liststruc $L2_BIN_DIR/liststruc
 
 alias frspec2tsv $L2_BIN_DIR/frspec2tsv
 alias frnumexts $L2_BIN_DIR/frnumexts
-alias frfindcentroid $L2_BIN_DIR/frfindcentroid
+
+alias FITS2jpeg $L2_BIN_DIR/FITS2jpeg
 
 ##################
 # Script aliases #

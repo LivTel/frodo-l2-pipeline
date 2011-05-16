@@ -23,7 +23,7 @@ CFLAGS		= -Wall -g -std=c99
 CAT		= /bin/cat
 GREP		= /bin/grep
 MV		= /bin/mv
-RM		= /bin/rm
+RM		= /bin/rm -i
 
 ################
 # $(LIBS) flag #
@@ -43,7 +43,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts FITS2jpeg
 
 #################
 # make routines #
@@ -104,6 +104,14 @@ frodo_aux_spec2tsv: frodo_aux_spec2tsv.c libfrodo
 frodo_aux_numexts: frodo_aux_numexts.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_aux_numexts.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frnumexts
 	$(MV) frnumexts $(L2_BIN_DIR)	
+
+FITS2jpeg: FITS2jpeg.c jpegsubs
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) FITS2jpeg.c jpegsubs.o -lcfitsio -ljpeg -lm -o FITS2jpeg 
+	$(MV) FITS2jpeg $(L2_BIN_DIR)
+	$(RM) jpegsubs.o
+
+jpegsubs: jpegsubs.c
+	$(CC) $(CFLAGS) -c jpegsubs.c
 
 frodo_functions: frodo_functions.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c frodo_functions.c
