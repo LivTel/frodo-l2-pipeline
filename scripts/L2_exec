@@ -402,7 +402,7 @@ else
 
 	imcopy $output_file"["$this_output_ext"]" $output_COLCUBENONSS_ext_file
 	FITS2jpeg -fits $output_COLCUBENONSS_ext_file -jpeg $output_COLCUBENONSS_jpg_file -nonLinear -quality 100
-	$L2_EXT_SOFTWARE_PATH_IM/convert $output_COLCUBENONSS_jpg_file -normalize -resize 1000% $output_COLCUBENONSS_png_file
+	$L2_EXT_SOFTWARE_PATH_IM/convert $output_COLCUBENONSS_jpg_file -normalize -filter point -resize 1000% $output_COLCUBENONSS_png_file
 
 	##################################
 	# Montage images		 #
