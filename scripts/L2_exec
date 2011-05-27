@@ -2,7 +2,7 @@
 
 ##################################
 # L2_exec 			 #
-# Last Modified Date:   16/05/11 #
+# Last Modified Date:   27/05/11 #
 ##################################
 
 reset
@@ -512,7 +512,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 3 30 | tee $this_log_file
+frclean 3 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -674,7 +674,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 3 30 | tee $this_log_file
+frclean 3 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -836,7 +836,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 15 30 | tee $this_log_file
+frclean 15 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -998,7 +998,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 15 30 | tee $this_log_file
+frclean 15 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
