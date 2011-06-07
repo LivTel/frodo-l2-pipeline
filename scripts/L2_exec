@@ -75,7 +75,7 @@ if ($#argv == "3") then
 		set arc_file = `basename $arc_file`
 		set continuum_file = `basename $continuum_file`
 
-		set output_file = `echo $target_file_stem | awk -F'_' '{ print $1"_"$2"_"$3"_"$4"_"$5"_"$6"_2" }'`
+		set output_file = `echo $target_file_stem | awk -F '_' '{ print $1"_"$2"_"$3"_"$4"_"$5"_"$6"_2.fits" }'`
 		set output_file_stem = `basename $output_file .fits`
 
 		cd $dir_name
