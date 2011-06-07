@@ -325,6 +325,15 @@ else
 
 endif
 
+set num_filled_exts = `frnumexts $output_file`
+
+if ($num_filled_exts != 8 && $num_filled_exts != 5) then
+
+	set error_msg = "! L2_exec:\tIncorrect number of filled HDUs ($num_filled_exts) in output file "$output_file". (CRITICAL)"
+	goto error
+
+endif
+
 ###########################################################################################################
 # - STEP 9 -					   			   				  #
 # Check external preview creation software exists in $L2_EXT_SOFTWARE_PATH_* and create image previews	  #
@@ -429,15 +438,6 @@ rm -f $target_file $arc_file $continuum_file > /dev/null			# remove source files
 mv `ls | grep .log | grep -v $log_file` logs					# move routine log files to logs/
 mv `ls | grep -v "$output_file_stem\." | grep -v tmp | grep -v logs` tmp	# move all files except the core output files to tmp/
 
-set num_filled_exts = `frnumexts $output_file`
-
-if ($num_filled_exts != 8 && $num_filled_exts != 5) then
-
-	set error_msg = "! L2_exec:\tIncorrect number of filled HDUs ($num_filled_exts) in output file "$output_file". (CRITICAL)"
-	goto error
-
-endif
-
 echo "" >> $L2_SUCCESS_LOG_PATH
 echo -n $start_timestamp"," >> $L2_SUCCESS_LOG_PATH
 echo -n $target_file"," >> $L2_SUCCESS_LOG_PATH
@@ -512,7 +512,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 3 100 | tee $this_log_file
+frclean 2 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -674,7 +674,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 3 100 | tee $this_log_file
+frclean 2 100 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
