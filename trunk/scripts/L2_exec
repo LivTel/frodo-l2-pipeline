@@ -361,7 +361,7 @@ else
 
 	echo "- L2_exec:\tCreating image preview."
 
-	set output_preview_png_file = $output_file_stem".png"
+	set output_preview_png_file = $output_file_stem".jpg"
 
 	#####################################################
 	# Process SPEC_NONSS extension to TSV file and plot #
