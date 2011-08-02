@@ -2,7 +2,7 @@
 
 ##################################
 # L2_exec 			 #
-# Last Modified Date:   27/05/11 #
+# Last Modified Date:   21/07/11 #
 ##################################
 
 reset
@@ -156,7 +156,7 @@ else if ("$target_key_GRATID" == "Blue-High") then
 	set config_dir				= "blue_vph" 
 	set config_arm 				= "blue" 
 	set config_res				= "high" 
-	set L2_pipe_script_name 	= "pipe-blue-high"	
+	set L2_pipe_script_name 		= "pipe-blue-high"	
 
 	set WAV_LOW 				= 3900
 	set WAV_HIGH 				= 5100
@@ -520,7 +520,7 @@ echo "#####################################"
 
 set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
-frtrace 2 100 5 | tee $this_log_file
+frtrace 3 100 5 | tee $this_log_file
 
 
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
@@ -603,7 +603,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 15 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -765,7 +765,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 9 100 4 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -927,7 +927,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 10 10 $reference_arc_list_file 15 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 10 10 $reference_arc_list_file 5 15 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -1090,7 +1090,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 15 4 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 5 10 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
