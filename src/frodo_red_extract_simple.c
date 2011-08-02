@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_extract_simple.c
- Last Modified Date:     	08/05/11
+ Last Modified Date:     	02/08/11
 
 ************************************************************************/
 
@@ -49,7 +49,8 @@ int main ( int argc, char *argv [] ) {
 		// Redefine routine input parameters
 
 		char *input_f			= strdup(argv[1]);
-		int half_aperture_num_pix	= strtol(argv[2], NULL, 0);
+		//double half_aperture_num_pix	= strtol(argv[2], NULL, 0);		// ROUNDED CENTROID EXTRACTION
+		double half_aperture_num_pix	= strtod(argv[2], NULL);
 		int flip_disp_axis		= strtol(argv[3], NULL, 0);
 		char *output_f			= strdup(argv[4]);
 
@@ -263,7 +264,7 @@ int main ( int argc, char *argv [] ) {
 		int ii, jj;
 
 		double x;
-		int x_int;
+		// int x_int;	// ROUNDED CENTROID EXTRACTION
 		int y_int;
 
 		double input_frame_values [FIBRES][nyelements];
@@ -293,7 +294,65 @@ int main ( int argc, char *argv [] ) {
 	
 					}
 
-					x_int = lrint(x) - INDEXING_CORRECTION;
+					// PARTIAL FLUX EXTRACTION
+
+					x -= INDEXING_CORRECTION;
+
+					// ***********************************************************************
+					// Does [x] violate the img boundaries?
+
+					if ((x > nxelements) || (x <= 0)) {
+
+						write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATEX", -7, "Status flag for L2 frextract routine", ERROR_CODES_FILE_WRITE_ACCESS);
+						fits_report_error(stdout, input_f_status); 
+
+						free(input_f);
+						free(output_f);
+						fclose(traces_file);
+						if(fits_close_file(input_f_ptr, &input_f_status)) fits_report_error (stdout, input_f_status); 
+
+						return 1;
+
+					}
+
+					// ***********************************************************************
+					// Extract flux within aperture
+
+					double x_low, x_high;
+
+					x_low = x-half_aperture_num_pix-0.5;
+					x_high = x+half_aperture_num_pix+0.5;			
+
+					int x_low_floor, x_high_floor;
+	
+					x_low_floor = floor(x-half_aperture_num_pix-0.5);
+					x_high_floor = floor(x+half_aperture_num_pix+0.5);
+			
+					for (jj=x_low_floor; jj<=x_high_floor; jj++) {
+
+						if (jj == x_low_floor) {			// outside pixel where partial flux needs to be taken into account
+
+							double partial_fraction_of_bin = (x_low_floor + 1) - x_low;
+							input_frame_values[ii][y_int-1] += partial_fraction_of_bin * input_f_pixels[jj];
+
+						} else if (jj == x_high_floor) {		// outside pixel where partial flux needs to be taken into account
+
+							double partial_fraction_of_bin = x_high - x_high_floor;
+							input_frame_values[ii][y_int-1] += partial_fraction_of_bin * input_f_pixels[jj];
+
+						} else {
+
+							 input_frame_values[ii][y_int-1] += input_f_pixels[jj];
+				
+						}
+
+					}
+
+					// ROUNDED CENTROID EXTRACTION
+					// n.b. must also change half_aperture_num_pix input variable to int.
+					/*
+
+					x_int = lrint(x) - INDEXING_CORRECTION;	
 
 					// ***********************************************************************
 					// Does [x_int] violate the img boundaries?
@@ -313,7 +372,7 @@ int main ( int argc, char *argv [] ) {
 					}
 
 					// ***********************************************************************
-					// Extract flux within pixel aperture
+					// Extract flux within aperture
 
 					for (jj=x_int-half_aperture_num_pix; jj<=x_int+half_aperture_num_pix; jj++) {
 
@@ -322,9 +381,10 @@ int main ( int argc, char *argv [] ) {
 
 					}
 
-					//printf("%f\t%f\t%f\t%f\n", x, input_f_pixels[x_int], input_f_pixels[x_int-1], input_f_pixels[x_int+1]);		// DEBUG
-
+					// printf("%f\t%f\t%f\t%f\n", x, input_f_pixels[x_int], input_f_pixels[x_int-1], input_f_pixels[x_int+1]);		// DEBUG
 					// if ((input_f_pixels[x_int] > input_f_pixels[x_int-1]) && (input_f_pixels[x_int] > input_f_pixels[x_int+1])) count++;	// DEBUG
+
+					*/
 
 				}
 

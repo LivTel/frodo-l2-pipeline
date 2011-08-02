@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_functions.c
- Last Modified Date:     	11/05/11
+ Last Modified Date:     	21/07/11
 
 ************************************************************************/
 
@@ -654,7 +654,7 @@ int interpolate(char interpolation_type [], double x_wav [], double x_val [], in
 	for (xi = interpolation_start; gsl_fcmp(xi, interpolation_end+spacing, 1e-5); xi += spacing) {	// checking to see if xi is equal to interpolation_end+spacing (i.e. no more iterations)
 
 		x_val_out[this_interpolation_index] = gsl_spline_eval(spline, xi, acc);
-		// printf("\n%f\t%g", xi, x_val_out[this_interpolation_index]);	// DEBUG
+		//printf("\n%f\t%g", xi, x_val_out[this_interpolation_index]);	// DEBUG
 
 		this_interpolation_index++;
 

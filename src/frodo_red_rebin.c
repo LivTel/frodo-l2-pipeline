@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_rebin.c
- Last Modified Date:     	08/05/11
+ Last Modified Date:     	21/07/11
 
 ************************************************************************/
 
@@ -483,12 +483,14 @@ int main (int argc, char *argv []) {
 
 					}
 
+					// printf("%d\t%f\n", ii, x_wav[ii]); // DEBUG
+
 				}
 
 				// for (ii=0; ii< nxelements; ii++) printf("\n%f\t%f", x_wav[ii], cor_cc_ext_target_f_pixels[ii]);	// DEBUG
 
 				if (interpolate(interpolation_type, x_wav, cor_cc_ext_target_f_pixels, nxelements, bin_wavelengths[0], bin_wavelengths[num_bins-1], dispersion, reb_cor_cc_ext_target_f_pixels)) {
-
+		
 					write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATRE", -9, "Status flag for L2 frrebin routine", ERROR_CODES_FILE_WRITE_ACCESS);
 
 					free(cor_cc_ext_target_f);
