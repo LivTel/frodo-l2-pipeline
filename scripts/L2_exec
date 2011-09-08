@@ -522,7 +522,6 @@ set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 3 100 5 | tee $this_log_file
 
-
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 
 echo "###############################################"
@@ -683,7 +682,6 @@ echo "#####################################"
 set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 2 100 5 | tee $this_log_file
-
 
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 
@@ -846,7 +844,6 @@ set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 2 100 5 | tee $this_log_file
 
-
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 
 echo "###############################################"
@@ -1007,7 +1004,6 @@ echo "#####################################"
 set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 2 100 5 | tee $this_log_file
-
 
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 

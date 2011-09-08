@@ -180,7 +180,7 @@ int main (int argc, char *argv []) {
 
 		}
 
-		// 4.	Perform iterative sigma clip
+		// 3.	Perform iterative sigma clip
 
 		int sky_indexes [nyelements];	// array of boolean values, TRUE = sky only
 
@@ -191,6 +191,13 @@ int main (int argc, char *argv []) {
 		int num_sky_fibres;
 
 		iterative_sigma_clip(fibre_fluxes, nyelements, clip_sigma, sky_indexes, &final_mean, &final_sd, &num_sky_fibres);
+
+		/* // !!SUBSKY TESTS!! - comment iterative_sigma_clip + make half of [sky_indexes] array TRUE and set [num_sky_fibres]
+		for (ii=0; ii<72; ii++) sky_indexes[ii] = TRUE; 
+		for (ii=72; ii<143; ii++) sky_indexes[ii] = FALSE; 
+		num_sky_fibres = 72; */
+		
+		// /* !!SUBSKY TESTS!! - remove checks
 
 		// REMOVE AVERAGE SKY CONTRIBUTION FROM ALL FIBRES
 		// ***********************************************************************
@@ -221,6 +228,8 @@ int main (int argc, char *argv []) {
 
 		} 
 
+		// */ // !!SUBSKY TESTS!! - remove checks
+
 		// 2.	Duplicate [fibre_fluxes] array, sort into ascending order and
 		//	calculate median
 
@@ -242,9 +251,10 @@ int main (int argc, char *argv []) {
 		//	is extended.
 
 		// printf("%f\t%f\t%f\n", fibre_fluxes_median, final_mean, thresh_median_sigma*final_sd);	// DEBUG
-
+ 		
+		// /* !!SUBSKY TESTS!! - remove checks	
 		if ((fibre_fluxes_median > final_mean - thresh_median_sigma*final_sd) && (fibre_fluxes_median < final_mean + thresh_median_sigma*final_sd)) { // Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
-
+		// */ // !!SUBSKY TESTS!! - remove checks	
 			int sky_fibre_index;
 
 			double this_wavelength_sky_fibre_values_median;
@@ -283,7 +293,8 @@ int main (int argc, char *argv []) {
 				free(this_wavelength_sky_fibre_values);
 
 			}
-
+		
+		// /* !!SUBSKY TESTS!! - remove checks
 		} else {
 
 			write_key_to_file(ERROR_CODES_FILE, REF_ERROR_CODES_FILE, "L2STATSU", -8, "Status flag for L2 frsubsky routine", ERROR_CODES_FILE_WRITE_ACCESS);
@@ -296,6 +307,7 @@ int main (int argc, char *argv []) {
 			return 1; 
 
 		}
+		// */ // !!SUBSKY TESTS!! - remove checks
 
 		// ***********************************************************************
 		// Set ss_reb_cor_cc_ext_target frame parameters
