@@ -270,7 +270,7 @@ int main ( int argc, char *argv [] ) {
 		double input_frame_values [FIBRES][nyelements];
 		memset(input_frame_values, 0, sizeof(double)*nyelements*FIBRES);
 
-		// double total_flux = 0;	// DEBUG
+		//double total_flux = 0;	// DEBUG
 		// int count = 0;		// DEBUG
 
 		for (fpixel[1] = cut_y[0]; fpixel[1] <= cut_y[1]; fpixel[1]++) {
@@ -334,15 +334,18 @@ int main ( int argc, char *argv [] ) {
 
 							double partial_fraction_of_bin = (x_low_floor + 1) - x_low;
 							input_frame_values[ii][y_int-1] += partial_fraction_of_bin * input_f_pixels[jj];
+							// total_flux += input_f_pixels[jj];	// DEBUG
 
 						} else if (jj == x_high_floor) {		// outside pixel where partial flux needs to be taken into account
 
 							double partial_fraction_of_bin = x_high - x_high_floor;
 							input_frame_values[ii][y_int-1] += partial_fraction_of_bin * input_f_pixels[jj];
+							// total_flux += input_f_pixels[jj];	// DEBUG
 
 						} else {
 
-							 input_frame_values[ii][y_int-1] += input_f_pixels[jj];
+							input_frame_values[ii][y_int-1] += input_f_pixels[jj];
+							// total_flux += input_f_pixels[jj];	// DEBUG
 				
 						}
 
