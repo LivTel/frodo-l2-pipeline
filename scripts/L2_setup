@@ -9,16 +9,16 @@
 # User defined environment #
 ############################
 
-setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"		# rmb/laptop
+#setenv L2_BASE_DIR "/home/rmb/frodo_l2_pipeline/trunk"		# rmb/laptop
 #setenv L2_BASE_DIR "/space/home/eng/frodo_build"		# lt/ltdevsrv
 #setenv L2_BASE_DIR "/home/data/rmb/frodo_l2_pipeline/trunk"	# lt/lt-archive/build
-#setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline/trunk"	# lt/lt-archive/deploy
+setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline/trunk"	# lt/lt-archive/deploy
 
-setenv L2_SUCCESS_LOG_PATH "/home/rmb/Desktop/L2_success.log"	# rmb/laptop
-#setenv L2_SUCCESS_LOG_PATH "/home/data/rmb/L2_success.log"	# lt/lt-archive
+#setenv L2_SUCCESS_LOG_PATH "/home/rmb/Desktop/L2_success.log"	# rmb/laptop
+setenv L2_SUCCESS_LOG_PATH "/home/data/rmb/L2_success.log"	# lt/lt-archive
 
-setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"	# rmb/laptop
-#setenv L2_FAIL_LOG_PATH "/home/data/rmb/L2_fail.log"		# lt/lt-archive
+#setenv L2_FAIL_LOG_PATH "/home/rmb/Desktop/L2_fail.log"	# rmb/laptop
+setenv L2_FAIL_LOG_PATH "/home/data/rmb/L2_fail.log"		# lt/lt-archive
 
 setenv LD_LIBRARY_PATH /usr/lib:/usr/lib/gsl			# all
 

@@ -512,7 +512,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 5 300 | tee $this_log_file
+frclean 8 350 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -602,7 +602,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 15 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 13 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -673,7 +673,7 @@ echo "##################################################################"
 
 set this_log_file = $output_file_stem$clean_log_suffix$extension_log
 
-frclean 5 300 | tee $this_log_file
+frclean 8 350 | tee $this_log_file
 
 echo "#####################################"
 echo "3. Trace peaks in sky file. (frtrace)"
@@ -763,7 +763,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 9 100 4 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 7 100 4 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -924,7 +924,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 10 10 $reference_arc_list_file 5 15 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 10 10 $reference_arc_list_file 5 13 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -1086,7 +1086,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 5 10 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 5 10 $reference_arc_list_file 5 8 100 3 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
