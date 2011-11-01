@@ -1,0 +1,11 @@
+#summary How to execute the L2 pipeline in a terminal on lt-archive
+
+= Details =
+
+Source the setup script
+
+[eng@lt-archive scripts]$ source L2_setup
+
+Invoke l2exec
+
+[eng@lt-archive ~]$ l2exec [...]
