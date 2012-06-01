@@ -380,7 +380,7 @@ else
 	echo 'set autoscale' 								>> $output_SPECNONSS_gnuplot_file
 	echo 'set xrange ['$WAV_LOW':'$WAV_HIGH']' 					>> $output_SPECNONSS_gnuplot_file
 	echo 'set xlabel "Wavelength (Å)"' 						>> $output_SPECNONSS_gnuplot_file
-	echo 'set ylabel "Counts"' 							>> $output_SPECNONSS_gnuplot_file
+	echo 'set ylabel "Intensity (counts)"' 							>> $output_SPECNONSS_gnuplot_file
 	echo 'plot "'$output_SPECNONSS_TSV_file'" index 0 using 1:2 with lines title ""' >> $output_SPECNONSS_gnuplot_file
 
 	$L2_EXT_SOFTWARE_PATH_GNUPLOT/gnuplot $output_SPECNONSS_gnuplot_file
@@ -784,7 +784,7 @@ set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
 set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
 
-frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.8 1 $this_output_file | tee $this_log_file
+frrebin $this_input_file $WAV_LOW $WAV_HIGH linear 0.6 1 $this_output_file | tee $this_log_file
 
 echo "#############################################################"
 echo "8. Sky subtract if sky selection criteria are met. (frsubsky)"
