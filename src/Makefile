@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   11/05/11 #
+# Last Modified Date:   01/06/12 #
 ##################################
 
 #############################
@@ -68,6 +68,10 @@ frodo_red_extract_simple: frodo_red_extract_simple.c libfrodo
 frodo_red_arcfit: frodo_red_arcfit.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_arcfit.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frarcfit
 	$(MV) frarcfit $(L2_BIN_DIR)
+
+frodo_red_arcfit2: frodo_red_arcfit2.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_arcfit2.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frarcfit2
+	$(MV) frarcfit2 $(L2_BIN_DIR)
 
 frodo_red_correct_throughput: frodo_red_correct_throughput.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_correct_throughput.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frcorrect
