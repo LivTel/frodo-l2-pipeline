@@ -1,0 +1,61 @@
+= Why outside of source control? =
+
+Until I (rmb) consolidate my working development version with the currently deployed version, the prefered method for updating the reference arc line lists is outside of subversion. Unfortunately this has the obvious downside of potentially causing version mismatches between machines, but as this is currently the case anyway there is no problem. 
+
+= Method =
+
+ * ssh on to lt-archive
+
+ {{{ [data@lt-archive]$ ssh -p 2222 data@lt-archive }}}
+
+ * cd to the desired config's reference arcs directory
+
+ {{{ [data@lt-archive]$ cd /usr/local/bin/frodo_l2_pipeline/trunk/config/reference_arcs/{CONFIG} }}}
+
+ * Create a new date-stamped directory (DDMMYY) from which the configuration will become active (this is an aesthetic measure only)
+
+ {{{ [data@lt-archive]$ mkdir {DATE} }}}
+
+ * cd into the newly created directory, create a new file named "arc.lis" and open with an editor
+
+ {{{ [data@lt-archive]$ cd {DATE} }}}
+
+ {{{ [data@lt-archive]$ touch arc.lis }}}
+
+ {{{ [data@lt-archive]$ vi arc.lis }}}
+
+ The arc.lis file should conform to a format of:
+
+ || position of line (px) || wavelength of line (Å) ||
+
+ It is desirable to find all the lines as used in previous "arc.lis" files as this will ensure that the quality of fit remain consistent between updates. 
+
+ If the instrument has not been physically altered, the positions of the lines between the configurations should approximately move by the same amount. If this is the case, generating a new arc line list may simply involve copying the contents of the most recently used arc line list and offsetting the position of each line by a constant number of pixels.
+
+ For situations where this is not applicable, it will be necessary to re-perform line identification. This is done by taking an exposure of the Xe arc lamp, executing L1/L2 reduction on this frame and using the spectrum from the *SPEC_NONSS* extension of the L2 produced file to manually identify the lines and their corresponding positions. There's no hard and fast rule about what software you use for line identification, but I have found figaro's [http://www.starlink.rl.ac.uk/docs/sun86.htx/node319.html arc] routine to be particularly useful as it provides a synchronously updated wavelength estimate for a given cursor position once you've identified more than two lines. To use the arc routine, you will first need to convert the FITS file to an NDF using convert's [http://star-www.rl.ac.uk/docs/sun55.htx/node19.html fits2ndf] command.
+
+ The following two images (blue-low Xe, red-low Xe) are useful as a start in identification:
+
+http://telescope.livjm.ac.uk/pics/Instruments/FRODO/frodo-blue-grating-xenon.png
+
+http://telescope.livjm.ac.uk/pics/Instruments/FRODO/frodo-red-grating-xenon.png
+
+ The arc line list from [http://www.nist.gov/data/PDFfiles/jpcrd661.pdf Salomon (2004)] can also be useful in some cases.
+
+ Once you've added the lines, close the arc.lis file. It's now necessary to tell the L2 under which dates this configuration file should be used from.
+
+ * cd to the desired config's lookup table directory
+
+ {{{ [data@lt-archive]$ cd /usr/local/bin/frodo_l2_pipeline/trunk/config/lookup_tables/{CONFIG} }}}
+
+ * Open the arc.tab file with the editor
+
+ {{{ [data@lt-archive]$ vi arc.tab }}}
+
+ * Add a new line conforming to the format:
+
+ || location of arc.lis file relative to {PATH}/reference_arcs/{CONFIG} directory || date from || time from || date to || time to ||
+
+ where dates correspond to DD/MM/YYYY format and times to HH:MM:SS. The keyword "now" can be used in the date from column to indicate that the configuration file is to be used up until the current date/time.
+
+
