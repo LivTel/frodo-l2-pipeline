@@ -1,6 +1,6 @@
 = Why outside of source control? =
 
-Until I (rmb) consolidate my working development version with the currently deployed version, the prefered method for updating the reference arc line lists is outside of subversion. Unfortunately this has the obvious downside of potentially causing version mismatches between machines, but as this is currently the case anyway there is no problem. 
+Until I (rmb, 280812) consolidate my working development version with the currently deployed version, the prefered method for updating the reference arc line lists is outside of subversion. Unfortunately this has the obvious downside of potentially causing version mismatches between machines, but as this is currently the case anyway there is no problem. 
 
 = Method =
 
@@ -57,5 +57,3 @@ http://telescope.livjm.ac.uk/pics/Instruments/FRODO/frodo-red-grating-xenon.png
  || location of arc.lis file relative to {PATH}/reference_arcs/{CONFIG} directory || date from || time from || date to || time to ||
 
  where dates correspond to DD/MM/YYYY format and times to HH:MM:SS. The keyword "now" can be used in the date from column to indicate that the configuration file is to be used up until the current date/time.
-
-
