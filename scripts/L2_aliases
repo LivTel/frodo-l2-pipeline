@@ -1,7 +1,7 @@
 
 ##################################
 # L2_aliases 			 #
-# Last Modified Date:   16/05/11 #
+# Last Modified Date:   28/06/13 #
 ##################################
 
 ################
@@ -24,6 +24,7 @@ alias liststruc $L2_BIN_DIR/liststruc
 
 alias frspec2tsv $L2_BIN_DIR/frspec2tsv
 alias frnumexts $L2_BIN_DIR/frnumexts
+alias frpeakfinder $L2_BIN_DIR/frpeakfinder
 
 alias FITS2jpeg $L2_BIN_DIR/FITS2jpeg
 
@@ -31,7 +32,8 @@ alias FITS2jpeg $L2_BIN_DIR/FITS2jpeg
 # Script aliases #
 ##################
 
-alias l2rfr $L2_SCRIPT_DIR/L2_calib_reduce-focus-run
+alias l2rfc python $L2_SCRIPT_DIR/calibration/run_focus_calibration.py
+alias l2rfcb $L2_SCRIPT_DIR/calibration/run_focus_calibration_bulk
 alias l2v cat $L2_MAN_DIR/VERSION
 
 alias l2exec $L2_SCRIPT_DIR/L2_exec

@@ -1,0 +1,49 @@
+#!/bin/csh
+# set directory containing files as first argument 
+# set GRATID as second argument ('Red-Low' || 'Red-High' || 'Blue-Low' || 'Blue-High')
+# set fauxL1processing flag as third argument (T/F)
+
+# remove existing output file
+if (-e $argv[2]) then
+    rm -f $argv[2]
+endif
+
+foreach file (`ls $argv[1]/*.fits`)
+    echo $file
+    # make sure it's the right config
+    set res = `modhead $file GRATID | awk -F "'" '{ print $2 }'`
+    # make sure it's Xe
+    set lamp2set = `modhead $file LAMP2SET | awk -F " " '{ print $2 }'`	# Xe
+    set lamp3set = `modhead $file LAMP3SET | awk -F " " '{ print $2 }'` # W
+    if (($argv[2] == $res) && ($lamp2set == 'T') && ($lamp3set == 'F')) then   
+        if ($res == 'Red-Low') then
+            set derTol = "400"
+        endif
+        if ($res == 'Red-High') then
+            set derTol = "400"
+        endif
+        if ($res == 'Blue-Low') then
+            set derTol = "150"
+        endif
+        if ($res == 'Blue-High') then
+            set derTol = "150"
+        endif
+
+        #set thisDate = `modhead $file DATE | awk -F "'" '{ print $2 }'`
+        #set thisTime = `modhead $file UTSTART | awk -F "'" '{ print $2 }'`
+        #echo `date +"%s" -d "$thisDate $thisTime"`
+
+        # faux L1 process (imcopy etc..)
+        if $argv[3] == 'T' then
+            #imcopy $file'[*,5:4090]' $file".cut"
+            #python run_focus_calibration --arcfile $file".cut" --interactive False
+            #rm -f $file".cut"
+        endif
+
+        python $L2_SCRIPT_DIR/calibration/run_focus_calibration.py --arcfile $file --outfile=$argv[2] --dertol=$derTol --interactive=0
+
+    endif
+end
+
+# sort the file by date
+cat $argv[2] | tail -n +2 | sort -k2,3 -o $argv[2]
