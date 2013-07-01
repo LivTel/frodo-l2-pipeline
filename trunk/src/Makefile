@@ -1,6 +1,6 @@
 ##################################
 # Makefile 			 #
-# Last Modified Date:   01/06/12 #
+# Last Modified Date:   27/06/13 #
 ##################################
 
 #############################
@@ -113,6 +113,10 @@ FITS2jpeg: FITS2jpeg.c jpegsubs
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) FITS2jpeg.c jpegsubs.o -lcfitsio -ljpeg -lm -o FITS2jpeg 
 	$(MV) FITS2jpeg $(L2_BIN_DIR)
 	$(RM) jpegsubs.o
+
+frodo_aux_peakfinder: frodo_aux_peakfinder.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_aux_peakfinder.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frpeakfinder
+	$(MV) frpeakfinder $(L2_BIN_DIR)
 
 jpegsubs: jpegsubs.c
 	$(CC) $(CFLAGS) -c jpegsubs.c

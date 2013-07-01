@@ -9,15 +9,15 @@
 # User defined environment #
 ############################
 
-setenv L2_BASE_DIR "/home/rmb/devel/frodo-l2-pipeline"						# rmb/laptop
+setenv L2_BASE_DIR "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline"						# rmb/laptop
 #setenv L2_BASE_DIR "/space/home/eng/frodo_build"						# lt/ltdevsrv
 #setenv L2_BASE_DIR "/home/data/rmb/frodo_l2_pipeline/trunk"					# lt/lt-archive/build
 #setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline/trunk"					# lt/lt-archive/deploy
 
-setenv L2_SUCCESS_LOG_PATH "/home/rmb/devel/frodo-l2-pipeline/logs/L2_success.log"		# rmb/laptop
+setenv L2_SUCCESS_LOG_PATH "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline/logs/L2_success.log"		# rmb/laptop
 #setenv L2_SUCCESS_LOG_PATH "/home/data/rmb/L2_success.log"					# lt/lt-archive
 
-setenv L2_FAIL_LOG_PATH "/home/rmb/devel/frodo-l2-pipeline/logs/L2_fail.log"			# rmb/laptop
+setenv L2_FAIL_LOG_PATH "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline/logs/L2_fail.log"			# rmb/laptop
 #setenv L2_FAIL_LOG_PATH "/home/data/rmb/L2_fail.log"						# lt/lt-archive
 
 setenv LD_LIBRARY_PATH /usr/lib:/usr/lib/gsl							# all
@@ -57,6 +57,7 @@ setenv L2_FRS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_SUBSKY
 setenv L2_FRRF_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REFORMAT
 setenv L2_FAN_BLURB_FILE $L2_MAN_DIR/FRODO_AUX_NUMEXTS
 setenv L2_FAS_BLURB_FILE $L2_MAN_DIR/FRODO_AUX_SPEC2TSV
+setenv L2_FAP_BLURB_FILE $L2_MAN_DIR/FRODO_AUX_PEAKFINDER
 
 setenv L2_EXEC_BLURB_FILE $L2_MAN_DIR/L2_EXEC
 

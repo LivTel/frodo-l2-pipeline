@@ -1,0 +1,4 @@
+"run_focus_calibration" can be used to make focus plots for individual arc files.
+"run_focus_calibration_bulk" is a batch process to exec run_calibration without plots, only to produce output file containing focus information.
+"plot.csh" is used to plot the output of "run"
+

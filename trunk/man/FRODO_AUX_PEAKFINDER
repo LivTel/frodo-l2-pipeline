@@ -1,0 +1,38 @@
+###################################### frodo_aux_peakfinder #######################################
+
+Usage:	frpeakfinder continuum_file 
+	       	     min_dist 
+	             half_aperture_num_pix
+	             der_tol	
+	             der_tol_ref_px
+	             min_rows
+		     min_peaks
+                     max_peaks
+
+Synopsis:
+
+Finds peaks (row-by-row) in a continuum FITS file.
+
+Description:
+
+Uses a peak finding routine that flags a peak if:
+
+1.	[half_aperture_num_pix] pixels either side of pixel being considered have lesser values.
+
+2.	The distance to the previous peak is greater than [min_dist].
+
+3.	The intensity of the currently considered peak is greater than the value at the pixels
+   	[der_tol_ref_px] either side by a tolerance value [der_tol].
+
+retaining rows with between [min_peaks] and [max_peaks] peaks
+
+If successful, the program will produce a file [FRFIND_OUTPUTF_PEAKS_FILE] containing a list of
+the centroids found using the find_centroid_parabolic function.
+
+The program is terminated if the number of rows found is less than [min_rows].
+
+Example: 
+
+frpeakfind continuum.fits 3 3 50 2 1000 40 144
+
+###################################################################################################
