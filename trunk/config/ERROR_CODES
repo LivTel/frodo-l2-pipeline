@@ -164,7 +164,7 @@ L2STATSU	-4	Failed to open target FITS file (ARG 1)
 L2STATSU	-5	Failed to read row of target frame
 L2STATSU	-6	Failed data quality criteria - all fibres identified as sky given sky selection criteria, target frame could be blank or contain an extended source
 L2STATSU	-7	Failed data quality criteria - no fibres identified as sky given sky selection criteria
-L2STATSU	-8	Failed data quality criteria - median of initial sample [fibre_fluxes_median] not within [thresh_median_sigma] of final mean [final_mean]
+L2STATSU	-8	Failed data quality criteria - [thresh_percentile]th percentile of initial sample not within [thresh_percentile_sigma] of final mean [final_mean]
 L2STATSU	-9	Failed to write output target img
 L2STATSU	-10	Failed to create output target img
 L2STATSU	-11	Failed to create output target FITS file (ARG 4)

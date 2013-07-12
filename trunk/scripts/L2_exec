@@ -633,7 +633,7 @@ set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
 set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
 
-frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+frsubsky $this_input_file 2 1 0.3 $this_output_file | tee $this_log_file
 
 echo "#################################################################"
 echo "9. Restructure and append all data to output MEF file. (frsubsky)"
@@ -794,7 +794,7 @@ set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
 set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
 
-frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+frsubsky $this_input_file 2 1 0.3 $this_output_file | tee $this_log_file
 
 echo "#################################################################"
 echo "9. Restructure and append all data to output MEF file. (frsubsky)"
@@ -955,7 +955,7 @@ set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
 set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
 
-frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+frsubsky $this_input_file 2 1 0.3 $this_output_file | tee $this_log_file
 
 echo "#################################################################"
 echo "9. Restructure and append all data to output MEF file. (frsubsky)"
@@ -1117,7 +1117,7 @@ set this_input_file 	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$subsky_file_suffix$extension_file
 set this_log_file	= $output_file_stem$subsky_log_suffix$extension_log
 
-frsubsky $this_input_file 2 1 $this_output_file | tee $this_log_file
+frsubsky $this_input_file 2 1 0.3 $this_output_file | tee $this_log_file
 
 echo "#################################################################"
 echo "9. Restructure and append all data to output MEF file. (frsubsky)"

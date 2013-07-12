@@ -2,7 +2,8 @@
 
 Usage:	frsubsky target_file_ext_cc_cor_reb
 		 clip_sigma
-		 thresh_median_sigma
+		 thresh_percentile_sigma
+                 thresh_percentile
 		 target_file_ext_cc_cor_reb_ss
 
 Synopsis:
@@ -13,8 +14,9 @@ Description:
  
 Uses an iterative sigma clipping algorithm on the total fluxes through each fibre to identify
 object fibres given the selection criteria ([clip_sigma]). The mean of the remaining fibres,
-flagged as sky, is then compared to the median of the initial sample. If the two are comparable
-to within [thresh_median_sigma] sigma then the identification is considered a success.
+flagged as sky, is then compared to the [thresh_percentile]th percentile of the initial sample. If 
+the two are comparable to within [thresh_percentile_sigma] sigma then the identification is 
+considered a success.
 
 If identification is successful, the median of the remaining fibres at each position along the
 dispersion axis is subtracted to remove the sky contribution and a sky-subtracted target
@@ -22,6 +24,6 @@ dispersion axis is subtracted to remove the sky contribution and a sky-subtracte
 
 Example:
 
-frsubsky target_ext_cc_cor_reb.fits 2 1 target_ext_cc_cor_reb_ss.fits
+frsubsky target_ext_cc_cor_reb.fits 2 1 0.5 target_ext_cc_cor_reb_ss.fits
 
 ###################################################################################################
