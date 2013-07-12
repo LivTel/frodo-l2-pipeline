@@ -77,7 +77,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     options, args = parser.parse_args()
-    print args
 
     params = {
               'logLevel' : str(options.logLevel),

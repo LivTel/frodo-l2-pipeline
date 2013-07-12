@@ -1,7 +1,7 @@
 /************************************************************************
 
  File:				frodo_red_subsky.c
- Last Modified Date:     	05/05/11
+ Last Modified Date:     	07/01/13
 
 ************************************************************************/
 
@@ -29,7 +29,7 @@ int main (int argc, char *argv []) {
 
 	}
 
-	if (argc != 5) {
+	if (argc != 6) {
 
 		if(populate_env_variable(FRS_BLURB_FILE, "L2_FRS_BLURB_FILE")) {
 
@@ -52,8 +52,9 @@ int main (int argc, char *argv []) {
 
 		char *reb_cor_cc_ext_target_f		= strdup(argv[1]);
 		int clip_sigma				= strtol(argv[2], NULL, 0);
-		int thresh_median_sigma			= strtol(argv[3], NULL, 0);
-		char *ss_reb_cor_cc_ext_target_f	= strdup(argv[4]);
+		int thresh_percentile_sigma		= strtol(argv[3], NULL, 0);
+		double thresh_percentile		= strtod(argv[4], NULL);
+		char *ss_reb_cor_cc_ext_target_f	= strdup(argv[5]);
 
 		// ***********************************************************************
 		// Open cc extracted target file (ARG 1), get parameters and perform any  
@@ -237,23 +238,20 @@ int main (int argc, char *argv []) {
 		memcpy(fibre_fluxes_sorted, fibre_fluxes, sizeof(double)*nyelements);	
 
 		gsl_sort(fibre_fluxes_sorted, 1, nyelements);
-		double fibre_fluxes_median = gsl_stats_median_from_sorted_data(fibre_fluxes_sorted, 1, nyelements);
+		double fibre_fluxes_percentile = gsl_stats_quantile_from_sorted_data(fibre_fluxes_sorted, 1, nyelements, thresh_percentile);
 
 		int jj;
 
 		double ss_reb_cor_cc_ext_target_frame_values [nyelements][nxelements];
 		memset(ss_reb_cor_cc_ext_target_frame_values, 0, sizeof(double)*nyelements*nxelements);
 
-		// 3.	Check to see if median of initial sample is within 
-		//	[thresh_median_sigma] sigma of final mean. If this is not the
-		//	case, it indicates that the IFU is over 50% filled with object
-		//	fibres and sky subtraction mightn't be reliable or the source
-		//	is extended.
+		// 3.	Check to see if the value of the [thresh_percentile] percentile of initial sample is within 
+		//	[thresh_percentile_sigma] sigma of final mean. 
 
-		// printf("%f\t%f\t%f\n", fibre_fluxes_median, final_mean, thresh_median_sigma*final_sd);	// DEBUG
+		// printf("%f\t%f\t%f\n", fibre_fluxes_median, final_mean, thresh_percentile_sigma*final_sd);	// DEBUG
  		
 		// /* !!SUBSKY TESTS!! - remove checks	
-		if ((fibre_fluxes_median > final_mean - thresh_median_sigma*final_sd) && (fibre_fluxes_median < final_mean + thresh_median_sigma*final_sd)) { // Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
+		if ((fibre_fluxes_percentile > final_mean - thresh_percentile_sigma*final_sd) && (fibre_fluxes_percentile < final_mean + thresh_percentile_sigma*final_sd)) { // Comparing doubles but accuracy isn't a necessity so don't need gsl_fcmp function
 		// */ // !!SUBSKY TESTS!! - remove checks	
 			int sky_fibre_index;
 
