@@ -50,9 +50,10 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     group1 = optparse.OptionGroup(parser, "General options")
     group1.add_option('--loglevel', action='store', default='INFO', dest='logLevel', help='logging level (DEBUG|INFO|WARNING|ERROR|CRITICAL)')
-    group1.add_option('--interactive', action='store', type=int, default=1, dest='interactive', help='show plots? (0|1)')#
+    group1.add_option('--interactive', action='store_true', default=False, dest='interactive', help='show plots?')
     group1.add_option('--arcfile', action='store', default="./r_a_20130314_2_1_1_1.fits", dest='pathToArcFile', help='path to arc file')
     group1.add_option('--outfile', action='store', default="output", type=str, dest='outFile', help='output filepath for fitting results') 
+    group1.add_option('--outimage', action='store', default="output", type=str, dest='outImage', help='output plot file') 
     group1.add_option('--dispccdsize', action='store', default=4096, type=int, dest='dispCCDSize', help='size of CCD along dispersion axis (px)') 
     group1.add_option('--spatccdsize', action='store', default=2048, type=int, dest='spatCCDSize', help='size of CCD along spatial axis (px)') 
     parser.add_option_group(group1)
@@ -96,7 +97,8 @@ if __name__ == "__main__":
               'yStep' : int(options.yStep),
               'dispCCDSize' : int(options.dispCCDSize),
               'spatCCDSize' : int(options.spatCCDSize),
-              'outFile' : str(options.outFile)
+              'outFile' : str(options.outFile),
+              'outImage' : str(options.outImage)
     }
 
     ## INPUT CHECKS
@@ -355,6 +357,8 @@ if __name__ == "__main__":
 
     if params['interactive']:
         plt.show()
+    else:
+        plt.savefig(params['outImage'])
 
     logging.info("Average dispersion FWHM best fit results. m=" + str(round(disp_mAv, 10)) + ", c=" + str(round(disp_cAv, 10)))
     logging.info("Average spatial FWHM best fit results. m=" + str(round(spat_mAv, 10)) + ", c=" + str(round(spat_cAv, 10)))
