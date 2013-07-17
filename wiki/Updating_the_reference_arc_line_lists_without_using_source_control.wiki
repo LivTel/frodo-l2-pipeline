@@ -6,7 +6,7 @@ Until I (rmb, 280812) consolidate my working development version with the curren
 
  * ssh on to lt-archive
 
- {{{ [rmb@rmb-tower]$ ssh -p 2222 data@lt-archive }}}
+ {{{ [rmb@rmb-tower]$ ssh data@lt-archive }}}
 
  * cd to the desired config's reference arcs directory
 
