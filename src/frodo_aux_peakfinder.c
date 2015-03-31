@@ -70,7 +70,7 @@ int main(int argc, char *argv []) {
 
 		if(!fits_open_file(&cont_f_ptr, cont_f, IMG_READ_ACCURACY, &cont_f_status)) {
 
-			if(!populate_img_parameters(cont_f, cont_f_ptr, cont_f_maxdim, &cont_f_bitpix, &cont_f_naxis, cont_f_naxes, &cont_f_status, "CONTINUUM FRAME")) {
+			if(!populate_img_parameters(cont_f, cont_f_ptr, cont_f_maxdim, &cont_f_bitpix, &cont_f_naxis, cont_f_naxes, &cont_f_status, "ARC FRAME")) {
 
 				if (cont_f_naxis != 2) {	// any data format checks here
 	
@@ -109,19 +109,19 @@ int main(int argc, char *argv []) {
 		int cut_y [2] = {1, cont_f_naxes[1]};
 
 		// ***********************************************************************
-		// Set parameters used when reading data from continuum fits file (ARG 1)
+		// Set parameters used when reading data from arc fits file (ARG 1)
 
 		long fpixel [2] = {cut_x[0], cut_y[0]};
 		long nxelements = (cut_x[1] - cut_x[0]) + 1;
 		long nyelements = (cut_y[1] - cut_y[0]) + 1;
 
 		// ***********************************************************************
-		// Create arrays to store pixel values from continuum fits file (ARG 1)
+		// Create arrays to store pixel values from arc fits file (ARG 1)
 
 		double cont_f_pixels [nxelements];
 
 		// ***********************************************************************
-		// Get continuum fits file (ARG 1) values and store in 2D array
+		// Get arc fits file (ARG 1) values and store in 2D array
 
 		int ii;
 
@@ -256,7 +256,7 @@ int main(int argc, char *argv []) {
 				free(cont_f);
 				fclose(outputfile);
 				if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
-
+r_a_20141105_2_1_1_9.fits
 				return 1; 		
 
 			}
@@ -287,7 +287,7 @@ int main(int argc, char *argv []) {
 		free(cont_f);
 
 		// ***********************************************************************
-		// Close [FRPEAKFINDER_OUTPUTF_PEAKS_FILE] output file and continuum file 
+		// Close [FRPEAKFINDER_OUTPUTF_PEAKS_FILE] output file and arc file 
 		// (ARG 1)
 
 		if (fclose(outputfile)) {

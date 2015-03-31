@@ -40,7 +40,7 @@ foreach file (`ls $argv[1]/*.fits`)
             #rm -f $file".cut"
         endif
 
-        python $L2_SCRIPT_DIR/calibration/run_focus_calibration.py --arcfile $file --outfile=$argv[2] --dertol=$derTol --interactive=0
+        python $L2_SCRIPT_DIR/calibration/run_focus_calibration.py --arcfile $file --outfile=$argv[2] --dertol=$derTol
 
     endif
 end

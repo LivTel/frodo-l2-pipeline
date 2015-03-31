@@ -825,7 +825,7 @@ int lsearch_int(int array [], int key, int size) {
 /************************************************************************
 
  Function:		median_filter
- Last Modified Date:    21/03/11	
+ Last Modified Date:    19/09/14	
  Purpose:		Applies a median filter to a dataset
  Required By:		frodo_red_reformat.c
  Additional Notes:	
@@ -846,7 +846,7 @@ int median_filter(double row_values [], double smoothed_row_values [], int nxele
 
 		for (jj=-median_half_filter_size; jj<median_half_filter_size; jj++) {
 
-			this_iteration_filter_values[jj] = row_values[ii+jj];
+			this_iteration_filter_values[jj+median_half_filter_size] = row_values[ii+jj];
 
 		}
 
