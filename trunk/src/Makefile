@@ -43,7 +43,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts FITS2jpeg
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts frodo_aux_peakfinder FITS2jpeg
 
 #################
 # make routines #

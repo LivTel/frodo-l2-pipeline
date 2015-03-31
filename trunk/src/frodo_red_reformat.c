@@ -260,7 +260,7 @@ int main (int argc, char *argv []) {
 
 			}
 
-			RETURN_FLAG = 2;
+			RETURN_FLAG = 7;
 			
 		} else if (!strcmp(operation, "L1_IMAGE") || !strcmp(operation, "RSS_NONSS") || !strcmp(operation, "RSS_SS")) { 
 
