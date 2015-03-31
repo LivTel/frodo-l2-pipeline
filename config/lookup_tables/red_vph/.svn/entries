@@ -1,0 +1,40 @@
+8
+
+dir
+28
+https://subversion.assembla.com/svn/frodo_l2_pipeline/trunk/config/lookup_tables/red_vph
+https://subversion.assembla.com/svn/frodo_l2_pipeline
+
+
+
+2011-09-08T12:37:41.960886Z
+27
+robbarnsley
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+0fd6086c-c144-405e-bbe8-4c8c7ef1872e
+
+arc.tab
+file
+
+
+
+
+2011-09-08T13:14:28.000000Z
+ba463ee4fb55348a0c59284fbbd01c46
+2011-09-08T12:37:41.960886Z
+27
+robbarnsley
+
