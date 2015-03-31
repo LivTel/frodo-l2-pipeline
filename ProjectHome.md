@@ -1,0 +1,1 @@
+A fully automated pipeline for the FRODOSpec integral field spectrograph
