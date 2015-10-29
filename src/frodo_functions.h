@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_functions.h
- Last Modified Date:     	09/05/11
-
-************************************************************************/
-
 #include <stdbool.h>
 
 int calc_least_sq_fit (int, int, double [], double [], double [], double *);

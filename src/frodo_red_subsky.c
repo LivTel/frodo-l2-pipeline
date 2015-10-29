@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_subsky.c
- Last Modified Date:     	07/01/13
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -18,8 +11,6 @@
 
 #include <gsl/gsl_sort_double.h>
 #include <gsl/gsl_statistics_double.h>
-
-// *********************************************************************/
 
 int main (int argc, char *argv []) {
 

@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_correct_throughput.c
- Last Modified Date:     	08/05/11
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -19,8 +12,6 @@
 
 #include <gsl/gsl_sort_double.h>
 #include <gsl/gsl_statistics_double.h>
-
-// *********************************************************************/
 
 int main (int argc, char *argv []) {
 

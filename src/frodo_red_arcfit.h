@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_arcfit.h
- Last Modified Date:     	07/03/11
-
-************************************************************************/
-
 char FRA_BLURB_FILE [200];
 
 int FRARCFIT_VAR_REF_FIBRE_INDEX_CC		= 0;				// this is the ARRAY INDEX of the fibre used as a reference in cross correlation analysis (e.g. fibre 1 = 0)

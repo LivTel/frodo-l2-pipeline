@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_findpeaks_simple_clean.c
- Last Modified Date:     	08/05/11
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -16,8 +9,6 @@
 #include "frodo_config.h"
 #include "frodo_red_findpeaks_simple_clean.h"
 #include "frodo_red_findpeaks_simple.h"
-
-// *********************************************************************
 
 int main(int argc, char *argv []) {
 

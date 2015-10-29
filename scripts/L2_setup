@@ -1,31 +1,19 @@
 #!/usr/bin/env tcsh
 
-##################################
-# L2_setup 			 #
-# Last Modified Date:   17/07/13 #
-##################################
-
 ############################
 # User defined environment #
 ############################
 
-setenv L2_BASE_DIR "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline"				# rmb/laptop
+#setenv L2_BASE_DIR "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline"				# rmb/laptop
+setenv L2_BASE_DIR "/mnt/NAS/devel/FRODOSpec/frodo-l2-pipeline-github/"				# rmb/tower
 #setenv L2_BASE_DIR "/space/home/eng/frodo_build"						# lt/ltdevsrv
 #setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline/trunk"					# lt/lt-archive/deploy
 
-setenv L2_SUCCESS_LOG_PATH "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline/logs/L2_success.log"	# rmb/laptop
-#setenv L2_SUCCESS_LOG_PATH "/home/data/rmb/L2_success.log"					# lt/lt-archive
+setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH":/usr/lib:/usr/lib/gsl"					# these are the default paths for any distribution
+setenv L2_EXT_SOFTWARE_PATH_IM "/usr/bin"							# these are the default paths for any distribution
+setenv L2_EXT_SOFTWARE_PATH_GNUPLOT "/usr/bin"							# these are the default paths for any distribution
 
-setenv L2_FAIL_LOG_PATH "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline/logs/L2_fail.log"		# rmb/laptop
-#setenv L2_FAIL_LOG_PATH "/home/data/rmb/L2_fail.log"						# lt/lt-archive
-
-setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH":/usr/lib:/usr/lib/gsl"					# all
-
-setenv L2_EXT_SOFTWARE_PATH_IM "/usr/bin"							# all
-setenv L2_EXT_SOFTWARE_PATH_GNUPLOT "/usr/bin"							# all
-
-# DO NOT ALTER PAST THIS LINE
-# ----------------------------------------------------------------------------------- #
+#! DO NOT EDIT PAST HERE UNLESS YOU KNOW WHAT YOU'RE DOING
 
 ##########################
 # Set up shell variables #
@@ -69,19 +57,19 @@ setenv L2_VERSION_FILE $L2_MAN_DIR/VERSION
 limit stacksize unlimited
 source $L2_SCRIPT_DIR/L2_aliases
 
-##############################
-# Set permissions on scripts #
-##############################
+#####################################
+# Set permissions on execute script #
+#####################################
 
-chmod +x $L2_SCRIPT_DIR/*
+chmod +x $L2_SCRIPT_DIR/L2_exec
 
 ###########################
 # Update man/VERSION file #
 ###########################
 
-set author = `svn info $L2_BASE_DIR | grep "Last Changed Author" | awk -F "Author:" '{print $2}'`
-set rev = `svn info $L2_BASE_DIR | grep "Last Changed Rev" | awk -F "Rev:" '{print $2}'`
-set date = `svn info $L2_BASE_DIR | grep "Last Changed Date" | awk -F "Date:" '{print $2}'`
+set author = `git log -1 $L2_BASE_DIR | grep "Author" | awk -F "Author:" '{print $2}' | tr -s ' '`
+set rev = `git log -1 $L2_BASE_DIR | grep "commit" | awk -F "commit " '{print $2}' | tr -s ' '`
+set date = `git log -1 $L2_BASE_DIR | grep "Date" | awk -F "Date:" '{print $2}' | tr -s ' '`
 
 set author = "Last Changed Author:\t$author"
 set rev = "Last Changed Revision:\t$rev"
@@ -90,21 +78,5 @@ set date = "Last Changed Date:\t$date"
 echo $author > $L2_VERSION_FILE
 echo $rev >> $L2_VERSION_FILE	
 echo $date >> $L2_VERSION_FILE
-
-######################################################################################################
-# Create time log file ($L2_TIME_LOG_PATH) and fail log file ($L2_FAIL_LOG_PATH) if it doesn't exist #
-######################################################################################################
-
-if (! -e $L2_SUCCESS_LOG_PATH) then
-
-	echo "L2_SUCCESS_LOG\n\nStart Timestamp,Target File,Arc File,Continuum File,Configuration,Execution Time (s),Number of filled HDUs,Warning Message" > $L2_SUCCESS_LOG_PATH
-
-endif
-
-if (! -e $L2_FAIL_LOG_PATH) then 
-
-	echo "L2_FAIL_LOG\n\nStart Timestamp,Target File,Arc File,Continuum File,Error Message" > $L2_FAIL_LOG_PATH
-
-endif
 
 exit(0)

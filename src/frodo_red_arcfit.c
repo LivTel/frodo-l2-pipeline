@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_arcfit.c
- Last Modified Date:     	05/05/11
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -17,8 +10,6 @@
 #include "frodo_red_arcfit.h"
 
 #include <gsl/gsl_statistics_int.h>
-
-// *********************************************************************/
 
 int main (int argc, char *argv []) {
 

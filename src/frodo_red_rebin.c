@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_red_rebin.c
- Last Modified Date:     	21/07/11
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -18,8 +11,6 @@
 #include "frodo_red_arcfit.h"
 
 #include <gsl/gsl_math.h>
-
-// *********************************************************************/
 
 int main (int argc, char *argv []) {
 

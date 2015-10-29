@@ -1,10 +1,5 @@
 #!/usr/bin/env tcsh
 
-##################################
-# L2_exec 			 #
-# Last Modified Date:   21/07/11 #
-##################################
-
 reset
 
 source $L2_SCRIPT_DIR/L2_aliases
@@ -423,10 +418,10 @@ else
 
 endif
 
-##############################################################
-# - STEP 10 - 		    				     #
-# Cleanup files/directories and write to L2_SUCCESS_LOG_PATH #
-##############################################################
+#############################
+# - STEP 10 - 		    #
+# Cleanup files/directories #
+#############################
 
 echo "- L2_exec:\tCleaning up files/directories."
 
@@ -438,18 +433,8 @@ rm -f $target_file $arc_file $continuum_file > /dev/null			# remove source files
 mv `ls | grep .log | grep -v $log_file` logs					# move routine log files to logs/
 mv `ls | grep -v "$output_file_stem\." | grep -v tmp | grep -v logs` tmp	# move all files except the core output files to tmp/
 
-echo "" >> $L2_SUCCESS_LOG_PATH
-echo -n $start_timestamp"," >> $L2_SUCCESS_LOG_PATH
-echo -n $target_file"," >> $L2_SUCCESS_LOG_PATH
-echo -n $arc_file"," >> $L2_SUCCESS_LOG_PATH
-echo -n $continuum_file"," >> $L2_SUCCESS_LOG_PATH
-echo -n $target_key_GRATID"," >> $L2_SUCCESS_LOG_PATH
-echo -n $exec_time"," >> $L2_SUCCESS_LOG_PATH
-echo -n $num_filled_exts"," >> $L2_SUCCESS_LOG_PATH
-
 if ($?warning_msg) then
 	echo $warning_msg
-	echo -n $warning_msg >> $L2_SUCCESS_LOG_PATH 
 endif
 
 cd $current_dir
@@ -463,31 +448,14 @@ exit(0)
 
 error:
 
-echo "" >> $L2_FAIL_LOG_PATH
-
-if ($?start_timestamp) echo -n $start_timestamp >> $L2_FAIL_LOG_PATH
-echo -n "," >> $L2_FAIL_LOG_PATH
-
-if ($?1) echo -n $1 >> $L2_FAIL_LOG_PATH
-echo -n "," >> $L2_FAIL_LOG_PATH
-
-if ($?2) echo -n $2 >> $L2_FAIL_LOG_PATH
-echo -n "," >> $L2_FAIL_LOG_PATH	
-
-if ($?3) echo -n $3 >> $L2_FAIL_LOG_PATH
-echo -n "," >> $L2_FAIL_LOG_PATH	
-
 if ($?error_msg) then
 	echo "$error_msg"
 	echo
-	echo -n $error_msg >> $L2_FAIL_LOG_PATH
 endif
 
 if ($print_blurb_on_error == 1) then
-
 	cat $L2_EXEC_BLURB_FILE
 	echo 
-
 endif
 
 cd $current_dir
@@ -602,7 +570,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 13 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 10 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"

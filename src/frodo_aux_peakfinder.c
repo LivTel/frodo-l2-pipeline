@@ -1,10 +1,3 @@
-/************************************************************************
-
- File:				frodo_aux_peakfinder.c
- Last Modified Date:     	27/06/13
-
-************************************************************************/
-
 #include <string.h>
 #include <stdio.h>
 #include "fitsio.h"
@@ -15,8 +8,6 @@
 #include "frodo_functions.h"
 #include "frodo_config.h"
 #include "frodo_aux_peakfinder.h"
-
-// *********************************************************************
 
 int main(int argc, char *argv []) {
 
@@ -256,7 +247,7 @@ int main(int argc, char *argv []) {
 				free(cont_f);
 				fclose(outputfile);
 				if(fits_close_file(cont_f_ptr, &cont_f_status)) fits_report_error (stdout, cont_f_status); 
-r_a_20141105_2_1_1_9.fits
+
 				return 1; 		
 
 			}
