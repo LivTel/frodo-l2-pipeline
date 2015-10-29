@@ -1,0 +1,19 @@
+# DELETE COMMENT LINES BEFORE USE
+# structure (one entry per line) is:
+#
+# path to arc.lis file (relative to reference_arcs/[blue||red]_[g||vph]/ folder)
+# \t
+# date valid from (dd/mm/yyyy)
+# \t
+# time valid from (HH:MM:SS)
+# \t
+# date valid to (dd/mm/yyyy)
+# \t
+# time valid to (HH:MM:SS)
+#
+# alternativey, the special token "now" can be used instead of BOTH of the "valid to" fields to indicate that this list is to be used indefinitely
+#
+# e.g.
+
+240912/arc.lis	24/09/2012	12:00:00	now
+
