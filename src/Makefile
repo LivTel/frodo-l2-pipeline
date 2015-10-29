@@ -24,14 +24,14 @@ RM		= /bin/rm -i
 # $(LIBS) flag #
 ################
 
-LIBS		= -L$(L2_LIB_DIR)#						rmb/laptop/tower
+LIBS		= -L$(L2_LIB_DIR)#						rmb/laptop/tower/lt-qc
 #LIBS		= -L/space/home/dev/src/cfitsio3310 -L$(L2_LIB_DIR)#		lt/ltdevsrv
 
 ####################
 # $(INCLUDES) flag #
 ####################
 
-INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop/tower
+INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop/tower/lt-qc
 #INCLUDES	= -I/space/home/dev/src/cfitsio3310 -I/usr/include/gsl#		lt/ltdevsrv
 
 ################
