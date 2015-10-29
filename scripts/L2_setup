@@ -67,9 +67,9 @@ chmod +x $L2_SCRIPT_DIR/L2_exec
 # Update man/VERSION file #
 ###########################
 
-set author = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "Author" | awk -F "Author:" '{print $2}' | tr -s ' '`
-set rev = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "commit" | awk -F "commit " '{print $2}' | tr -s ' '`
-set date = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "Date" | awk -F "Date:" '{print $2}' | tr -s ' '`
+set author = `git --git-dir $L2_BASE_DIR"/.git" log -1 | grep "Author" | awk -F "Author:" '{print $2}' | tr -s ' '`
+set rev = `git --git-dir $L2_BASE_DIR"/.git" log -1 | grep "commit" | awk -F "commit " '{print $2}' | tr -s ' '`
+set date = `git --git-dir $L2_BASE_DIR"/.git" log -1 | grep "Date" | awk -F "Date:" '{print $2}' | tr -s ' '`
 
 set author = "Last Changed Author:\t$author"
 set rev = "Last Changed Revision:\t$rev"
