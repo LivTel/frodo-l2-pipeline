@@ -5,9 +5,9 @@
 ############################
 
 #setenv L2_BASE_DIR "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline"				# rmb/laptop
-setenv L2_BASE_DIR "/mnt/NAS/devel/FRODOSpec/frodo-l2-pipeline-github/"				# rmb/tower
+#setenv L2_BASE_DIR "/mnt/NAS/devel/FRODOSpec/frodo-l2-pipeline-github"				# rmb/tower
 #setenv L2_BASE_DIR "/space/home/eng/frodo_build"						# lt/ltdevsrv
-#setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline/trunk"					# lt/lt-archive/deploy
+setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline"						# lt/lt-qc
 
 setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH":/usr/lib:/usr/lib/gsl"					# these are the default paths for any distribution
 setenv L2_EXT_SOFTWARE_PATH_IM "/usr/bin"							# these are the default paths for any distribution
@@ -67,9 +67,9 @@ chmod +x $L2_SCRIPT_DIR/L2_exec
 # Update man/VERSION file #
 ###########################
 
-set author = `git log -1 $L2_BASE_DIR | grep "Author" | awk -F "Author:" '{print $2}' | tr -s ' '`
-set rev = `git log -1 $L2_BASE_DIR | grep "commit" | awk -F "commit " '{print $2}' | tr -s ' '`
-set date = `git log -1 $L2_BASE_DIR | grep "Date" | awk -F "Date:" '{print $2}' | tr -s ' '`
+set author = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "Author" | awk -F "Author:" '{print $2}' | tr -s ' '`
+set rev = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "commit" | awk -F "commit " '{print $2}' | tr -s ' '`
+set date = `git --git-dir $L2_BASE_DIR"/.git" log -1 $L2_BASE_DIR | grep "Date" | awk -F "Date:" '{print $2}' | tr -s ' '`
 
 set author = "Last Changed Author:\t$author"
 set rev = "Last Changed Revision:\t$rev"
