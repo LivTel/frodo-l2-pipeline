@@ -38,7 +38,7 @@ INCLUDES	= -I/usr/include/cfitsio -I/usr/include/gsl#			rmb/laptop/tower/lt-qc
 # make default #
 ################
 
-all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract_simple frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts frodo_aux_peakfinder FITS2jpeg
+all: frodo_red_findpeaks_simple frodo_red_findpeaks_simple_clean frodo_red_trace frodo_red_extract frodo_red_extract_optimal frodo_red_arcfit frodo_red_correct_throughput frodo_red_rebin frodo_red_subsky frodo_red_reformat modhead imcopy liststruc frodo_aux_spec2tsv frodo_aux_numexts frodo_aux_peakfinder FITS2jpeg
 
 #################
 # make routines #
@@ -56,17 +56,13 @@ frodo_red_trace: frodo_red_trace.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_trace.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frtrace
 	$(MV) frtrace $(L2_BIN_DIR)
 
-frodo_red_extract_simple: frodo_red_extract_simple.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_extract_simple.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frextract
+frodo_red_extract: frodo_red_extract.c libfrodo
+	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_extract.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frextract
 	$(MV) frextract $(L2_BIN_DIR)
 
 frodo_red_arcfit: frodo_red_arcfit.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_arcfit.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frarcfit
 	$(MV) frarcfit $(L2_BIN_DIR)
-
-frodo_red_arcfit2: frodo_red_arcfit2.c libfrodo
-	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_arcfit2.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frarcfit2
-	$(MV) frarcfit2 $(L2_BIN_DIR)
 
 frodo_red_correct_throughput: frodo_red_correct_throughput.c libfrodo
 	$(CC) $(CFLAGS) $(INCLUDES) $(LIBS) frodo_red_correct_throughput.c -lfrodo -lgsl -lgslcblas -lcfitsio -lm -o frcorrect

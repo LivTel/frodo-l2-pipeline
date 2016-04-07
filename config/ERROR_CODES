@@ -57,10 +57,13 @@ L2STATEX	-7	x coordinate of fit violates img boundary condition
 L2STATEX	-8	Failed to read row of input frame
 L2STATEX	-9	Failed to write output img
 L2STATEX	-10	Failed to create output img
-L2STATEX	-11	Failed to create output FITS file (ARG 4)
+L2STATEX	-11	Failed to create output FITS file (ARG 7)
 L2STATEX	-12	Failed to close [FRTRACE_OUTPUTF_TRACES_FILE] file
 L2STATEX	-13	Failed to close input FITS file (ARG 1)
-L2STATEX	-14	Failed to close output FITS file (ARG 4)
+L2STATEX	-14	Failed to close output FITS file (ARG 7)
+L2STATEX	-15	Optimal extraction weights file doesn't exist (ARG 6)
+L2STATEX	-16	Failed to assign [polynomial_order] var, is it present in the weights.dat (ARG 6) file?
+L2STATEX	-17	Couldn't read READNOIS or GAIN keywords from header
 
 L2STATAR	3	Possible poor fit, χ² not within [FRARCFIT_VAR_CHISQUARED_MIN] and [FRARCFIT_VAR_CHISQUARED_MAX]
 L2STATAR	2	Distribution of matched arc lines may not be well sampled over the wavelength range

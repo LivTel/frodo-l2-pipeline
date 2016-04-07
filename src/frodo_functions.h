@@ -1,3 +1,7 @@
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 #include <stdbool.h>
 
 int calc_least_sq_fit (int, int, double [], double [], double [], double *);
@@ -9,6 +13,7 @@ int find_peaks (int, double [], int [], int *, int, int, int, int, bool);
 int find_peaks_contiguous (int, int, double **, int **, int *, int, int, int, int, int, bool);
 int find_time (char []);
 int flip_array_dbl (double [], int);
+double get_gaussian_integral_between_two_limits(double, double, double, double);
 int interpolate (char [], double [], double [], int, double, double, double, double []);
 int iterative_sigma_clip (double [], int, int, int [], double *, double *, int *);
 int lsearch_int (int [], int, int);

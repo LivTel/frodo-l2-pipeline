@@ -184,10 +184,12 @@ set target_key_DATE_unix = `date -d "$target_key_DATE $target_key_TIME" +"%s"`
 #########################################
 
 set this_reference_arc_dir = "$L2_REFERENCE_ARCS_DIR/$config_dir/"
+set this_optext_weights_dir = "$L2_OPTEXT_WEIGHTS_DIR/$config_dir/"
 set this_lookup_tables_dir = "$L2_LOOKUP_TABLES_DIR/$config_dir/"
 
-echo "- L2_exec:\tReference arc directory: $this_reference_arc_dir"
-echo "\t\tLookup tables directory: $this_lookup_tables_dir"
+echo "- L2_exec:\tLookup tables directory: $this_lookup_tables_dir"
+echo "\t\tReference arc directory: $this_reference_arc_dir"
+echo "\t\tOptext weights directory: $this_optext_weights_dir"
 
 ##################################################
 # - STEP 7 -			       		 #
@@ -253,8 +255,77 @@ if ($reference_arc_error == 1) then
 
 endif
 
+
+echo "- L2_exec:\tLookup tables directory: $this_lookup_tables_dir"
+echo "\t\tReference arc directory: $this_reference_arc_dir"
+echo "\t\tOptext weights directory: $this_optext_weights_dir"
+
+###################################################
+# - STEP 8 -			       	          #
+# Lookup nearest-in-time optext weights file      #
+###################################################
+
+set optext_weights_error = 1
+
+set i=`cat $this_lookup_tables_dir/weights.tab | wc -l`
+set j=1
+
+while ($j <= $i)
+
+	set line = `cat $this_lookup_tables_dir/weights.tab | head -$j | tail -1`
+
+	@ j = $j + 1
+
+	set from_day =  `echo $line[2] | awk -F "/" '{print $1}'`
+	set from_month =  `echo $line[2] | awk -F "/" '{print $2}'`
+	set from_year =  `echo $line[2] | awk -F "/" '{print $3}'`
+
+	set uk_locale_date_from = $from_day"/"$from_month"/"$from_year
+	set us_locale_date_from = $from_month"/"$from_day"/"$from_year
+
+	set date_from_unix = `date -d "$us_locale_date_from $line[3]" +"%s"`
+	set date_from_formatted = "$uk_locale_date_from $line[3]"
+
+	if ($line[4] == 'now') then
+	
+		set date_to_unix = `date -d $line[4] +"%s"`	
+		set date_to_formatted = "$line[4]"
+		
+	else
+
+		set to_day =  `echo $line[4] | awk -F "/" '{print $1}'`
+		set to_month =  `echo $line[4] | awk -F "/" '{print $2}'`
+		set to_year =  `echo $line[4] | awk -F "/" '{print $3}'`
+
+		set uk_locale_date_to = $to_day"/"$to_month"/"$to_year
+		set us_locale_date_to = $to_month"/"$to_day"/"$to_year
+
+		set date_to_unix = `date -d "$us_locale_date_to $line[5]" +"%s"`
+		set date_to_formatted = "$uk_locale_date_to $line[5]"
+
+	endif
+
+	if ("$target_key_DATE_unix" >= "$date_from_unix" && "$target_key_DATE_unix" <= "$date_to_unix") then
+
+		echo "- L2_exec:\tOptext weights file ($line[1]) found for observation date $target_key_DATE_formatted."
+		echo "\t\tValid from $date_from_formatted to $date_to_formatted."
+		set optext_weights_file = "$this_optext_weights_dir$line[1]"
+		set optext_weights_error = 0
+		break
+
+	endif
+
+end
+
+if ($optext_weights_error == 1) then
+
+	set error_msg = "! L2_exec:\tNo optext weights file found with dates spanning the required range. (CRITICAL)"
+	goto error
+
+endif
+
 ##########################################################################
-# - STEP 8 -			    				       	 #
+# - STEP 9 -			    				       	 #
 # Define output file suffixes and extensions and goto appropriate script #
 ##########################################################################
 
@@ -330,7 +401,7 @@ if ($num_filled_exts != 8 && $num_filled_exts != 5) then
 endif
 
 ###########################################################################################################
-# - STEP 9 -					   			   				  #
+# - STEP 10 -					   			   				  #
 # Check external preview creation software exists in $L2_EXT_SOFTWARE_PATH_* and create image previews	  #
 # n.b. HDUS are all indexed at 0									  #
 #													  #
@@ -536,9 +607,9 @@ else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
 endif
 
-echo "###################################################"
-echo "4c. Extract continuum file using tracing. (frtrace)"
-echo "###################################################"
+echo "#####################################################"
+echo "4c. Extract continuum file using tracing. (frextract)"
+echo "#####################################################"
 
 set this_input_file	= $continuum_file
 set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
@@ -660,7 +731,7 @@ echo "###############################################"
 set this_input_file	= $arc_file
 set this_output_file	= $arc_file_stem$arc_suffix$extract_file_suffix$extension_file
 
-frextract $this_input_file 2 1 $this_output_file | tee $this_log_file
+frextract $this_input_file 2 1 0 0 $optext_weights_file $this_output_file | tee $this_log_file
 
 # The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
 if (`cat error_codes | grep -c L2STATEX` == 1) then
@@ -682,7 +753,7 @@ echo "##################################################"
 set this_input_file	= $target_file
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$extension_file
 
-frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+frextract $this_input_file 2 1 1 25 $optext_weights_file $this_output_file | tee -a $this_log_file
 
 # The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
 if (`cat error_codes | grep -c L2STATEX` == 1) then
@@ -697,14 +768,16 @@ else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
 endif
 
-echo "###################################################"
-echo "4c. Extract continuum file using tracing. (frtrace)"
-echo "###################################################"
+exit(0)
+
+echo "#####################################################"
+echo "4c. Extract continuum file using tracing. (frextract)"
+echo "#####################################################"
 
 set this_input_file	= $continuum_file
 set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
 
-frextract $this_input_file 2 1 $this_output_file | tee -a $this_log_file
+frextract $this_input_file 2 1 0 0 $optext_weights_file $this_output_file | tee -a $this_log_file
 
 # The next section replaces the L2STATEX key (if it exists) in the error_codes file with a unique key relating to the frame being extracted
 if (`cat error_codes | grep -c L2STATEX` == 1) then
@@ -858,9 +931,9 @@ else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
 endif
 
-echo "###################################################"
-echo "4c. Extract continuum file using tracing. (frtrace)"
-echo "###################################################"
+echo "#####################################################"
+echo "4c. Extract continuum file using tracing. (frextract)"
+echo "#####################################################"
 
 set this_input_file	= $continuum_file
 set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file
@@ -1019,9 +1092,9 @@ else
 	set warning_msg = "! L2_exec:\tUnable to transform L2STATEX key as it doesn't exist in the error_codes file. (WARNING)"	
 endif
 
-echo "###################################################"
-echo "4c. Extract continuum file using tracing. (frtrace)"
-echo "###################################################"
+echo "#####################################################"
+echo "4c. Extract continuum file using tracing. (frextract)"
+echo "#####################################################"
 
 set this_input_file	= $continuum_file
 set this_output_file	= $continuum_file_stem$continuum_suffix$extract_file_suffix$extension_file

@@ -101,16 +101,6 @@ if __name__ == "__main__":
               'outImage' : str(options.outImage)
     }
 
-    ## INPUT CHECKS
-    ## some sanity checks
-    if params['fittingApertureX'] % 2 == 0:	# fittingApertureX must be odd
-        im_err._setError(-5)
-        im_err.handleError()
-
-    if params['fittingApertureY'] % 2 == 0:	# fittingApertureY must be odd
-        im_err._setError(-6)
-        im_err.handleError()
-
     logging.basicConfig(format='%(levelname)s: %(message)s', level=getattr(logging, params['logLevel'].upper()))
 
     ## GET ENVIRONMENT VARS AND SET PATHS
@@ -130,6 +120,16 @@ if __name__ == "__main__":
             im_err.handleError()          
     else:
         im_err._setError(-1)
+        im_err.handleError()
+
+    ## INPUT CHECKS
+    ## some sanity checks
+    if params['fittingApertureX'] % 2 == 0:	# fittingApertureX must be odd
+        im_err._setError(-5)
+        im_err.handleError()
+
+    if params['fittingApertureY'] % 2 == 0:	# fittingApertureY must be odd
+        im_err._setError(-6)
         im_err.handleError()
 
     ## L2

@@ -12,9 +12,8 @@ class errors:
                                    -2:"(getHeaders) Unable to get headers",
                                    -3:"(getData) Unable to get data",
                                    -4:"(closeFITSFile) Unable to close file. File not open",
-                                   -5:"(__main__) fittingApertureX must be odd",
-                                   -6:"(__main__) fittingApertureY must be odd"
-}
+                                   -5:"(__main__) fittingApertureX must be odd"
+                                  } 
 
     def _setError(self, newErrorCode):
         '''

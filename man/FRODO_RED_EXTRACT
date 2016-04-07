@@ -1,0 +1,47 @@
+####################################### frodo_red_extract #########################################
+
+Usage:	frextract input_file
+		  half_aperture_num_pix
+		  flip_disp_axis
+		  optimal
+		  cr_reject_sigma
+		  weights_file
+		  output_file
+
+Synopsis:
+
+Extracts flux from an aperture using either partial pixel summation or optimal extraction.
+
+Description:
+
+Uses the [FRTRACE_OUTPUTF_TRACES_FILE] tracing file to complete a simple aperture extraction of
+flux. The size of the aperture is determined by defining [half_aperture_num_pix], the number of
+pixels to be included in the summation either side of the centroid e.g. a [half_aperture_num_pix]
+of 2 would result in a total of 5 pixels in extraction; one for centroid and two either side.
+
+The routine has an option [flip_disp_axis] to reverse the data across the dispersion axis. This
+can be set to true by assigning a value of 1, and false by assigning a value of 0.
+
+The extraction aperture can be weighted by setting [optimal] to 1. The model used is a single 
+gaussian where the FWHM as a function of position along the dispersion axis is described for each 
+fibre by a polynomial fit, the data for which is kept in the [weights_file].
+
+Should optimal extraction be chosen, there is the additional ability to use the model to filter 
+out potential cosmic rays. The procedure for this is as follows. Each pixel in the extraction 
+aperture is considered in turn. For each pixel, the amount of flux expected is calculated by taking 
+the product of the model weight for this position and the total flux in the aperture. If the squared 
+difference is found to be a multiple of [cr_reject_sigma] from the pixel variance then the pixel is 
+flagged as a potential cosmic ray event. If a pixel is rejected, its contribution is 
+removed and the aperture is reiterated. This proceeds until no more pixels are flagged. If 
+[cr_reject_sigma] is set to 0, no cosmic ray filtering will be attempted. Currently, filtering will 
+only be attempted if [optimal] is set.
+
+Example: 
+
+frextract target.fits 2 1 1 0 $L2_CONFIG_DIR/optext_weights/red_vph/060116/weights.dat 
+          target_ext.fits
+frextract arc.fits 2 1 1 0 $L2_CONFIG_DIR/optext_weights/red_vph/060116/weights.dat arc_ext.fits
+frextract continuum.fits 2 1 1 0 $L2_CONFIG_DIR/optext_weights/red_vph/060116/weights.dat 
+          continuum_ext.fits
+
+###################################################################################################

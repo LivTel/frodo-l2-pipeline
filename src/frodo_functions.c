@@ -15,6 +15,7 @@
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_math.h>
 #include <gsl_randist.h>
+#include <gsl_sf_erf.h>
 
 /************************************************************************
 
@@ -552,6 +553,23 @@ int flip_array_dbl(double array [], int size) {
 	}
 
 	return 0;
+
+}
+
+/************************************************************************
+
+ Function:		get_gaussian_integral_between_two_limits	
+ Purpose:		Gets the integral of a gaussian function between
+                        two limits
+ Additional Notes:	None
+
+************************************************************************/
+
+double get_gaussian_integral_between_two_limits(double mu, double sigma, double lim1, double lim2) {
+
+	double integral_up_to_lim2 = 0.5 * (1 + gsl_sf_erf((lim2 - mu) / (sigma * sqrt(2))));
+	double integral_up_to_lim1 = 0.5 * (1 + gsl_sf_erf((lim1 - mu) / (sigma * sqrt(2))));
+	return integral_up_to_lim2 - integral_up_to_lim1;
 
 }
 

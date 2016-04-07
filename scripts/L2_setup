@@ -5,9 +5,9 @@
 ############################
 
 #setenv L2_BASE_DIR "/home/rmb/devel/FRODOSpec/frodo-l2-pipeline"				# rmb/laptop
-#setenv L2_BASE_DIR "/mnt/NAS/devel/FRODOSpec/frodo-l2-pipeline-github"				# rmb/tower
+setenv L2_BASE_DIR "/mnt/NAS/devel/FRODOSpec/frodo-l2-pipeline-github"				# rmb/tower
 #setenv L2_BASE_DIR "/space/home/eng/frodo_build"						# lt/ltdevsrv
-setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline"						# lt/lt-qc
+#setenv L2_BASE_DIR "/usr/local/bin/frodo_l2_pipeline"						# lt/lt-qc
 
 setenv LD_LIBRARY_PATH $LD_LIBRARY_PATH":/usr/lib:/usr/lib/gsl"					# these are the default paths for any distribution
 setenv L2_EXT_SOFTWARE_PATH_IM "/usr/bin"							# these are the default paths for any distribution
@@ -27,6 +27,7 @@ setenv L2_SCRIPT_DIR $L2_BASE_DIR/scripts
 setenv L2_MAN_DIR $L2_BASE_DIR/man
 
 setenv L2_REFERENCE_ARCS_DIR $L2_CONFIG_DIR/reference_arcs
+setenv L2_OPTEXT_WEIGHTS_DIR $L2_CONFIG_DIR/optext_weights
 setenv L2_LOOKUP_TABLES_DIR $L2_CONFIG_DIR/lookup_tables
 
 setenv L2_ERROR_CODES_FILE $L2_CONFIG_DIR/ERROR_CODES
@@ -36,7 +37,7 @@ setenv L2_HEADER_FILE $L2_MAN_DIR/HEADER
 setenv L2_FRFS_BLURB_FILE $L2_MAN_DIR/FRODO_RED_FINDPEAKS_SIMPLE
 setenv L2_FRFSC_BLURB_FILE $L2_MAN_DIR/FRODO_RED_FINDPEAKS_SIMPLE_CLEAN
 setenv L2_FRT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_TRACE
-setenv L2_FRES_BLURB_FILE $L2_MAN_DIR/FRODO_RED_EXTRACT_SIMPLE
+setenv L2_FRE_BLURB_FILE $L2_MAN_DIR/FRODO_RED_EXTRACT
 setenv L2_FRA_BLURB_FILE $L2_MAN_DIR/FRODO_RED_ARCFIT
 setenv L2_FRCT_BLURB_FILE $L2_MAN_DIR/FRODO_RED_CORRECT_THROUGHPUT
 setenv L2_FRR_BLURB_FILE $L2_MAN_DIR/FRODO_RED_REBIN
