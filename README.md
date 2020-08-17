@@ -20,6 +20,8 @@ pipeline, `scripts/L2_exec`, is written in cshell. A more in depth description o
 
 5. Make the binaries and library: `src/make all`
 
+6. Red arm requires Python 3, `astropy.io` (for FITS), `numpy` and `scipy.signal` (for Savizky-Golay filter). Python is only used on the red arm and only used once in order to call `scripts/frTungstenFibreFlat.py`. This is used to generate a per fibre flat field and is only requires because the red arm CCD has a highly complicated and detailed flat field. For a typical CCD (including the blue arm on LT),the call to this function can be completely eliminated from `scripts/L2_exec` and then Python is no longer required.
+
 n.b. for LT operations, `L2_BASE_DIR`, `LIBS` and `INCLUDES` should already have a commented option for `lt-qc`.
 
 # Arc Calibration Solutions
