@@ -1,0 +1,58 @@
+################################# frodo_tungsten_fibre_flat ####################################
+
+usage: frTungstenFibreFlat.py [-h] [-l] [-e] [-d] [-v]
+                              targetfile tungstenfile outputfilename
+
+Apply fibre flat in Frodo L2 DpOL.
+
+positional arguments:
+  targetfile      Extracted science target FITS from frextract, mandatory
+  tungstenfile    Extracted tungsten continuum FITS from frextract, mandatory
+  outputfilename  Output file name, mandatory
+
+optional arguments:
+  -h, --help      show this help message and exit
+  -l              Apply extra smoothing that applies only to the low res
+                  grating. (default: Off)
+  -e              Do fibre throughput equalisation. Only needed if you have
+                  not run frcorrect on the wlamp input. (default: Off)
+  -d              Turn on debug mode. Saves interim products to disk.
+                  (default: Off)
+  -v              Turn on verbose mode (default: Off)
+
+Synopsis:
+
+Use tungstem lamp spectra to generate and apply flat field correction
+
+This function exists to work around a specific issue on Frodo Red (bug #2645)
+and is not intended for more generalised use in a generic spectral pipeline.
+
+Description:
+
+Where the generic CCD flat field is insufficient to sample the response of the CCD an 
+observation of a tungsten lamp can be used to specifically sample the exact same pixels as are 
+used to extract the target data tramlines. A tungsten lamp is required that was obtained in
+identical conditions to the target frame, close in time and optical bench temperature because
+it is only possible to extract the flat from the specific pixels that get illuminated so the
+resulting flat is only valid when tungten and target are very well matched.
+
+The fibre extracted tungsten spectra are normalised against the mean spectral shape of the 
+tungsten lamp so the spectral response of lamp and spectrogaph are removed leaving only the pixel-
+to-pixel variation in throughput. To do this the mean tungsten spectrum is estimated and then
+divided into each of the 144 fibres.
+
+That normalised file is then used a flat field to correct the target file.
+
+No extra command line options are required. Optional parameters are
+
+  -e which attempts to match the total throughput of the fibres before doing any of the above
+  
+  -l which uses a stronger smoothing function, optimised to Red-Low. The default parameters 
+     without this option still perform adequate results on Red-Low and Red-High.
+
+
+Example:
+
+python3 frTungstenFibreFlat.py target_ext_cc.fits continuum_ext_cc.fits target_ext_cc_fibflat.fits
+
+###################################################################################################
