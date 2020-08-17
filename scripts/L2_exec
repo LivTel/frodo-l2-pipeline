@@ -194,6 +194,7 @@ echo "\t\tLookup tables directory: $this_lookup_tables_dir"
 # Lookup nearest-in-time reference arc list file #
 ##################################################
 
+
 set reference_arc_error = 1
 
 set i=`cat $this_lookup_tables_dir/arc.tab | wc -l`
@@ -265,6 +266,7 @@ set continuum_suffix 			= "_continuum"
 set extract_file_suffix 		= "_ext"
 set arcfit_file_suffix 			= "_cc"
 set correct_file_suffix			= "_cor"
+set fibreflat_suffix                    = "_fibflat"
 set rebin_file_suffix			= "_reb"
 set subsky_file_suffix			= "_ss"
 
@@ -466,6 +468,9 @@ exit(1)
 
 pipe-red-low:
 
+#time debug
+set unix_start_time_trace = `date +"%s.%N"`
+
 echo "###################################"
 echo "1. Find peaks in sky file. (frfind)"
 echo "###################################"
@@ -489,6 +494,11 @@ echo "#####################################"
 set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 3 100 5 | tee $this_log_file
+
+#time debug
+set unix_end_time_trace = `date +"%s.%N"`
+set tracing_duration  = `echo "5k $unix_end_time_trace $unix_start_time_trace - p" | dc`
+echo "Total duration for peak find, clean and trace $continuum_file = $tracing_duration sec" | tee $this_log_file
 
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 
@@ -572,9 +582,9 @@ set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
 frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 15 1 2 5 10 $reference_arc_list_file 5 10 100 2 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
-echo "######################################################"
-echo "6. Apply throughput corrections. (frcorrectthroughput)"
-echo "######################################################"
+echo "################################################################"
+echo "6. Apply throughput corrections to target. (frcorrectthroughput)"
+echo "################################################################"
 
 set this_input_file_1 	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_input_file_2 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
@@ -583,11 +593,40 @@ set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
 
 frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
 
+echo "#######################################################################"
+echo "6a. Apply throughput corrections to the tungsten. (frcorrectthroughput)"
+echo "#######################################################################"
+
+set this_input_file_1   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file    = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file       = $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee -a $this_log_file
+
+echo "########################################################################"
+echo "6 1/2. Apply fibre flat derived from tungsten.  (frTungstenFibreFlat.py)"
+echo "########################################################################"
+
+# If you call frTungstenFibreFlat.py with a simple wlamp frextract then you need the -e command line option to
+# equalise the fibres. Since we have run the wlamp through frcorrect in 6a, we do not need the -e option.
+set this_input_file_1	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_input_file_2   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file    = $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$fibreflat_suffix$extension_file
+set this_log_file       = $output_file_stem$fibreflat_suffix$extension_log
+
+# -d is debug and can be dropped after we finish testing
+# -l applies an extra level of smoothing that only works on the LOW grating. Even then its value is
+# questionable and could be omitted.
+python3 ${L2_SCRIPT_DIR}/frTungstenFibreFlat.py -v -l $this_input_file_1 $this_input_file_2 $this_output_file | tee $this_log_file
+
 echo "###########################"
 echo "7. Rebin spectra. (frrebin)"
 echo "###########################"
 
-set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$fibreflat_suffix$extension_file
+# Note that $fibreflat_suffix gets dropped from the filename here. Should be added back in
+# By dropping it I maintain file name consistency with the blue arm, though that is a weak justification
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
 set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
 
@@ -631,6 +670,9 @@ echo "###################################"
 echo "1. Find peaks in sky file. (frfind)"
 echo "###################################"
 
+# time debug
+set unix_start_time_trace = `date +"%s.%N"`
+
 set this_log_file = $output_file_stem$find_log_suffix$extension_log
 
 frfind $continuum_file 3 3 10 30 2 1000 | tee $this_log_file
@@ -650,6 +692,11 @@ echo "#####################################"
 set this_log_file = $output_file_stem$trace_log_suffix$extension_log
 
 frtrace 2 100 5 | tee $this_log_file
+
+# time debug
+set unix_end_time_trace = `date +"%s.%N"`
+set tracing_duration  = `echo "5k $unix_end_time_trace $unix_start_time_trace - p" | dc`
+echo "Total duration for peak find, clean and trace $continuum_file = $tracing_duration sec" | tee $this_log_file
 
 set this_log_file	= $output_file_stem$extract_log_suffix$extension_log
 
@@ -731,7 +778,7 @@ set this_output_file_2 	= $target_file_stem$target_suffix$extract_file_suffix$ar
 set this_output_file_3 	= $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
 set this_log_file	= $output_file_stem$arcfit_log_suffix$extension_log
 
-frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 15 7 10 1 2 3 10 $reference_arc_list_file 5 7 100 4 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
+frarcfit $this_input_file_1 $this_input_file_2 $this_input_file_3 5 7 10 1 2 3 10 $reference_arc_list_file 5 7 100 4 $this_output_file_1 $this_output_file_2 $this_output_file_3 | tee $this_log_file
 
 echo "######################################################"
 echo "6. Apply throughput corrections. (frcorrectthroughput)"
@@ -744,11 +791,38 @@ set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
 
 frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
 
+echo "#######################################################################"
+echo "6a. Apply throughput corrections to the tungsten. (frcorrectthroughput)"
+echo "#######################################################################"
+
+set this_input_file_1   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_input_file_2   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$extension_file
+set this_output_file    = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_log_file       = $output_file_stem$correct_log_suffix$extension_log
+
+frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee -a $this_log_file
+
+echo "########################################################################"
+echo "6 1/2. Apply fibre flat derived from tungsten.  (frTungstenFibreFlat.py)"
+echo "########################################################################"
+
+# If you call frTungstenFibreFlat.py with a simple wlamp frextract then you need the -e command line option to
+# equalise the fibres. Since we have run the wlamp through frcorrect in 6a, we do not need the -e option.
+set this_input_file_1   = $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_input_file_2   = $continuum_file_stem$continuum_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_output_file    = $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$fibreflat_suffix$extension_file
+set this_log_file       = $output_file_stem$fibreflat_suffix$extension_log
+
+python3 ${L2_SCRIPT_DIR}/frTungstenFibreFlat.py -v $this_input_file_1 $this_input_file_2 $this_output_file | tee $this_log_file
+
+
 echo "###########################"
 echo "7. Rebin spectra. (frrebin)"
 echo "###########################"
 
-set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$extension_file
+set this_input_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$fibreflat_suffix$extension_file
+# Note that $fibreflat_suffix gets dropped from the filename here. Should be added back in
+# By dropping it I maintain file name consistency with the blue arm, though that is a weak justification
 set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfit_file_suffix$correct_file_suffix$rebin_file_suffix$extension_file
 set this_log_file	= $output_file_stem$rebin_log_suffix$extension_log
 
@@ -904,6 +978,8 @@ set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
 
 frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+# 6 1/2. This is where frTungstenFibreFlat.py is implemented for RED, but it is not used by BLUE
 
 echo "###########################"
 echo "7. Rebin spectra. (frrebin)"
@@ -1066,6 +1142,8 @@ set this_output_file	= $target_file_stem$target_suffix$extract_file_suffix$arcfi
 set this_log_file	= $output_file_stem$correct_log_suffix$extension_log
 
 frcorrect $this_input_file_1 $this_input_file_2 $WAV_LOW $WAV_HIGH $this_output_file | tee $this_log_file
+
+# 6 1/2. This is where frTungstenFibreFlat.py is implemented for RED, but it is not used by BLUE
 
 echo "###########################"
 echo "7. Rebin spectra. (frrebin)"
